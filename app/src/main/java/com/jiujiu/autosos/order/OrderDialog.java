@@ -2,6 +2,9 @@ package com.jiujiu.autosos.order;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -49,12 +52,21 @@ public class OrderDialog extends Dialog {
         setContentView(view);
         setCancelable(false);
 
-        tvPhone.setText(order.getCarOwner());
+        tvPhone.setText(order.getCarOwnerId() + "");
+        tvPhone.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
+        tvPhone.getPaint().setAntiAlias(true);//抗锯齿
         tvToRescueAdress.setText(order.getToRescueAdress());
         tvIgnore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dismiss();
+            }
+        });
+        tvPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + tvPhone.getText().toString()));
+                context.startActivity(intent);
             }
         });
 

@@ -58,7 +58,7 @@ public abstract class BaseListFragment<T> extends BaseFragment {
     protected boolean hasMore = true;
 
     @Override
-    public void afterViewInited(final View view) {
+    protected void afterViewInited(final View view) {
         initListView();
         initPtrFrame();
         initMsgLayout();

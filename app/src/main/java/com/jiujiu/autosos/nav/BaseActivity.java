@@ -23,7 +23,6 @@ import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.autonavi.tbt.TrafficFacilityInfo;
-import com.jiujiu.autosos.common.storage.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,10 +55,11 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
         //设置模拟导航的行车速度
         mAMapNavi.setEmulatorNaviSpeed(75);
 
-        //设置当前位置，如果有的话
-        if (UserStorage.getInstance().getOldlongitude() != null && UserStorage.getInstance().getOldlatitude() != null) {
-            mStartLatlng = new NaviLatLng(UserStorage.getInstance().getOldlatitude().doubleValue(), UserStorage.getInstance().getOldlongitude().doubleValue());
-        }
+        setupStartAndEndLocation();
+
+    }
+
+    protected void setupStartAndEndLocation() {
         sList.add(mStartLatlng);
         eList.add(mEndLatlng);
     }

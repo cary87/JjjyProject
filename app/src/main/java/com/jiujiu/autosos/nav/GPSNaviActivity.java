@@ -1,16 +1,18 @@
 package com.jiujiu.autosos.nav;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewOptions;
 import com.amap.api.navi.enums.NaviType;
+import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.trace.LBSTraceClient;
 import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceStatusListener;
 import com.jiujiu.autosos.R;
+import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.resp.Order;
 
 import java.util.List;
 
@@ -28,6 +30,20 @@ public class GPSNaviActivity extends BaseActivity {
         AMapNaviViewOptions options = mAMapNaviView.getViewOptions();
         options.setLayoutVisible(false);
         mAMapNaviView.setViewOptions(options);
+    }
+
+    @Override
+    protected void setupStartAndEndLocation() {
+        //设置当前位置，如果有的话
+        if (UserStorage.getInstance().getOldlongitude() != null && UserStorage.getInstance().getOldlatitude() != null) {
+            mStartLatlng = new NaviLatLng(UserStorage.getInstance().getOldlatitude().doubleValue(), UserStorage.getInstance().getOldlongitude().doubleValue());
+        }
+        Order order = (Order) getIntent().getSerializableExtra("order");
+        if (order != null) {
+            mEndLatlng = new NaviLatLng(order.getLatitude(), order.getLongitude());
+        }
+        sList.add(mStartLatlng);
+        eList.add(mEndLatlng);
     }
 
     @Override

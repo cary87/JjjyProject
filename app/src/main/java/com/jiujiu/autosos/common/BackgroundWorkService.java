@@ -3,6 +3,7 @@ package com.jiujiu.autosos.common;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -125,7 +126,9 @@ public class BackgroundWorkService extends AbsWorkService implements AMapLocatio
                 amapLocation.getFloor();//获取当前室内定位的楼层
                 
                 //更新司机当前位置
-                updateDriverPosition(longitude, latitude, province);
+                if (!TextUtils.isEmpty(province)) {
+                    updateDriverPosition(longitude, latitude, province);
+                }
             } else {
                 //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
                 LogUtils.e("wzh", "location Error, ErrCode:"
@@ -145,8 +148,9 @@ public class BackgroundWorkService extends AbsWorkService implements AMapLocatio
                     String provinceCode = "";
                     List<AreaModel> areaModels = AreaUtil.getArea(getApplicationContext());
                     for (AreaModel areaModel : areaModels) {
-                        if (areaModel.getName().contains(province)) {
+                        if (areaModel.getName().contains(province) || (province.length() > 1 && areaModel.getName().contains(province.substring(0, 2)))) {
                             provinceCode = areaModel.getId();
+                            break;
                         }
                     }
                     param.put("province", provinceCode);

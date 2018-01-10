@@ -1,11 +1,15 @@
 package com.jiujiu.autosos.home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.flyco.tablayout.CommonTabLayout;
 import com.flyco.tablayout.listener.CustomTabEntity;
 import com.flyco.tablayout.listener.OnTabSelectListener;
@@ -17,8 +21,10 @@ import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.model.BottomTabEntity;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.common.utils.DialogUtils;
 import com.jiujiu.autosos.common.utils.PushUtils;
 import com.jiujiu.autosos.me.MeFragment;
+import com.jiujiu.autosos.nav.GPSNaviActivity;
 import com.jiujiu.autosos.nav.TTSController;
 import com.jiujiu.autosos.order.OrderDialog;
 import com.jiujiu.autosos.order.OrderFragment;
@@ -50,7 +56,6 @@ public class MainActivity extends BaseActivity {
             R.drawable.setting_press, R.drawable.me_press};
 
     protected TTSController mTtsManager;
-
 
     @Override
     protected int getLayoutID() {
@@ -104,7 +109,7 @@ public class MainActivity extends BaseActivity {
      * 接单
      * @param order
      */
-    public void acceptOrder(Order order) {
+    public void acceptOrder(final Order order) {
         showLoadingDialog("接受订单中");
         HashMap<String, String> params = new HashMap<>();
         params.put("province", order.getProvince() + "");
@@ -130,6 +135,17 @@ public class MainActivity extends BaseActivity {
             public void onResponse(BaseResp resp, int i) {
                 hideLoadingDialog();
                 showToast("接单成功");
+                //TODO for network test
+                DialogUtils.showConfirmDialog(MainActivity.this, "请先切换到外网，再开始导航", new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(MainActivity.this, GPSNaviActivity.class);
+                        intent.putExtra("order", order);
+                        startActivity(intent);
+                    }
+                });
+
             }
         });
     }
