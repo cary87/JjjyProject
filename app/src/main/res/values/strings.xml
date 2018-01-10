@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">啾啾救援</string>
+    <!--dialog-->
+    <string name="positive">确定</string>
+    <string name="negative">取消</string>
+
+    <!--tips-->
+    <string name="net_error">服务器连接异常</string>
+    <string name="no_data">没有数据</string>
+    <string name="loading">加载中...</string>
+
+    <!--底部tab栏-->
+    <string name="tab_work">工作</string>
+    <string name="tab_order">订单</string>
+    <string name="tab_profile">我的</string>
+    <string name="tab_setting">设置</string>
+    <string name="see_more_order_detail"><u>查看更多订单信息</u></string>
+    <string name="order_coming">您有新的救援订单，请接收</string>
+</resources>

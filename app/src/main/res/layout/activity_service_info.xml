@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="准确填写车辆信息，享受高质量订单匹配" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="车牌号" />
+
+                    <TextView
+                        android:id="@+id/tv_province_of_car"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:background="@color/colorAccent"
+                        android:padding="6dp"
+                        android:text="桂" />
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/et_card_number"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="A88888" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="联系方式" />
+
+                <EditText
+                    android:id="@+id/et_mobile"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="18520124568" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                style="@style/service_section">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="服务类型" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
+
+                <CheckBox
+                    android:id="@+id/cb_tuoche"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="拖车" />
+
+                <CheckBox
+                    android:id="@+id/cb_dadian"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="搭电" />
+
+                <CheckBox
+                    android:id="@+id/cb_diaoche"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="吊车" />
+
+                <CheckBox
+                    android:id="@+id/cb_kuaixiu"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="快修" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
+
+                <CheckBox
+                    android:id="@+id/cb_kaishuo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="开锁" />
+
+                <CheckBox
+                    android:id="@+id/cb_daijia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="代驾" />
+
+                <CheckBox
+                    android:id="@+id/cb_huanbutai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="换胎补胎" />
+
+                <CheckBox
+                    android:id="@+id/cb_songshui_songyong"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="送水送油" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal">
+
+                <CheckBox
+                    android:id="@+id/cb_kancha_paizhao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="查勘拍照" />
+
+                <CheckBox
+                    android:id="@+id/cb_kunjing_jiuyuan"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="困境救援" />
+
+                <CheckBox
+                    android:id="@+id/cb_daiban_nianjian"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="代办年检" />
+
+            </LinearLayout>
+
+            <RelativeLayout android:id="@+id/layout_diaoche" android:visibility="gone" style="@style/service_section">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="吊车吨位"/>
+
+                <TextView
+                    android:id="@+id/tv_diaoche_ton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:drawableRight="@drawable/icon_arrow_right"
+                    android:textColor="@color/black"
+                    android:text="70"/>
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_tuoche"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout style="@style/service_section">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="牵引吨位"/>
+
+                    <TextView
+                        android:id="@+id/tv_tuoche_ton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:drawableRight="@drawable/icon_arrow_right"
+                        android:textColor="@color/black"
+                        android:text=""/>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    style="@style/service_section">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="是否落地"/>
+
+                    <RadioGroup
+                        android:id="@+id/rg_luodi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_alignParentEnd="true">
+
+                        <RadioButton
+                            android:id="@+id/rb_no1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="无"/>
+
+                        <RadioButton
+                            android:id="@+id/rb_yes1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="有"/>
+
+                    </RadioGroup>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    style="@style/service_section">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="辅助轮"/>
+
+                    <RadioGroup
+                        android:id="@+id/rg_fuzhulun"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_alignParentEnd="true">
+
+                        <RadioButton
+                            android:id="@+id/rb_no2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="无"/>
+
+                        <RadioButton
+                            android:id="@+id/rb_yes2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="有"/>
+
+                    </RadioGroup>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    style="@style/service_section">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="是否有起吊功能"/>
+
+                    <RadioGroup
+                        android:id="@+id/rg_qidiao_function"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_alignParentEnd="true">
+
+                        <RadioButton
+                            android:id="@+id/rb_no3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="无"/>
+
+                        <RadioButton
+                            android:id="@+id/rb_yes3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="有"/>
+
+                    </RadioGroup>
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

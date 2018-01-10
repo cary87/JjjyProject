@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_toolbar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorBg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ll_version"
+                style="@style/setting_item_layout"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    style="@style/setting_item_text"
+                    android:text="版本管理" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_about"
+                style="@style/setting_item_layout"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    style="@style/setting_item_text"
+                    android:text="关于" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_feedback"
+                style="@style/setting_item_layout"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    style="@style/setting_item_text"
+                    android:text="意见反馈" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_contact_us"
+                style="@style/setting_item_layout"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    style="@style/setting_item_text"
+                    android:text="联系我们" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_open_protection"
+                style="@style/setting_item_layout"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    style="@style/setting_item_text"
+                    android:text="开启保护" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_logout"
+                style="@style/setting_item_layout"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    style="@style/setting_item_text"
+                    android:text="退出" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</LinearLayout>
