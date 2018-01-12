@@ -2,6 +2,7 @@ package com.jiujiu.autosos.me;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
-import com.jiujiu.autosos.common.base.BaseActivity;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.base.ChangePwdResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.RSACoder;
@@ -33,7 +34,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Administrator on 2017/12/27 0027.
  */
 
-public class ChangePasswordActivity extends BaseActivity {
+public class ChangePasswordActivity extends AbsBaseActivity {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.et_old_pwd)
@@ -46,7 +47,7 @@ public class ChangePasswordActivity extends BaseActivity {
     Toolbar toolbar;
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         tvTitle.setText("修改密码");
         setupToolbar(toolbar);
     }

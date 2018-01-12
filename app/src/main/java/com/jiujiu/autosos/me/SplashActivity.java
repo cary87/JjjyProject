@@ -6,7 +6,7 @@ import android.os.Handler;
 
 import com.jaeger.library.StatusBarUtil;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.common.base.BaseActivity;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.home.MainActivity;
 
@@ -14,10 +14,10 @@ import com.jiujiu.autosos.home.MainActivity;
 /**
  * Created by Cary on 2017/4/25 0025.
  */
-public class SplashActivity extends BaseActivity {
+public class SplashActivity extends AbsBaseActivity {
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         StatusBarUtil.setTransparent(this);
         jump();
 

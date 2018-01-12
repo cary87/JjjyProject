@@ -31,7 +31,7 @@
             android:id="@+id/tv_order_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="@color/colorAccent"
             android:layout_gravity="end"
             android:text="已接单"/>
 
@@ -107,6 +107,13 @@
 
         </LinearLayout>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -153,7 +160,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <!--<LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
@@ -170,7 +177,7 @@
                 android:textColor="@color/black"
                 android:text="深圳龙岗"/>
 
-        </LinearLayout>
+        </LinearLayout>-->
 
     </LinearLayout>
 

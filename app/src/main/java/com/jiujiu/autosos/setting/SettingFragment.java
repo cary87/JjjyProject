@@ -12,6 +12,7 @@ import com.jiujiu.autosos.common.base.BaseFragment;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.nav.LocationManeger;
 import com.xdandroid.hellodaemon.IntentWrapper;
 
 import butterknife.BindView;
@@ -74,6 +75,7 @@ public class SettingFragment extends BaseFragment {
             }
         });
         UserStorage.getInstance().clear();
+        LocationManeger.getInstance().stopLocation();
         mActivity.finish();
     }
 }

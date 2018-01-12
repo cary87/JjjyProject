@@ -1,21 +1,17 @@
 package com.jiujiu.autosos.camera;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.cameraview.CameraView;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.common.base.BaseActivity;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,14 +19,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 /**
  * Created by Administrator on 2017/12/29 0029.
  */
 
-public class CameraActivity extends BaseActivity {
+public class CameraActivity extends AbsBaseActivity {
     public static final String TAG = CameraActivity.class.getSimpleName();
 
     @BindView(R.id.camera)
@@ -39,7 +34,7 @@ public class CameraActivity extends BaseActivity {
     private Handler mBackgroundHandler;
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
         }

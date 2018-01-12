@@ -2,6 +2,7 @@ package com.jiujiu.autosos.resp;
 
 import com.jiujiu.autosos.common.http.BaseResp;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -10,17 +11,17 @@ import java.util.List;
 
 public class FecthOrderResp extends BaseResp {
 
-    private List<DataBean> data;
+    private List<OrderModel> data;
 
-    public List<DataBean> getData() {
+    public List<OrderModel> getData() {
         return data;
     }
 
-    public void setData(List<DataBean> data) {
+    public void setData(List<OrderModel> data) {
         this.data = data;
     }
 
-    public static class DataBean {
+    public static class OrderModel implements Serializable {
         /**
          * toRescueAdress : 的说法是短发沙发上
          * driverCar : 粤A000001

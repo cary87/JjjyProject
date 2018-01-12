@@ -2,6 +2,7 @@ package com.jiujiu.autosos.me;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -13,7 +14,7 @@ import android.widget.TextView;
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.UserApi;
-import com.jiujiu.autosos.common.base.BaseActivity;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.utils.LogUtils;
@@ -32,7 +33,7 @@ import okhttp3.Call;
  * Created by Administrator on 2017/12/27 0027.
  */
 
-public class PersonalAuthActivity extends BaseActivity {
+public class PersonalAuthActivity extends AbsBaseActivity {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.toolbar)
@@ -48,7 +49,7 @@ public class PersonalAuthActivity extends BaseActivity {
     private int tagOfPic = -1;
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         tvTitle.setText("个人资料认证");
         setupToolbar(toolbar);
     }

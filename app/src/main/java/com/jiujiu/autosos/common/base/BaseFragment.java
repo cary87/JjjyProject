@@ -15,7 +15,7 @@ import io.reactivex.disposables.CompositeDisposable;
  * 所有Fragment基类
  */
 public abstract class BaseFragment extends Fragment {
-    public BaseActivity mActivity;
+    public AbsBaseActivity mActivity;
     protected boolean viewInited;
     protected CompositeDisposable cd = new CompositeDisposable();
     private Unbinder unbinder;
@@ -23,7 +23,7 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivity = (BaseActivity) getActivity();
+        mActivity = (AbsBaseActivity) getActivity();
     }
 
     @Nullable

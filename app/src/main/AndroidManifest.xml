@@ -83,7 +83,7 @@
         <!-- OnePush配置 -->
         <service android:name="com.sdbc.onepushlib.OnePushService" />
         <service android:name="com.sdbc.onepushlib.service.OnePushFakeService"
-            android:process=":doctor" />
+            android:process=":autofake" />
         <receiver android:name=".push.OnePushReceiver"
             android:exported="true" >
             <intent-filter>

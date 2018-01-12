@@ -1,6 +1,5 @@
 package com.jiujiu.autosos.home;
 
-import android.content.Intent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -12,14 +11,13 @@ import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.base.BaseFragment;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
-import com.jiujiu.autosos.nav.GPSNaviActivity;
+import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.resp.LoginResp;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
@@ -84,6 +82,11 @@ public class WorkbenchFragment extends BaseFragment {
                             user.setOnlineState(b ? 0 : 1);
                             UserStorage.getInstance().setUser(user);
                             setOnlineText(b);
+                            if (b) {
+                                LocationManeger.getInstance().startLocation();
+                            } else {
+                                LocationManeger.getInstance().stopLocation();
+                            }
                         } else {
                             mActivity.handleError(new AppException(o.getCode(), o.getMessage()));
                         }
@@ -95,12 +98,5 @@ public class WorkbenchFragment extends BaseFragment {
                     }
                 });
         cd.add(disposable);
-    }
-
-
-    @OnClick(R.id.btn_nav)
-    public void onViewClicked() {
-        Intent intent = new Intent(mActivity, GPSNaviActivity.class);
-        startActivity(intent);
     }
 }

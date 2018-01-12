@@ -1,9 +1,7 @@
 package com.jiujiu.autosos.nav;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
 import android.widget.Toast;
 
 import com.amap.api.navi.AMapNavi;
@@ -23,46 +21,22 @@ import com.amap.api.navi.model.AimLessModeStat;
 import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.autonavi.tbt.TrafficFacilityInfo;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class BaseActivity extends Activity implements AMapNaviListener, AMapNaviViewListener {
+public class BaseActivity extends AbsBaseActivity implements AMapNaviListener, AMapNaviViewListener {
 
     protected AMapNaviView mAMapNaviView;
     protected AMapNavi mAMapNavi;
     protected TTSController mTtsManager;
     protected NaviLatLng mEndLatlng = new NaviLatLng(40.084894,116.603039);
     protected NaviLatLng mStartLatlng = new NaviLatLng(39.825934,116.342972);
-    protected final List<NaviLatLng> sList = new ArrayList<NaviLatLng>();
-    protected final List<NaviLatLng> eList = new ArrayList<NaviLatLng>();
+    protected final List<NaviLatLng> sList = new ArrayList<>();
+    protected final List<NaviLatLng> eList = new ArrayList<>();
     protected List<NaviLatLng> mWayPointList;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //实例化语音引擎
-        mTtsManager = TTSController.getInstance(getApplicationContext());
-        mTtsManager.init();
-
-        //
-        mAMapNavi = AMapNavi.getInstance(getApplicationContext());
-        mAMapNavi.addAMapNaviListener(this);
-        mAMapNavi.addAMapNaviListener(mTtsManager);
-
-        //设置模拟导航的行车速度
-        mAMapNavi.setEmulatorNaviSpeed(75);
-
-        setupStartAndEndLocation();
-
-    }
-
-    protected void setupStartAndEndLocation() {
-        sList.add(mStartLatlng);
-        eList.add(mEndLatlng);
-    }
 
     @Override
     protected void onResume() {
@@ -75,11 +49,10 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
         super.onPause();
         mAMapNaviView.onPause();
 
-//        仅仅是停止你当前在说的这句话，一会到新的路口还是会再说的
+        //仅仅是停止你当前在说的这句话，一会到新的路口还是会再说的
         mTtsManager.stopSpeaking();
-//
-//        停止导航之后，会触及底层stop，然后就不会再有回调了，但是讯飞当前还是没有说完的半句话还是会说完
-//        mAMapNavi.stopNavi();
+        //停止导航之后，会触及底层stop，然后就不会再有回调了，但是讯飞当前还是没有说完的半句话还是会说完
+        //mAMapNavi.stopNavi();
     }
 
     @Override
@@ -90,6 +63,25 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
         mAMapNavi.stopNavi();
         mAMapNavi.destroy();
         mTtsManager.destroy();
+    }
+
+    @Override
+    protected void setup(Bundle savedInstanceState) {
+        //实例化语音引擎
+        mTtsManager = TTSController.getInstance(getApplicationContext());
+        mTtsManager.init();
+
+        mAMapNavi = AMapNavi.getInstance(getApplicationContext());
+        mAMapNavi.addAMapNaviListener(this);
+        mAMapNavi.addAMapNaviListener(mTtsManager);
+
+        //设置模拟导航的行车速度
+        mAMapNavi.setEmulatorNaviSpeed(75);
+    }
+
+    @Override
+    protected int getLayoutID() {
+        return 0;
     }
 
     @Override
@@ -259,7 +251,7 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
 
     @Override
     public void notifyParallelRoad(int i) {
-        if (i == 0) {
+        /*if (i == 0) {
             Toast.makeText(this, "当前在主辅路过渡", Toast.LENGTH_SHORT).show();
             Log.d("wlx", "当前在主辅路过渡");
             return;
@@ -274,7 +266,7 @@ public class BaseActivity extends Activity implements AMapNaviListener, AMapNavi
             Toast.makeText(this, "当前在辅路", Toast.LENGTH_SHORT).show();
 
             Log.d("wlx", "当前在辅路");
-        }
+        }*/
     }
 
     @Override

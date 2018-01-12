@@ -72,7 +72,7 @@ public class FileUploadResp extends BaseResp {
 
         @Override
         public String toString() {
-            return "DataBean{" +
+            return "OrderModel{" +
                     "fileName='" + fileName + '\'' +
                     ", key='" + key + '\'' +
                     ", url='" + url + '\'' +

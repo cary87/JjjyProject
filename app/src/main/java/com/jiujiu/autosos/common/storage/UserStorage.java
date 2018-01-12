@@ -14,11 +14,12 @@ import com.litesuits.common.data.DataKeeper;
 public class UserStorage {
     public static final String SHAREPRE = "app_save";
     public static final String KEY_USER = "key_user";
+    private static final String KEY_LAST_LONGITUDE = "key_last_longitude";
+    private static final String KEY_LAST_LATITUDE = "key_last_latitude";
     private static UserStorage instance;
     private String token;
     private LoginResp.DataBean user;
-    private Double oldlongitude;
-    private Double oldlatitude;
+    private String nowLocationAddress;
 
     private UserStorage() {
         try {
@@ -67,20 +68,32 @@ public class UserStorage {
         return user.getOnlineState() == 0;
     }
 
-    public Double getOldlongitude() {
-        return oldlongitude;
+    public String getNowLocationAddress() {
+        return nowLocationAddress;
     }
 
-    public void setOldlongitude(Double oldlongitude) {
-        this.oldlongitude = oldlongitude;
+    public void setNowLocationAddress(String nowLocationAddress) {
+        this.nowLocationAddress = nowLocationAddress;
     }
 
-    public Double getOldlatitude() {
-        return oldlatitude;
+    public double getLastSubmitLongitude() {
+        DataKeeper keeper = new DataKeeper(AutososApplication.getApp(), SHAREPRE);
+        return Double.parseDouble(keeper.get(KEY_LAST_LONGITUDE + (user == null ? "" : user.getUserId()), "0"));
     }
 
-    public void setOldlatitude(Double oldlatitude) {
-        this.oldlatitude = oldlatitude;
+    public void setLastSubmitLongitude(double lastSubmitLongitude) {
+        DataKeeper keeper = new DataKeeper(AutososApplication.getApp(), SHAREPRE);
+        keeper.put(KEY_LAST_LONGITUDE + (user == null ? "" : user.getUserId()), Double.toString(lastSubmitLongitude));
+    }
+
+    public double getLastSubmitLatitude() {
+        DataKeeper keeper = new DataKeeper(AutososApplication.getApp(), SHAREPRE);
+        return Double.parseDouble(keeper.get(KEY_LAST_LATITUDE + (user == null ? "" : user.getUserId()), "0"));
+    }
+
+    public void setLastSubmitLatitude(double lastSubmitLatitude) {
+        DataKeeper keeper = new DataKeeper(AutososApplication.getApp(), SHAREPRE);
+        keeper.put(KEY_LAST_LATITUDE + (user == null ? "" : user.getUserId()), Double.toString(lastSubmitLatitude));
     }
 
     public String getToken() {

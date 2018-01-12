@@ -10,7 +10,7 @@ public enum OrderStateEnum {
     Post(1, "已派单"),
     Accept(2, "已接单"),
     Arrive(3, "已到达"),
-    Finished(4, "服务已完成"),
+    Finished(4, "待付款"),
     Payed(5, "已付款"),
     Evaluated(6, "已评价"),
     Cancel(7, "已取消"),

@@ -15,8 +15,8 @@ import com.flyco.tablayout.listener.CustomTabEntity;
 import com.flyco.tablayout.listener.OnTabSelectListener;
 import com.google.gson.Gson;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.api.UserApi;
-import com.jiujiu.autosos.common.base.BaseActivity;
+import com.jiujiu.autosos.api.OrderApi;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.model.BottomTabEntity;
@@ -40,7 +40,7 @@ import java.util.HashMap;
 import butterknife.BindView;
 import okhttp3.Call;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AbsBaseActivity {
     @BindView(R.id.vp_container)
     ViewPager mViewPagerContainer;
     @BindView(R.id.bottom_layout)
@@ -50,10 +50,10 @@ public class MainActivity extends BaseActivity {
     private String[] mTitles;
     private int[] mIconUnselectIds = {
             R.drawable.workbench_normal, R.drawable.order_normal,
-            R.drawable.setting_normal, R.drawable.me_normal};
+            R.drawable.me_normal, R.drawable.setting_normal};
     private int[] mIconSelectIds = {
             R.drawable.workbench_press, R.drawable.order_press,
-            R.drawable.setting_press, R.drawable.me_press};
+            R.drawable.me_press, R.drawable.setting_press};
 
     protected TTSController mTtsManager;
 
@@ -99,6 +99,14 @@ public class MainActivity extends BaseActivity {
         OrderDialog dialog = new OrderDialog(this, order, new OrderDialog.OnAcceptOrderListener() {
             @Override
             public void onAcceptOrder() {
+                /*if (UserStorage.getInstance().getLastSubmitLongitude() == 0 || UserStorage.getInstance().getLastSubmitLatitude() == 0) {
+                    LocationManeger.getInstance().addMyLocationListener(new LocationManeger.OnMyLocationListener() {
+                        @Override
+                        public void onLocationChanged(Double longitude, Double latitude, String province, String detailAddress) {
+
+                        }
+                    });
+                }*/
                 acceptOrder(order);
             }
         });
@@ -114,18 +122,18 @@ public class MainActivity extends BaseActivity {
         HashMap<String, String> params = new HashMap<>();
         params.put("province", order.getProvince() + "");
         params.put("orderId", order.getOrderId() + "");
-        params.put("svrId", order.getBelongOrg() + "");
-        params.put("svrName", order.getBelongOrgName());
+        params.put("svrId", UserStorage.getInstance().getUser().getBelongOrg() + "");
+        params.put("svrName", UserStorage.getInstance().getUser().getBelongOrgName());
         params.put("driverType", order.getDriverType());
         params.put("driverCar", order.getCarNo());
         params.put("toRescueAdress", order.getToRescueAdress());
         params.put("toRescueLongitude", order.getToRescueLongitude() + "");
         params.put("toRescueLatitude", order.getToRescueLatitude() + "");
         params.put("driverAdress", "广州天河");
-        params.put("driverLongitude", String.valueOf(UserStorage.getInstance().getOldlongitude()));
-        params.put("driverLatitude", String.valueOf(UserStorage.getInstance().getOldlatitude()));
         params.put("items", new Gson().toJson(order.getItemsList()));
-        UserApi.driverAcceptOrder(params, new ApiCallback<BaseResp>() {
+        params.put("driverLongitude", String.valueOf(UserStorage.getInstance().getLastSubmitLongitude()));
+        params.put("driverLatitude", String.valueOf(UserStorage.getInstance().getLastSubmitLatitude()));
+        OrderApi.driverAcceptOrder(params, new ApiCallback<BaseResp>() {
             @Override
             public void onError(Call call, Exception e, int i) {
                 handleError(e);
@@ -151,12 +159,12 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         mFragments.add(new WorkbenchFragment());
         mFragments.add(new OrderFragment());
-        mFragments.add(new SettingFragment());
         mFragments.add(new MeFragment());
-        mTitles = new String[] {getString(R.string.tab_work), getString(R.string.tab_order), getString(R.string.tab_setting), getString(R.string.tab_profile)};
+        mFragments.add(new SettingFragment());
+        mTitles = new String[] {getString(R.string.tab_work), getString(R.string.tab_order), getString(R.string.tab_profile), getString(R.string.tab_setting)};
         for (int i = 0; i < mTitles.length; i++) {
             mTabEntities.add(new BottomTabEntity(mTitles[i], mIconSelectIds[i], mIconUnselectIds[i]));
         }

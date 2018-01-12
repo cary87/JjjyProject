@@ -1,6 +1,7 @@
 package com.jiujiu.autosos.me;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -18,14 +19,14 @@ import android.widget.TextView;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
-import com.jiujiu.autosos.common.base.BaseActivity;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.model.ServiceItemEnum;
 import com.jiujiu.autosos.common.model.YesNoEnum;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.home.MainActivity;
 import com.jiujiu.autosos.req.DriverInfoReq;
 import com.jiujiu.autosos.resp.LoginResp;
-import com.jiujiu.autosos.home.MainActivity;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,7 +43,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Administrator on 2018/1/4.
  */
 
-public class ProvideServiceInfoActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener {
+public class ProvideServiceInfoActivity extends AbsBaseActivity implements CompoundButton.OnCheckedChangeListener {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.toolbar)
@@ -103,7 +104,7 @@ public class ProvideServiceInfoActivity extends BaseActivity implements Compound
     LinearLayout layoutTuoche;
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         tvTitle.setText("服务信息录入");
         setupToolbar(toolbar);
         cbTuoche.setOnCheckedChangeListener(this);

@@ -17,7 +17,7 @@ import okhttp3.Call;
  * Created by Administrator on 2017/12/21 0021.
  */
 
-public class OrderFragment extends BaseListFragment<FecthOrderResp.DataBean> {
+public class OrderFragment extends BaseListFragment<FecthOrderResp.OrderModel> {
     @BindView(R.id.tv_title)
     TextView tvBarTitle;
 
@@ -46,7 +46,7 @@ public class OrderFragment extends BaseListFragment<FecthOrderResp.DataBean> {
     }
 
     @Override
-    protected BaseListAdapter<FecthOrderResp.DataBean> getListAdapter() {
+    protected BaseListAdapter<FecthOrderResp.OrderModel> getListAdapter() {
         return new OrderAdapter(mActivity);
     }
 

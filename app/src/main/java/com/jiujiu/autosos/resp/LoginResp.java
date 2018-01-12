@@ -88,6 +88,15 @@ public class LoginResp extends BaseResp {
         private String token;
         private String passwordFlag;
         private String password;
+        private String province;
+
+        public String getProvince() {
+            return province;
+        }
+
+        public void setProvince(String province) {
+            this.province = province;
+        }
 
         public String getUserId() {
             return userId;

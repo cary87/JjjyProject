@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
  * Created by Administrator on 2018/1/10.
  */
 
-public class OrderAdapter extends BaseListAdapter<FecthOrderResp.DataBean> {
+public class OrderAdapter extends BaseListAdapter<FecthOrderResp.OrderModel> {
     public OrderAdapter(Context context) {
         super(context);
     }
@@ -35,12 +35,13 @@ public class OrderAdapter extends BaseListAdapter<FecthOrderResp.DataBean> {
         }
 
         holder.tvCarNumber.setText(getItem(i).getCarNo());
-        holder.tvDestinationAddress.setText(getItem(i).getToRescueAdress());
         holder.tvOccurAddress.setText(getItem(i).getAddress());
         holder.tvOrderNumber.setText(getItem(i).getOrderId() + "");
         holder.tvPhone.setText(getItem(i).getCarOwnerId() + "");
         holder.tvOrderState.setText(OrderStateEnum.getOrderState(getItem(i).getState()).getLabel());
+        //holder.tvDestinationAddress.setText(getItem(i).getToRescueAdress());
         //holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getOrderTime()));
+
         return view;
     }
 
@@ -53,11 +54,12 @@ public class OrderAdapter extends BaseListAdapter<FecthOrderResp.DataBean> {
         TextView tvPhone;
         @BindView(R.id.tv_occur_address)
         TextView tvOccurAddress;
-        @BindView(R.id.tv_destination_address)
-        TextView tvDestinationAddress;
         @BindView(R.id.tv_order_state)
         TextView tvOrderState;
-        /*@BindView(R.id.tv_order_time)
+        /*
+        @BindView(R.id.tv_destination_address)
+        TextView tvDestinationAddress;
+        @BindView(R.id.tv_order_time)
         TextView tvOrderTime;*/
 
         OrderViewHolder(View view) {

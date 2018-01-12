@@ -29,7 +29,7 @@ import io.reactivex.disposables.CompositeDisposable;
 /**
  * 所有Activity基类
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class AbsBaseActivity extends AppCompatActivity {
 
     protected CompositeDisposable cd = new CompositeDisposable();
 
@@ -37,7 +37,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private Unbinder unbinder;
 
     private Dialog mLoadingDialog;
-    protected BaseActivity mActivity;
+    protected AbsBaseActivity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         unbinder = ButterKnife.bind(this);
         ActivityStack.getInstance().addActivity(this);
         mActivity = this;
-        setup();
+        setup(savedInstanceState);
     }
 
     @Override
@@ -76,7 +76,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 初始化数据
      */
-    protected abstract void setup();
+    protected abstract void setup(Bundle savedInstanceState);
 
     /**
      * 获取布局文件
@@ -87,7 +87,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void handleError(Throwable e) {
         hideLoadingDialog();
         if (e instanceof ConnectException || e instanceof UnknownHostException) {
-            DialogUtils.showConfirmDialog(this, "当前网络不可用，请检查网络设置", new MaterialDialog.SingleButtonCallback() {
+            DialogUtils.showConfirmDialog(this, "服务器连接失败", new MaterialDialog.SingleButtonCallback() {
                 @Override
                 public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                     dialog.dismiss();

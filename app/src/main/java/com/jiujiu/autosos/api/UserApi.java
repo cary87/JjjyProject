@@ -25,7 +25,6 @@ public class UserApi {
     public static final String DRIVERINFOUPDATE = "/common/users/driverInfoUpdate";
     public static final String UPDATEPOSITION = "/common/position/updatePosition";
     public static final String SAVELICENSE = "/common/users/saveLicenseFile";
-    public static final String ACCEPTORDER = "/common/order/driverAcceptOrder";
 
 
     public static final String VCCODE = "/common/sendVCode";
@@ -66,11 +65,6 @@ public class UserApi {
     public static <T> void saveLicense(Map<String,String> param, Callback<T> callback) {
         ApiHelper.httpRequest(HttpMethod.POST, SAVELICENSE, param, callback);
     }
-
-    public static <T> void driverAcceptOrder(Map<String,String> param, Callback<T> callback) {
-        ApiHelper.httpRequest(HttpMethod.POST, ACCEPTORDER, param, callback);
-    }
-
 
     public static <T> void sendVCCode(Map<String,String> param, Callback<T> callback) {
         ApiHelper.httpRequest(HttpMethod.POST, VCCODE, param, callback);

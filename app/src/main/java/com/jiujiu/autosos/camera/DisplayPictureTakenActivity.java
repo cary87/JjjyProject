@@ -1,13 +1,14 @@
 package com.jiujiu.autosos.camera;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.common.base.BaseActivity;
+import com.jiujiu.autosos.common.base.AbsBaseActivity;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -16,14 +17,14 @@ import butterknife.OnClick;
  * Created by Administrator on 2018/1/3.
  */
 
-public class DisplayPictureTakenActivity extends BaseActivity {
+public class DisplayPictureTakenActivity extends AbsBaseActivity {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.iv_display)
     ImageView ivDisplay;
 
     @Override
-    protected void setup() {
+    protected void setup(Bundle savedInstanceState) {
         tvTitle.setText("拍照结果");
         String url = getIntent().getStringExtra("url");
         if (url != null) {
