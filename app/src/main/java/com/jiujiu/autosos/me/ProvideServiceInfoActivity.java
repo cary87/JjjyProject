@@ -16,17 +16,19 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
-import com.jiujiu.autosos.common.http.BaseResp;
+import com.jiujiu.autosos.common.model.PlateTypeEnum;
 import com.jiujiu.autosos.common.model.ServiceItemEnum;
 import com.jiujiu.autosos.common.model.YesNoEnum;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.common.utils.DialogUtils;
 import com.jiujiu.autosos.home.MainActivity;
 import com.jiujiu.autosos.req.DriverInfoReq;
-import com.jiujiu.autosos.resp.LoginResp;
+import com.jiujiu.autosos.resp.UserResp;
 
 import java.util.Arrays;
 import java.util.List;
@@ -43,7 +45,7 @@ import io.reactivex.schedulers.Schedulers;
  * Created by Administrator on 2018/1/4.
  */
 
-public class ProvideServiceInfoActivity extends AbsBaseActivity implements CompoundButton.OnCheckedChangeListener {
+public class ProvideServiceInfoActivity extends AbsBaseActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.toolbar)
@@ -103,13 +105,22 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
     @BindView(R.id.layout_tuoche)
     LinearLayout layoutTuoche;
 
+    private static final String[] ABBREVIATIONS = {
+            "京", "津", "冀", "晋", "蒙", "辽", "吉", "黑", "沪",
+            "苏", "浙", "皖", "闽", "赣", "鲁", "豫", "鄂", "湘",
+            "粤", "桂", "琼", "渝", "川", "贵", "云", "藏", "陕",
+            "甘", "青", "宁", "新"};
+
     @Override
     protected void setup(Bundle savedInstanceState) {
         tvTitle.setText("服务信息录入");
         setupToolbar(toolbar);
         cbTuoche.setOnCheckedChangeListener(this);
         cbDiaoche.setOnCheckedChangeListener(this);
-        LoginResp.DataBean user = UserStorage.getInstance().getUser();
+        layoutDiaoche.setOnClickListener(this);
+        layoutTuoche.setOnClickListener(this);
+        tvProvinceOfCar.setOnClickListener(this);
+        UserResp.DataBean user = UserStorage.getInstance().getUser();
         if (!TextUtils.isEmpty(user.getDriverLicensePlateNumber())) {
             tvProvinceOfCar.setText(user.getDriverLicensePlateNumber().substring(0, 1));
             etCardNumber.setText(user.getDriverLicensePlateNumber().substring(1));
@@ -117,11 +128,20 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
         etMobile.setText(user.getPhone());
         if (!TextUtils.isEmpty(user.getDriverServiceItems())) {
             String itemsStr = user.getDriverServiceItems();
-            List<String> arrays = Arrays.asList(itemsStr.split("|"));
+            List<String> arrays = Arrays.asList(itemsStr.split("\\|"));
             if (arrays.contains(ServiceItemEnum.DragCar.getValue() + "")) {
                 cbTuoche.setChecked(true);
                 layoutTuoche.setVisibility(View.VISIBLE);
-                tvTuocheTon.setText(user.getDriverPlateType());
+                tvTuocheTon.setText(TextUtils.isEmpty(user.getDriverPlateType()) ? "" : PlateTypeEnum.getPlateType(user.getDriverPlateType()).getLable());
+                if (!TextUtils.isEmpty(user.getDriverToGroundType())) {
+                    rgLuodi.check(YesNoEnum.Yes.equals(YesNoEnum.getYesNo(user.getDriverToGroundType())) ? R.id.rb_yes1 : R.id.rb_no1);
+                }
+                if (!TextUtils.isEmpty(user.getDriverToGroundType())) {
+                    rgFuzhulun.check(YesNoEnum.Yes.equals(YesNoEnum.getYesNo(user.getDriverAuxiliaryType())) ? R.id.rb_yes2 : R.id.rb_no2);
+                }
+                if (!TextUtils.isEmpty(user.getDriverToGroundType())) {
+                    rgQidiaoFunction.check(YesNoEnum.Yes.equals(YesNoEnum.getYesNo(user.getDriverLiftingType())) ? R.id.rb_yes3 : R.id.rb_no3);
+                }
             }
             if (arrays.contains(ServiceItemEnum.TakeElec.getValue() + "")) {
                 cbDadian.setChecked(true);
@@ -129,7 +149,7 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
             if (arrays.contains(ServiceItemEnum.HungCar.getValue() + "")) {
                 cbDiaoche.setChecked(true);
                 layoutDiaoche.setVisibility(View.VISIBLE);
-                tvDiaocheTon.setText(user.getDriverToGroundType());
+                tvDiaocheTon.setText(TextUtils.isEmpty(user.getDriverLiftingTonnageType()) ? "" : user.getDriverLiftingTonnageType() + "吨");
             }
             if (arrays.contains(ServiceItemEnum.FastReqair.getValue() + "")) {
                 cbKuaixiu.setChecked(true);
@@ -151,6 +171,9 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
             }
             if (arrays.contains(ServiceItemEnum.PlightRescue.getValue() + "")) {
                 cbKunjingJiuyuan.setChecked(true);
+            }
+            if (arrays.contains(ServiceItemEnum.YearlyCheck.getValue() + "")) {
+                cbDaibanNianjian.setChecked(true);
             }
         }
     }
@@ -198,7 +221,7 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
                 buffer.append(ServiceItemEnum.DragCar.getValue());
                 buffer.append("|");
 
-                driverInfoReq.setDriverServiceItems(tvTuocheTon.getText().toString());
+                driverInfoReq.setDriverPlateType(TextUtils.isEmpty(tvTuocheTon.getText().toString()) ? "" : PlateTypeEnum.getPlateTypeByLable(tvTuocheTon.getText().toString()).getValue());
 
                 if (rgLuodi.getCheckedRadioButtonId() == R.id.rb_yes1) {
                     driverInfoReq.setDriverToGroundType(YesNoEnum.Yes.getValue());
@@ -225,7 +248,7 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
             if (cbDiaoche.isChecked()) {
                 buffer.append(ServiceItemEnum.HungCar.getValue());
                 buffer.append("|");
-                driverInfoReq.setDriverToGroundType(tvDiaocheTon.getText().toString());
+                driverInfoReq.setDriverLiftingTonnageType(TextUtils.isEmpty(tvDiaocheTon.getText().toString()) ? "" : tvDiaocheTon.getText().toString().replace("吨", ""));
             }
             if (cbKuaixiu.isChecked()) {
                 buffer.append(ServiceItemEnum.FastReqair.getValue());
@@ -273,20 +296,21 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
 
     public void updateServiceInfo(final DriverInfoReq driverInfoReq) {
         showLoadingDialog("正在更新");
-        Disposable disposable = Single.fromCallable(new Callable<BaseResp>() {
+        Disposable disposable = Single.fromCallable(new Callable<UserResp>() {
             @Override
-            public BaseResp call() throws Exception {
-                return UserApi.driverInfoUpdate(driverInfoReq, BaseResp.class);
+            public UserResp call() throws Exception {
+                return UserApi.driverInfoUpdate(driverInfoReq, UserResp.class);
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<BaseResp>() {
+                .subscribe(new Consumer<UserResp>() {
             @Override
-            public void accept(BaseResp o) throws Exception {
+            public void accept(UserResp o) throws Exception {
                 if (isSuccessResp(o)) {
                     hideLoadingDialog();
                     showToast("更新成功");
                     UserStorage.getInstance().updateServiceInfoSetted();
+                    UserStorage.getInstance().setUser(o.getData());
                     boolean isFromLogin = getIntent().getBooleanExtra("from-login", false);
                     if (isFromLogin) {
                         Intent intent = new Intent(mActivity, MainActivity.class);
@@ -304,5 +328,38 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
             }
         });
         cd.add(disposable);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.layout_diaoche:
+                DialogUtils.showSingleChoiceListDialog(this, Arrays.asList(getResources().getStringArray(R.array.diaoche_weights)), -1, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                        tvDiaocheTon.setText(text);
+                        return true;
+                    }
+                }, null);
+                break;
+            case R.id.layout_tuoche:
+                DialogUtils.showSingleChoiceListDialog(this, Arrays.asList(getResources().getStringArray(R.array.tuoche_weights)), -1, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                        tvTuocheTon.setText(text);
+                        return true;
+                    }
+                }, null);
+                break;
+            case R.id.tv_province_of_car:
+                DialogUtils.showSingleChoiceListDialog(this, Arrays.asList(ABBREVIATIONS), -1, new MaterialDialog.ListCallbackSingleChoice() {
+                    @Override
+                    public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                        tvProvinceOfCar.setText(text);
+                        return true;
+                    }
+                }, null);
+                break;
+        }
     }
 }

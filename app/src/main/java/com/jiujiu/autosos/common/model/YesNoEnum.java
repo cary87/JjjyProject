@@ -5,6 +5,7 @@ package com.jiujiu.autosos.common.model;
  */
 
 public enum YesNoEnum {
+    unknow("", ""),
     Yes("2", "有"),
     No("1", "无");
     private String value;
@@ -29,5 +30,15 @@ public enum YesNoEnum {
 
     public void setLable(String lable) {
         this.lable = lable;
+    }
+
+    public static YesNoEnum getYesNo(String value) {
+        for (YesNoEnum yesNoEnum : values()) {
+            if (yesNoEnum.value.equals(value)) {
+                return yesNoEnum;
+            }
+        }
+
+        return unknow;
     }
 }

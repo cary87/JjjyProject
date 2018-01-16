@@ -74,7 +74,7 @@ public class FecthOrderResp extends BaseResp {
 
         private String toRescueAdress;
         private String driverCar;
-        private int distance;
+        private double distance;
         private long orderId;
         private String payTime;
         private double latitude;
@@ -83,9 +83,9 @@ public class FecthOrderResp extends BaseResp {
         private String remark;
         private String orderItems;
         private String pictures;
-        private int payableAmount;
+        private double payableAmount;
         private long carOwnerId;
-        private int flowAmount;
+        private double flowAmount;
         private String arriveTime;
         private double toRescueLongitude;
         private long postTime;
@@ -107,7 +107,7 @@ public class FecthOrderResp extends BaseResp {
         private long acceptTime;
         private String svrName;
         private String driverType;
-        private int crossBridgeAmount;
+        private double crossBridgeAmount;
         private long driverId;
         private double toRescueLatitude;
         private long belongOrg;
@@ -115,7 +115,7 @@ public class FecthOrderResp extends BaseResp {
         private String driverName;
         private String provinceName;
         private String payCode;
-        private int paidAmount;
+        private double paidAmount;
         private String items;
         private List<?> logs;
         private List<?> traces;
@@ -136,11 +136,11 @@ public class FecthOrderResp extends BaseResp {
             this.driverCar = driverCar;
         }
 
-        public int getDistance() {
+        public double getDistance() {
             return distance;
         }
 
-        public void setDistance(int distance) {
+        public void setDistance(double distance) {
             this.distance = distance;
         }
 
@@ -208,11 +208,11 @@ public class FecthOrderResp extends BaseResp {
             this.pictures = pictures;
         }
 
-        public int getPayableAmount() {
+        public double getPayableAmount() {
             return payableAmount;
         }
 
-        public void setPayableAmount(int payableAmount) {
+        public void setPayableAmount(double payableAmount) {
             this.payableAmount = payableAmount;
         }
 
@@ -224,11 +224,11 @@ public class FecthOrderResp extends BaseResp {
             this.carOwnerId = carOwnerId;
         }
 
-        public int getFlowAmount() {
+        public double getFlowAmount() {
             return flowAmount;
         }
 
-        public void setFlowAmount(int flowAmount) {
+        public void setFlowAmount(double flowAmount) {
             this.flowAmount = flowAmount;
         }
 
@@ -400,11 +400,11 @@ public class FecthOrderResp extends BaseResp {
             this.driverType = driverType;
         }
 
-        public int getCrossBridgeAmount() {
+        public double getCrossBridgeAmount() {
             return crossBridgeAmount;
         }
 
-        public void setCrossBridgeAmount(int crossBridgeAmount) {
+        public void setCrossBridgeAmount(double crossBridgeAmount) {
             this.crossBridgeAmount = crossBridgeAmount;
         }
 
@@ -464,11 +464,11 @@ public class FecthOrderResp extends BaseResp {
             this.payCode = payCode;
         }
 
-        public int getPaidAmount() {
+        public double getPaidAmount() {
             return paidAmount;
         }
 
-        public void setPaidAmount(int paidAmount) {
+        public void setPaidAmount(double paidAmount) {
             this.paidAmount = paidAmount;
         }
 

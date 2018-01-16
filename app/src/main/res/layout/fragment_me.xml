@@ -112,6 +112,7 @@
 
             <LinearLayout
                 android:id="@+id/ll_share"
+                android:visibility="gone"
                 style="@style/setting_item_layout"
                 android:layout_marginTop="8dp">
 

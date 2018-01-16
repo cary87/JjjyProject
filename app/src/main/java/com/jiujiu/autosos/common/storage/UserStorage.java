@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.jiujiu.autosos.common.AutososApplication;
-import com.jiujiu.autosos.resp.LoginResp;
+import com.jiujiu.autosos.resp.UserResp;
 import com.litesuits.common.data.DataKeeper;
 
 /**
@@ -18,7 +18,7 @@ public class UserStorage {
     private static final String KEY_LAST_LATITUDE = "key_last_latitude";
     private static UserStorage instance;
     private String token;
-    private LoginResp.DataBean user;
+    private UserResp.DataBean user;
     private String nowLocationAddress;
 
     private UserStorage() {
@@ -26,7 +26,7 @@ public class UserStorage {
             DataKeeper keeper = new DataKeeper(AutososApplication.getApp(), SHAREPRE);
             String loginRespJson = keeper.get(KEY_USER, "");
             if (!TextUtils.isEmpty(loginRespJson)) {
-                user = new Gson().fromJson(loginRespJson, LoginResp.DataBean.class);
+                user = new Gson().fromJson(loginRespJson, UserResp.DataBean.class);
                 token = user.getToken();
             }
         } catch (Exception e) {
@@ -108,11 +108,11 @@ public class UserStorage {
         keeper.put(KEY_USER, new Gson().toJson(user));
     }
 
-    public LoginResp.DataBean getUser() {
+    public UserResp.DataBean getUser() {
         return user;
     }
 
-    public void setUser(LoginResp.DataBean user) {
+    public void setUser(UserResp.DataBean user) {
         this.user = user;
         this.token = user.getToken();
 

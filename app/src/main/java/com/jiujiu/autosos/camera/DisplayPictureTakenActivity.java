@@ -7,11 +7,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.jiujiu.autosos.R;
+import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
+import com.jiujiu.autosos.common.http.ApiCallback;
+import com.jiujiu.autosos.common.utils.LogUtils;
+import com.jiujiu.autosos.resp.FileUploadResp;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import okhttp3.Call;
+
+import static com.jiujiu.autosos.order.TakePhotoConstant.PHOTO_TAG;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_ARRIVE_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_MOVE_UP_CAR_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_TO_DES_TAKE;
 
 /**
  * Created by Administrator on 2018/1/3.
@@ -23,22 +41,74 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
     @BindView(R.id.iv_display)
     ImageView ivDisplay;
 
+    @BindView(R.id.pb_upload)
+    NumberProgressBar pbUpload;
+
+    /**
+     * 哪种业务拍照
+     */
+    private int mTag = -1;
+
+    /**
+     * 图片上传后返回的相对路径
+     */
+    private List<String> paths = new ArrayList<>();
+
     @Override
     protected void setup(Bundle savedInstanceState) {
         tvTitle.setText("拍照结果");
-        String url = getIntent().getStringExtra("url");
-        if (url != null) {
-            Glide.with(this).load(url).into(ivDisplay);
-        }
+        mTag = getIntent().getIntExtra(PHOTO_TAG, -1);
 
+        String url = getIntent().getStringExtra("url");
+        displayAndUpload(url);
+
+    }
+
+    /**
+     * 上传拍摄的图片
+     * @param file
+     */
+    private void uploadPicture(File file) {
+        pbUpload.setProgress(0);
+        pbUpload.setVisibility(View.VISIBLE);
+        HashMap<String, String> params = new HashMap<>();
+        params.put("key", "attach");
+        UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
+            @Override
+            public void onError(Call call, Exception e, int i) {
+
+            }
+
+            @Override
+            public void inProgress(float progress, long total, int id) {
+                super.inProgress(progress, total, id);
+                pbUpload.setProgress((int) progress *100);
+                LogUtils.i("wzh", progress + "");
+
+            }
+
+            @Override
+            public void onResponse(FileUploadResp resp, int i) {
+                LogUtils.i("wzh", resp.toString());
+                paths.add(resp.getData().getPath());
+            }
+        });
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        mTag = getIntent().getIntExtra(PHOTO_TAG, -1);
+
         String url = intent.getStringExtra("url");
-        if (url != null) {
+        displayAndUpload(url);
+    }
+
+    private void displayAndUpload(String url) {
+        File file = new File(url);
+        if (url != null && file.exists()) {
             Glide.with(this).load(url).into(ivDisplay);
+            uploadPicture(file);
         }
     }
 
@@ -55,6 +125,13 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
                 startActivity(reIntent);
                 break;
             case R.id.btn_finish_take:
+                if (mTag == TAG_ARRIVE_TAKE) {
+                    EventBus.getDefault().post(new Integer(TAG_ARRIVE_TAKE));
+                }else if (mTag == TAG_MOVE_UP_CAR_TAKE) {
+                    EventBus.getDefault().post(new Integer(TAG_MOVE_UP_CAR_TAKE));
+                } else if (mTag == TAG_TO_DES_TAKE) {
+                    EventBus.getDefault().post(new Integer(TAG_TO_DES_TAKE));
+                }
                 finish();
                 break;
             case R.id.btn_take_one_more:

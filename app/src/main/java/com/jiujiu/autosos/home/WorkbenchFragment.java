@@ -12,7 +12,7 @@ import com.jiujiu.autosos.common.base.BaseFragment;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.nav.LocationManeger;
-import com.jiujiu.autosos.resp.LoginResp;
+import com.jiujiu.autosos.resp.UserResp;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
@@ -78,7 +78,7 @@ public class WorkbenchFragment extends BaseFragment {
                     @Override
                     public void accept(BaseResp o) throws Exception {
                         if (mActivity.isSuccessResp(o)) {
-                            LoginResp.DataBean user = UserStorage.getInstance().getUser();
+                            UserResp.DataBean user = UserStorage.getInstance().getUser();
                             user.setOnlineState(b ? 0 : 1);
                             UserStorage.getInstance().setUser(user);
                             setOnlineText(b);

@@ -13,7 +13,7 @@ import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.RSACoder;
 import com.jiujiu.autosos.home.MainActivity;
-import com.jiujiu.autosos.resp.LoginResp;
+import com.jiujiu.autosos.resp.UserResp;
 import com.jiujiu.autosos.resp.PublicKeyResp;
 
 import java.util.HashMap;
@@ -55,40 +55,40 @@ public class LoginActivity extends AbsBaseActivity {
             showToast("请输入手机号");
         } else {
             showLoadingDialog("登录中");
-            Disposable disposable = Observable.create(new ObservableOnSubscribe<LoginResp>() {
+            Disposable disposable = Observable.create(new ObservableOnSubscribe<UserResp>() {
                 @Override
-                public void subscribe(ObservableEmitter<LoginResp> emitter) throws Exception {
+                public void subscribe(ObservableEmitter<UserResp> emitter) throws Exception {
                     PublicKeyResp publickeyResp = UserApi.getPublicKey(PublicKeyResp.class);
                     if (isSuccessResp(publickeyResp)) {
                         String encPwd = RSACoder.encodeByPublicKey(etPwd.getText().toString(), publickeyResp.getData().getPublicKey());
                         HashMap<String, String> param = new HashMap<>();
                         param.put("username", etPhone.getText().toString());
                         param.put("password", encPwd);
-                        LoginResp loginResp = UserApi.login(param, LoginResp.class);
-                        if (isSuccessResp(loginResp)) {
-                            UserStorage.getInstance().setUser(loginResp.getData());
+                        UserResp userResp = UserApi.login(param, UserResp.class);
+                        if (isSuccessResp(userResp)) {
+                            UserStorage.getInstance().setUser(userResp.getData());
                             //登录成功后设置为在线状态
                             param.clear();
                             param.put("onlineState", "0");
                             BaseResp resp = UserApi.setOnlineState(param, BaseResp.class);
                             if (isSuccessResp(resp)) {
-                                LoginResp.DataBean user = UserStorage.getInstance().getUser();
+                                UserResp.DataBean user = UserStorage.getInstance().getUser();
                                 //更新在线状态后重写入持久化
                                 user.setOnlineState(0);
                                 UserStorage.getInstance().setUser(user);
                             }
-                            emitter.onNext(loginResp);
+                            emitter.onNext(userResp);
                         } else {
-                            emitter.onError(new AppException(loginResp.getCode(), loginResp.getMessage()));
+                            emitter.onError(new AppException(userResp.getCode(), userResp.getMessage()));
                         }
                     } else {
                         emitter.onError(new AppException(publickeyResp.getCode(), publickeyResp.getMessage()));
                     }
                 }
             }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
-                    .subscribe(new Consumer<LoginResp>() {
+                    .subscribe(new Consumer<UserResp>() {
                         @Override
-                        public void accept(LoginResp o) throws Exception {
+                        public void accept(UserResp o) throws Exception {
                             hideLoadingDialog();
                             if (UserStorage.getInstance().isServiceInfoSetted()) {
                                 Intent intent = new Intent(mActivity, MainActivity.class);

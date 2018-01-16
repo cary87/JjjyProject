@@ -121,7 +121,7 @@ public class DialogUtils {
     public static void showConfirmDialogWithCancel(Context context, String title, MaterialDialog.SingleButtonCallback callback) {
         new MaterialDialog.Builder(context).title(title)
                 .positiveText(context.getResources().getString(R.string.positive))
-                .negativeText("不了")
+                .negativeText("否")
                 .canceledOnTouchOutside(false)
                 .onAny(callback)
                 .show();

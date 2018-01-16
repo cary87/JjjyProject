@@ -51,7 +51,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="A88888" />
+                    android:text="" />
 
             </LinearLayout>
 
@@ -69,8 +69,9 @@
                     android:id="@+id/et_mobile"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:inputType="phone"
                     android:layout_weight="2"
-                    android:text="18520124568" />
+                    android:text="" />
 
             </LinearLayout>
 
@@ -185,7 +186,7 @@
                     android:layout_alignParentEnd="true"
                     android:drawableRight="@drawable/icon_arrow_right"
                     android:textColor="@color/black"
-                    android:text="70"/>
+                    android:text=""/>
 
             </RelativeLayout>
 

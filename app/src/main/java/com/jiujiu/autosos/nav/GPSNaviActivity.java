@@ -3,11 +3,15 @@ package com.jiujiu.autosos.nav;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.MyLocationStyle;
@@ -18,29 +22,54 @@ import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.trace.LBSTraceClient;
 import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceStatusListener;
-import com.google.gson.Gson;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.camera.CameraActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.order.SignatureToCheckActivity;
+import com.jiujiu.autosos.order.SignatureToFinishActivity;
 import com.jiujiu.autosos.resp.Order;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.HashMap;
 import java.util.List;
 
+import butterknife.BindView;
 import okhttp3.Call;
 
+import static com.jiujiu.autosos.order.TakePhotoConstant.PHOTO_TAG;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_ARRIVE_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_CONSTRUCTION_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_LOOK_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_MOVE_UP_CAR_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_TO_DES_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_VIN_TAKE;
+
 public class GPSNaviActivity extends BaseActivity implements View.OnClickListener {
+    @BindView(R.id.btn_order_detail)
+    ImageButton btnOrderDetail;
+    @BindView(R.id.btn_signature)
+    ImageButton btnSignature;
+    @BindView(R.id.btn_look)
+    ImageButton btnLook;
+    @BindView(R.id.btn_vin)
+    ImageButton btnVin;
+    @BindView(R.id.btn_construction)
+    ImageButton btnConstruction;
     private Button btnArrive;
-    private Button btnGetPayAmount;
     private TextView tvBeginNav;
     private boolean navInitSuccess;
 
     private AMap aMap;
 
     private Order order;
+
+    public static final int REQ_TO_PAY = 1222;
 
     @Override
     protected void setup(Bundle savedInstanceState) {
@@ -50,21 +79,52 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
         mAMapNaviView.setAMapNaviViewListener(this);
         btnArrive = (Button) findViewById(R.id.btn_arrive);
         btnArrive.setOnClickListener(this);
-        btnGetPayAmount = (Button) findViewById(R.id.btn_get_pay_amount);
-        btnGetPayAmount.setOnClickListener(this);
         tvBeginNav = (TextView) findViewById(R.id.tv_begin_nav);
         tvBeginNav.setOnClickListener(this);
+        btnOrderDetail.setOnClickListener(this);
+        btnSignature.setOnClickListener(this);
+        btnLook.setOnClickListener(this);
+        btnVin.setOnClickListener(this);
+        btnConstruction.setOnClickListener(this);
 
         AMapNaviViewOptions options = mAMapNaviView.getViewOptions();
         options.setLayoutVisible(false);
         mAMapNaviView.setViewOptions(options);
 
         order = (Order) getIntent().getSerializableExtra("order");
+
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected int getLayoutID() {
         return R.layout.activity_basic_navi;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    /**
+     * 监听拍照上传完成回调
+     * @param integer
+     */
+    @Subscribe
+    public void onPhotoTakenEvent(Integer integer) {
+        if (integer == TAG_ARRIVE_TAKE) {
+            btnArrive.setText("把车辆挪上拖车拍照");
+            btnArrive.setTag(TAG_MOVE_UP_CAR_TAKE);
+        } else if (integer == TAG_MOVE_UP_CAR_TAKE) {
+            btnArrive.setText("到达拖车目的地拍照");
+            btnArrive.setTag(TAG_TO_DES_TAKE);
+        } else if (integer == TAG_TO_DES_TAKE) {
+            Intent sign = new Intent(this, SignatureToFinishActivity.class);
+            order.setDistance(mAMapNavi.getNaviPath().getAllLength() / 1000.00);
+            sign.putExtra("order", order);
+            startActivityForResult(sign, REQ_TO_PAY);
+        }
     }
 
     /**
@@ -172,39 +232,60 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_arrive:
-                sendArriveRequest();
-                break;
-            case R.id.btn_get_pay_amount:
-                getPaymentAmount();
+                if (v.getTag() != null) {
+                    int nowTag = (int) v.getTag();
+                    if (nowTag == TAG_MOVE_UP_CAR_TAKE) {
+                        Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
+                        intent.putExtra(PHOTO_TAG, TAG_MOVE_UP_CAR_TAKE);
+                        startActivity(intent);
+                    } else if (nowTag == TAG_TO_DES_TAKE) {
+                        DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达拖车目的地", new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                switch (which) {
+                                    case POSITIVE:
+                                        Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
+                                        intent.putExtra(PHOTO_TAG, TAG_TO_DES_TAKE);
+                                        startActivity(intent);
+                                        break;
+                                    case NEGATIVE:
+                                        dialog.dismiss();
+                                        break;
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    sendArriveRequest();
+                }
                 break;
             case R.id.tv_begin_nav:
                 if (navInitSuccess) {
                     beginCalculateDriveRoute();
                 }
                 break;
+            case R.id.btn_order_detail:
+                break;
+            case R.id.btn_signature:
+                Intent sign = new Intent(this, SignatureToCheckActivity.class);
+                startActivity(sign);
+                break;
+            case R.id.btn_look:
+                Intent look = new Intent(this, CameraActivity.class);
+                look.putExtra(PHOTO_TAG, TAG_LOOK_TAKE);
+                startActivity(look);
+                break;
+            case R.id.btn_vin:
+                Intent vin = new Intent(this, CameraActivity.class);
+                vin.putExtra(PHOTO_TAG, TAG_VIN_TAKE);
+                startActivity(vin);
+                break;
+            case R.id.btn_construction:
+                Intent construction = new Intent(this, CameraActivity.class);
+                construction.putExtra(PHOTO_TAG, TAG_CONSTRUCTION_TAKE);
+                startActivity(construction);
+                break;
         }
-    }
-
-    public void getPaymentAmount() {
-        showLoadingDialog("加载中");
-        HashMap<String, String> params = new HashMap<>();
-        params.put("orderId", order.getOrderId() + "");
-        params.put("distance", Double.toString(mAMapNavi.getNaviPath().getAllLength()/1000.00));
-        params.put("crossBridgeAmount", "50");
-        params.put("items", new Gson().toJson(order.getItemsList()));
-        OrderApi.finishOrder(params, new ApiCallback<BaseResp>() {
-            @Override
-            public void onError(Call call, Exception e, int i) {
-                handleError(e);
-            }
-
-            @Override
-            public void onResponse(BaseResp resp, int i) {
-                btnGetPayAmount.setEnabled(false);//不可再点击
-                hideLoadingDialog();
-                showToast("获取应付金额成功");
-            }
-        });
     }
 
     /**
@@ -224,11 +305,20 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
             @Override
             public void onResponse(BaseResp resp, int i) {
                 hideLoadingDialog();
-                btnArrive.setEnabled(false);//不可再点击
-                btnGetPayAmount.setVisibility(View.VISIBLE);
                 Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
+                intent.putExtra(PHOTO_TAG, TAG_ARRIVE_TAKE);
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQ_TO_PAY) {
+            if (resultCode == RESULT_OK) {
+                finish();
+            }
+        }
     }
 }

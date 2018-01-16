@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="diaoche_weights">
+        <item>8吨</item>
+        <item>20吨</item>
+        <item>50吨</item>
+        <item>70吨</item>
+        <item>100吨</item>
+        <item>160吨</item>
+        <item>200吨</item>
+    </string-array>
+
+    <string-array name="tuoche_weights">
+        <item>3吨/一类车</item>
+        <item>5吨/二类车</item>
+        <item>8吨/三类车</item>
+        <item>大托/四类车</item>
+        <item>大托/五类车</item>
+    </string-array>
+
+</resources>

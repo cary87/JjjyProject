@@ -21,6 +21,8 @@ import java.io.OutputStream;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+import static com.jiujiu.autosos.order.TakePhotoConstant.PHOTO_TAG;
+
 /**
  * Created by Administrator on 2017/12/29 0029.
  */
@@ -33,11 +35,17 @@ public class CameraActivity extends AbsBaseActivity {
 
     private Handler mBackgroundHandler;
 
+    /**
+     * 哪种业务拍照
+     */
+    private int mTag = -1;
+
     @Override
     protected void setup(Bundle savedInstanceState) {
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
         }
+        mTag = getIntent().getIntExtra(PHOTO_TAG, -1);
     }
 
     @Override
@@ -126,6 +134,7 @@ public class CameraActivity extends AbsBaseActivity {
     private void viewPicture(File file) {
         Intent intent = new Intent(this, DisplayPictureTakenActivity.class);
         intent.putExtra("url", file.getAbsolutePath());
+        intent.putExtra(PHOTO_TAG, mTag);
         startActivity(intent);
         finish();
     }

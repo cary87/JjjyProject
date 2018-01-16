@@ -142,7 +142,7 @@ public class PersonalAuthActivity extends AbsBaseActivity {
                             public void inProgress(float progress, long total, int id) {
                                 super.inProgress(progress, total, id);
                                 pbUpload.setProgress((int) progress *100);
-                                LogUtils.i("wzh", progress + " total " + total);
+                                LogUtils.i("wzh", progress + "");
 
                             }
 

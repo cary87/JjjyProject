@@ -21,9 +21,9 @@
             android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="到达救援现场"
+            android:text="到达救援现场并拍照"
             android:textColor="@color/white"
-            android:layout_gravity="center"/>
+            android:layout_gravity="right"/>
 
         <TextView
             android:id="@+id/tv_begin_nav"
@@ -33,17 +33,49 @@
             android:textColor="@color/white"
             android:drawableRight="@drawable/icon_nav"
             android:text="开始导航"/>
+    </FrameLayout>
 
-        <Button
-            android:id="@+id/btn_get_pay_amount"
-            android:visibility="invisible"
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentRight="true">
+
+        <ImageButton
+            android:id="@+id/btn_order_detail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="结算"
-            android:textColor="@color/white"/>
+            android:background="@drawable/selector_order_detail"/>
 
-    </FrameLayout>
+        <ImageButton
+            android:id="@+id/btn_signature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_order_detail"
+            android:background="@drawable/selector_signature"/>
+
+        <ImageButton
+            android:id="@+id/btn_look"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_signature"
+            android:background="@drawable/selector_look"/>
+
+        <ImageButton
+            android:id="@+id/btn_vin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_look"
+            android:background="@drawable/selector_vin"/>
+
+        <ImageButton
+            android:id="@+id/btn_construction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_vin"
+            android:background="@drawable/selector_construction"/>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

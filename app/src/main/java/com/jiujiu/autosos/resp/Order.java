@@ -47,7 +47,7 @@ public class Order implements Serializable {
     private long carOwnerId;
     private int chargeType;
     private int crossBridgePayer;
-    private int distance;
+    private double distance;
     private String driverType;
     private double latitude;
     private double longitude;
@@ -143,11 +143,11 @@ public class Order implements Serializable {
         this.crossBridgePayer = crossBridgePayer;
     }
 
-    public int getDistance() {
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(double distance) {
         this.distance = distance;
     }
 
@@ -274,35 +274,35 @@ public class Order implements Serializable {
          * perPrice : 0
          */
 
-        private int additional;
-        private int baseKilometre;
-        private int basePrice;
+        private double additional;
+        private double baseKilometre;
+        private double basePrice;
         private String itemId;
         private String itemName;
-        private int perKilometre;
-        private int perPrice;
+        private double perKilometre;
+        private double perPrice;
 
-        public int getAdditional() {
+        public double getAdditional() {
             return additional;
         }
 
-        public void setAdditional(int additional) {
+        public void setAdditional(double additional) {
             this.additional = additional;
         }
 
-        public int getBaseKilometre() {
+        public double getBaseKilometre() {
             return baseKilometre;
         }
 
-        public void setBaseKilometre(int baseKilometre) {
+        public void setBaseKilometre(double baseKilometre) {
             this.baseKilometre = baseKilometre;
         }
 
-        public int getBasePrice() {
+        public double getBasePrice() {
             return basePrice;
         }
 
-        public void setBasePrice(int basePrice) {
+        public void setBasePrice(double basePrice) {
             this.basePrice = basePrice;
         }
 
@@ -322,19 +322,19 @@ public class Order implements Serializable {
             this.itemName = itemName;
         }
 
-        public int getPerKilometre() {
+        public double getPerKilometre() {
             return perKilometre;
         }
 
-        public void setPerKilometre(int perKilometre) {
+        public void setPerKilometre(double perKilometre) {
             this.perKilometre = perKilometre;
         }
 
-        public int getPerPrice() {
+        public double getPerPrice() {
             return perPrice;
         }
 
-        public void setPerPrice(int perPrice) {
+        public void setPerPrice(double perPrice) {
             this.perPrice = perPrice;
         }
     }
