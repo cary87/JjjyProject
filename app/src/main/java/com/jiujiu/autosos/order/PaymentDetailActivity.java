@@ -1,22 +1,30 @@
 package com.jiujiu.autosos.order;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.sumimakito.awesomeqr.AwesomeQRCode;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
-import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.order.model.CalculationTypeEnum;
+import com.jiujiu.autosos.order.model.OrderItem;
+import com.jiujiu.autosos.order.model.PayWayEnum;
+import com.jiujiu.autosos.resp.FinishOrderResp;
 import com.jiujiu.autosos.resp.Order;
+import com.jiujiu.autosos.resp.QrResp;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,8 +53,13 @@ public class PaymentDetailActivity extends AbsBaseActivity {
     TextView tvAdditionalPrice;
     @BindView(R.id.tv_distance)
     TextView tvDistance;
+    @BindView(R.id.ll_other_fee)
+    LinearLayout llOtherFee;
 
     private Order order;
+    private OrderItem orderItem;//取数组第一个做计费明细
+
+    private double crossBridgeAmount;//过桥过路费
 
     @Override
     protected void setup(Bundle savedInstanceState) {
@@ -55,13 +68,22 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         order = (Order) getIntent().getSerializableExtra("order");
         if (order != null) {
             tvDistance.setText(order.getDistance() + "公里");
+            if (order.getItemsList() != null && order.getItemsList().size() > 0) {
+                orderItem = order.getItemsList().get(0);
+                CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByValue(orderItem.getCalculationType());
+                if (calculationType != null) {
+                    tvCalculationType.setText(calculationType.getLaybel());
+                } else {
+                    tvCalculationType.setText("");
+                }
+            }
         }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                getDefaultPaymentAmount();
+                getPaymentAmount();
             }
-        }, 1000);
+        }, 200);
     }
 
     @Override
@@ -74,10 +96,27 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         switch (view.getId()) {
             case R.id.fl_calculation:
                 String[] calculationArray = new String[]{"公里价", "一口价"};
-                DialogUtils.showSingleChoiceListDialog(mActivity, Arrays.asList(calculationArray), 0, new MaterialDialog.ListCallbackSingleChoice() {
+                DialogUtils.showSingleChoiceListDialog(mActivity, Arrays.asList(calculationArray), -1, new MaterialDialog.ListCallbackSingleChoice() {
                     @Override
                     public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                         tvCalculationType.setText(text);
+                        CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByLabel(text.toString());
+                        if (calculationType != null && calculationType.equals(CalculationTypeEnum.Once)) {
+                            orderItem.setCalculationType(calculationType.getValue());
+                            llOtherFee.setVisibility(View.GONE);
+                            DialogUtils.showInputDialog(mActivity, "一口价费用", "", InputType.TYPE_CLASS_NUMBER, "请输入一口价", new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
+                                    double oncePrice = Double.parseDouble(input.toString());
+                                    orderItem.setPrice(oncePrice);
+                                    tvTotalAmount.setText(Double.toString(oncePrice) + "元");
+                                    // 触发重新计算价格
+                                    getPaymentAmount();
+                                }
+                            });
+                        } else {
+                            llOtherFee.setVisibility(View.VISIBLE);
+                        }
                         return true;
                     }
                 }, null);
@@ -87,6 +126,8 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvCrossBridgePrice.setText(input);
+                        crossBridgeAmount = Double.parseDouble(input.toString());
+                        getPaymentAmount();
                     }
                 });
                 break;
@@ -95,35 +136,91 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvAdditionalPrice.setText(input);
+                        orderItem.setAdditional(Double.parseDouble(input.toString()));
+                        getPaymentAmount();
                     }
                 });
                 break;
             case R.id.btn_wx_qr:
+                getQRCode(PayWayEnum.WxPay);
                 break;
             case R.id.btn_ali_qr:
+                getQRCode(PayWayEnum.AliPay);
                 break;
         }
     }
 
     /**
-     * 拉取订单默认结算价格
+     * 获取扫码支付二维码
+     * @param payway
      */
-    public void getDefaultPaymentAmount() {
+    public void getQRCode(final PayWayEnum payway) {
         showLoadingDialog("加载中");
         HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
-        params.put("distance", order.getDistance() +"");
-        params.put("crossBridgeAmount", "0");
-        params.put("items", new Gson().toJson(order.getItemsList()));
-        OrderApi.finishOrder(params, new ApiCallback<BaseResp>() {
+        params.put("payWay", payway.getValue());
+        OrderApi.createQRCode(params, new ApiCallback<QrResp>() {
             @Override
             public void onError(Call call, Exception e, int i) {
                 handleError(e);
             }
 
             @Override
-            public void onResponse(BaseResp resp, int i) {
+            public void onResponse(QrResp resp, int i) {
                 hideLoadingDialog();
+                generateQR2View(resp.getData().getPayQR(), payway);
+            }
+        });
+    }
+
+    /**
+     * 生成二维码图片并展示
+     * @param qrString
+     */
+    public void generateQR2View(String qrString, final PayWayEnum payWayEnum) {
+        new AwesomeQRCode.Renderer()
+                .contents(qrString)
+                .size(500).margin(20)
+                .renderAsync(new AwesomeQRCode.Callback() {
+                    @Override
+                    public void onRendered(AwesomeQRCode.Renderer renderer, final Bitmap bitmap) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                QRDialog qrDialog = new QRDialog(PaymentDetailActivity.this, bitmap, payWayEnum);
+                                qrDialog.show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(AwesomeQRCode.Renderer renderer, Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+    /**
+     * 拉取结算价格
+     */
+    public void getPaymentAmount() {
+        showLoadingDialog("加载中");
+        HashMap<String, String> params = new HashMap<>();
+        params.put("orderId", order.getOrderId() + "");
+        params.put("distance", order.getDistance() + "");
+        params.put("crossBridgeAmount", Double.toString(crossBridgeAmount));
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        params.put("items", gson.toJson(order.getItemsList()));
+        OrderApi.finishOrder(params, new ApiCallback<FinishOrderResp>() {
+            @Override
+            public void onError(Call call, Exception e, int i) {
+                handleError(e);
+            }
+
+            @Override
+            public void onResponse(FinishOrderResp resp, int i) {
+                hideLoadingDialog();
+                tvTotalAmount.setText(resp.getData().getPayableAmount() + "元");
             }
         });
     }

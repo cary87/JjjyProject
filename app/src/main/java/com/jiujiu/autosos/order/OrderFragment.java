@@ -8,6 +8,7 @@ import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.base.BaseListAdapter;
 import com.jiujiu.autosos.common.base.BaseListFragment;
 import com.jiujiu.autosos.common.http.ApiCallback;
+import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.resp.FecthOrderResp;
 
 import butterknife.BindView;
@@ -17,7 +18,7 @@ import okhttp3.Call;
  * Created by Administrator on 2017/12/21 0021.
  */
 
-public class OrderFragment extends BaseListFragment<FecthOrderResp.OrderModel> {
+public class OrderFragment extends BaseListFragment<OrderModel> {
     @BindView(R.id.tv_title)
     TextView tvBarTitle;
 
@@ -46,7 +47,7 @@ public class OrderFragment extends BaseListFragment<FecthOrderResp.OrderModel> {
     }
 
     @Override
-    protected BaseListAdapter<FecthOrderResp.OrderModel> getListAdapter() {
+    protected BaseListAdapter<OrderModel> getListAdapter() {
         return new OrderAdapter(mActivity);
     }
 

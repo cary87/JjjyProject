@@ -17,6 +17,8 @@ public class OrderApi {
     public static final String COUNTDRIVERORDERS = "/common/order/countDriverOrders";
     public static final String ACCEPTORDER = "/common/order/driverAcceptOrder";
     public static final String FINISH_ORDER = "/common/order/finishOrder";
+    public static final String SAVE_ORDER_PICTURE = "/common/order/savePicFile";
+    public static final String CREATE_QR_CODE = "/common/order/createQRCode";
 
     public static <T> void fecthOrder(int currentPage, Callback<T> callback) {
         ApiHelper.httpRequest(HttpMethod.GET, FECTH_ORDER + currentPage, null, callback);
@@ -36,5 +38,13 @@ public class OrderApi {
 
     public static <T> void countDriverOrders(Map<String,String> param, Callback<T> callback) {
         ApiHelper.httpRequest(HttpMethod.GET, COUNTDRIVERORDERS, param, callback);
+    }
+
+    public static <T> void savePicFile(Map<String,String> param, Callback<T> callback) {
+        ApiHelper.httpRequest(HttpMethod.POST, SAVE_ORDER_PICTURE, param, callback);
+    }
+
+    public static <T> void createQRCode(Map<String,String> param, Callback<T> callback) {
+        ApiHelper.httpRequest(HttpMethod.POST, CREATE_QR_CODE, param, callback);
     }
 }

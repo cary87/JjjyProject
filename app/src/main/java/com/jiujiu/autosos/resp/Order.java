@@ -1,5 +1,7 @@
 package com.jiujiu.autosos.resp;
 
+import com.jiujiu.autosos.order.model.OrderItem;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -61,7 +63,7 @@ public class Order implements Serializable {
     private String toRescueAdress;
     private double toRescueLatitude;
     private double toRescueLongitude;
-    private List<Item> itemsList;
+    private List<OrderItem> itemsList;
 
     public String getAddress() {
         return address;
@@ -255,87 +257,11 @@ public class Order implements Serializable {
         this.toRescueLongitude = toRescueLongitude;
     }
 
-    public List<Item> getItemsList() {
+    public List<OrderItem> getItemsList() {
         return itemsList;
     }
 
-    public void setItemsList(List<Item> itemsList) {
+    public void setItemsList(List<OrderItem> itemsList) {
         this.itemsList = itemsList;
-    }
-
-    public static class Item implements Serializable {
-        /**
-         * additional : 0
-         * baseKilometre : 0
-         * basePrice : 0
-         * itemId : 0
-         * itemName : 拖车
-         * perKilometre : 0
-         * perPrice : 0
-         */
-
-        private double additional;
-        private double baseKilometre;
-        private double basePrice;
-        private String itemId;
-        private String itemName;
-        private double perKilometre;
-        private double perPrice;
-
-        public double getAdditional() {
-            return additional;
-        }
-
-        public void setAdditional(double additional) {
-            this.additional = additional;
-        }
-
-        public double getBaseKilometre() {
-            return baseKilometre;
-        }
-
-        public void setBaseKilometre(double baseKilometre) {
-            this.baseKilometre = baseKilometre;
-        }
-
-        public double getBasePrice() {
-            return basePrice;
-        }
-
-        public void setBasePrice(double basePrice) {
-            this.basePrice = basePrice;
-        }
-
-        public String getItemId() {
-            return itemId;
-        }
-
-        public void setItemId(String itemId) {
-            this.itemId = itemId;
-        }
-
-        public String getItemName() {
-            return itemName;
-        }
-
-        public void setItemName(String itemName) {
-            this.itemName = itemName;
-        }
-
-        public double getPerKilometre() {
-            return perKilometre;
-        }
-
-        public void setPerKilometre(double perKilometre) {
-            this.perKilometre = perKilometre;
-        }
-
-        public double getPerPrice() {
-            return perPrice;
-        }
-
-        public void setPerPrice(double perPrice) {
-            this.perPrice = perPrice;
-        }
     }
 }

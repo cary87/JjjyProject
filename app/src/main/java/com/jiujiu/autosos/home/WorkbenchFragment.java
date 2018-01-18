@@ -12,6 +12,7 @@ import com.jiujiu.autosos.common.base.BaseFragment;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.nav.LocationManeger;
+import com.jiujiu.autosos.order.model.OnlineStateEnum;
 import com.jiujiu.autosos.resp.UserResp;
 
 import java.util.HashMap;
@@ -48,7 +49,7 @@ public class WorkbenchFragment extends BaseFragment {
                 updateOnlineState(b);
             }
         });
-        switchOnline.setChecked(UserStorage.getInstance().getUser().getOnlineState() == 0);
+        switchOnline.setChecked(UserStorage.getInstance().getUser().getOnlineState() == OnlineStateEnum.Online.getValue());
         setOnlineText(switchOnline.isChecked());
     }
 
@@ -69,7 +70,7 @@ public class WorkbenchFragment extends BaseFragment {
             @Override
             public BaseResp call() throws Exception {
                 HashMap<String, String> param = new HashMap<>();
-                param.put("onlineState", b ? "0" : "1");
+                param.put("onlineState", b ? OnlineStateEnum.Online.getValue() + "" : OnlineStateEnum.Offline.getValue() + "");
                 return UserApi.setOnlineState(param, BaseResp.class);
             }
         }).observeOn(AndroidSchedulers.mainThread())
@@ -79,7 +80,7 @@ public class WorkbenchFragment extends BaseFragment {
                     public void accept(BaseResp o) throws Exception {
                         if (mActivity.isSuccessResp(o)) {
                             UserResp.DataBean user = UserStorage.getInstance().getUser();
-                            user.setOnlineState(b ? 0 : 1);
+                            user.setOnlineState(b ? OnlineStateEnum.Online.getValue() : OnlineStateEnum.Offline.getValue());
                             UserStorage.getInstance().setUser(user);
                             setOnlineText(b);
                             if (b) {

@@ -7,6 +7,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.jiujiu.autosos.api.UserApi;
+import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.AutososApplication;
 import com.jiujiu.autosos.common.Constant;
 import com.jiujiu.autosos.common.http.BaseResp;
@@ -46,7 +47,7 @@ public class LocationManeger implements AMapLocationListener {
         option.setLocationPurpose(AMapLocationClientOption.AMapLocationPurpose.Transport);
         option.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //设置定位间隔,单位毫秒,默认为2000ms，最低1000ms
-        option.setInterval(3000);
+        option.setInterval(30000);
         //设置是否返回地址信息（默认返回地址信息）
         option.setNeedAddress(true);
         //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
@@ -158,22 +159,25 @@ public class LocationManeger implements AMapLocationListener {
                     param.put("longitude", Double.toString(longitude));
                     param.put("latitude", Double.toString(latitude));
                     BaseResp resp = UserApi.updatePosition(param, BaseResp.class);
-                    emitter.onNext(resp);
+                    if (Constant.CODE_SUCCESS.equals(resp.getCode())) {
+                        UserStorage.getInstance().setLastSubmitLongitude(longitude);
+                        UserStorage.getInstance().setLastSubmitLatitude(latitude);
+                        emitter.onNext(resp);
+                    } else {
+                        emitter.onError(new AppException(resp.getCode(), resp.getMessage()));
+                    }
                 }
             }).observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new Consumer<BaseResp>() {
                         @Override
                         public void accept(BaseResp o) throws Exception {
-                            if (Constant.CODE_SUCCESS.equals(o.getCode())) {
-                                UserStorage.getInstance().setLastSubmitLongitude(longitude);
-                                UserStorage.getInstance().setLastSubmitLatitude(latitude);
-                            }
+                            LogUtils.i("wzh", "-------------向Server更新当前位置信息成功-----------");
                         }
                     }, new Consumer<Throwable>() {
                         @Override
                         public void accept(Throwable throwable) throws Exception {
-                            LogUtils.e("wzh", "-------------向Server更新当前司机位置信息失败-----------");
+                            LogUtils.e("wzh", "-------------向Server更新当前位置信息失败-----------");
                         }
                     });
         }

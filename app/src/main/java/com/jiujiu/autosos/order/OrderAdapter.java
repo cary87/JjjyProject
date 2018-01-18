@@ -8,8 +8,8 @@ import android.widget.TextView;
 
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.BaseListAdapter;
+import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
-import com.jiujiu.autosos.resp.FecthOrderResp;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,7 +18,7 @@ import butterknife.ButterKnife;
  * Created by Administrator on 2018/1/10.
  */
 
-public class OrderAdapter extends BaseListAdapter<FecthOrderResp.OrderModel> {
+public class OrderAdapter extends BaseListAdapter<OrderModel> {
     public OrderAdapter(Context context) {
         super(context);
     }

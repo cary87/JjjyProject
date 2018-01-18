@@ -51,7 +51,7 @@
                     android:text="救援位置："/>
 
                 <TextView
-                    android:id="@+id/tv_toRescueAdress"
+                    android:id="@+id/tv_address"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"

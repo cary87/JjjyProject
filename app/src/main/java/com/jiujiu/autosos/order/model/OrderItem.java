@@ -7,47 +7,38 @@ import java.io.Serializable;
  */
 
 public class OrderItem implements Serializable {
-
     /**
-     * additional : 0
-     * baseKilometre : 0
-     * basePrice : 0
+     * calculationType : null
      * itemId : 0
+     * specialEnd : null
      * itemName : 拖车
-     * perKilometre : 0
      * perPrice : 0
+     * price : null
+     * additional : 0
+     * perKilometre : 0
+     * baseKilometre : 0
+     * specialStart : null
+     * basePrice : 0
      */
 
-    private int additional;
-    private int baseKilometre;
-    private int basePrice;
+    private Integer calculationType;
     private String itemId;
+    private String specialEnd;
     private String itemName;
-    private int perKilometre;
-    private int perPrice;
+    private double perPrice;
+    private double price;
+    private double additional;
+    private double perKilometre;
+    private double baseKilometre;
+    private String specialStart;
+    private double basePrice;
 
-    public int getAdditional() {
-        return additional;
+    public Integer getCalculationType() {
+        return calculationType;
     }
 
-    public void setAdditional(int additional) {
-        this.additional = additional;
-    }
-
-    public int getBaseKilometre() {
-        return baseKilometre;
-    }
-
-    public void setBaseKilometre(int baseKilometre) {
-        this.baseKilometre = baseKilometre;
-    }
-
-    public int getBasePrice() {
-        return basePrice;
-    }
-
-    public void setBasePrice(int basePrice) {
-        this.basePrice = basePrice;
+    public void setCalculationType(Integer calculationType) {
+        this.calculationType = calculationType;
     }
 
     public String getItemId() {
@@ -58,6 +49,14 @@ public class OrderItem implements Serializable {
         this.itemId = itemId;
     }
 
+    public String getSpecialEnd() {
+        return specialEnd;
+    }
+
+    public void setSpecialEnd(String specialEnd) {
+        this.specialEnd = specialEnd;
+    }
+
     public String getItemName() {
         return itemName;
     }
@@ -66,19 +65,59 @@ public class OrderItem implements Serializable {
         this.itemName = itemName;
     }
 
-    public int getPerKilometre() {
-        return perKilometre;
-    }
-
-    public void setPerKilometre(int perKilometre) {
-        this.perKilometre = perKilometre;
-    }
-
-    public int getPerPrice() {
+    public double getPerPrice() {
         return perPrice;
     }
 
-    public void setPerPrice(int perPrice) {
+    public void setPerPrice(double perPrice) {
         this.perPrice = perPrice;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getAdditional() {
+        return additional;
+    }
+
+    public void setAdditional(double additional) {
+        this.additional = additional;
+    }
+
+    public double getPerKilometre() {
+        return perKilometre;
+    }
+
+    public void setPerKilometre(double perKilometre) {
+        this.perKilometre = perKilometre;
+    }
+
+    public double getBaseKilometre() {
+        return baseKilometre;
+    }
+
+    public void setBaseKilometre(double baseKilometre) {
+        this.baseKilometre = baseKilometre;
+    }
+
+    public String getSpecialStart() {
+        return specialStart;
+    }
+
+    public void setSpecialStart(String specialStart) {
+        this.specialStart = specialStart;
+    }
+
+    public double getBasePrice() {
+        return basePrice;
+    }
+
+    public void setBasePrice(double basePrice) {
+        this.basePrice = basePrice;
     }
 }

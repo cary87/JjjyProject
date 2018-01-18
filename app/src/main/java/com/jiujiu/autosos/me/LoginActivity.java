@@ -13,6 +13,7 @@ import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.RSACoder;
 import com.jiujiu.autosos.home.MainActivity;
+import com.jiujiu.autosos.order.model.OnlineStateEnum;
 import com.jiujiu.autosos.resp.UserResp;
 import com.jiujiu.autosos.resp.PublicKeyResp;
 
@@ -69,7 +70,7 @@ public class LoginActivity extends AbsBaseActivity {
                             UserStorage.getInstance().setUser(userResp.getData());
                             //登录成功后设置为在线状态
                             param.clear();
-                            param.put("onlineState", "0");
+                            param.put("onlineState", OnlineStateEnum.Online.getValue() + "");
                             BaseResp resp = UserApi.setOnlineState(param, BaseResp.class);
                             if (isSuccessResp(resp)) {
                                 UserResp.DataBean user = UserStorage.getInstance().getUser();

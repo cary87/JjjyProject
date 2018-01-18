@@ -58,11 +58,16 @@ public class BaseActivity extends AbsBaseActivity implements AMapNaviListener, A
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mAMapNaviView.onDestroy();
-        //since 1.6.0 不再在naviview destroy的时候自动执行AMapNavi.stopNavi();请自行执行
-        mAMapNavi.stopNavi();
-        mAMapNavi.destroy();
-        mTtsManager.destroy();
+        new Thread() {
+            @Override
+            public void run() {
+                mAMapNaviView.onDestroy();
+                //since 1.6.0 不再在naviview destroy的时候自动执行AMapNavi.stopNavi();请自行执行
+                mAMapNavi.stopNavi();
+                mAMapNavi.destroy();
+                mTtsManager.destroy();
+            }
+        }.start();
     }
 
     @Override

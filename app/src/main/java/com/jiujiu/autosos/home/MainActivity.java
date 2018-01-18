@@ -11,6 +11,7 @@ import com.flyco.tablayout.CommonTabLayout;
 import com.flyco.tablayout.listener.CustomTabEntity;
 import com.flyco.tablayout.listener.OnTabSelectListener;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
@@ -126,7 +127,8 @@ public class MainActivity extends AbsBaseActivity {
         params.put("toRescueLongitude", order.getToRescueLongitude() + "");
         params.put("toRescueLatitude", order.getToRescueLatitude() + "");
         params.put("driverAdress", "广州天河");
-        params.put("items", new Gson().toJson(order.getItemsList()));
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        params.put("items", gson.toJson(order.getItemsList()));
         params.put("driverLongitude", String.valueOf(UserStorage.getInstance().getLastSubmitLongitude()));
         params.put("driverLatitude", String.valueOf(UserStorage.getInstance().getLastSubmitLatitude()));
         OrderApi.driverAcceptOrder(params, new ApiCallback<BaseResp>() {

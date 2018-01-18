@@ -86,5 +86,6 @@ dependencies {
     compile 'com.amap.api:location:latest.integration'
     compile 'com.daimajia.numberprogressbar:library:1.4@aar'
     compile 'com.github.gcacace:signature-pad:1.2.1'
+    compile 'com.github.SumiMakito:AwesomeQRCode:1.0.6'
 
 }

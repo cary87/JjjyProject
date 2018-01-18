@@ -24,8 +24,8 @@ import butterknife.ButterKnife;
 public class OrderDialog extends Dialog {
     @BindView(R.id.tv_order_title)
     TextView tvOrderTitle;
-    @BindView(R.id.tv_toRescueAdress)
-    TextView tvToRescueAdress;
+    @BindView(R.id.tv_address)
+    TextView tvAddress;
     @BindView(R.id.tv_phone)
     TextView tvPhone;
     @BindView(R.id.tv_ignore)
@@ -55,7 +55,7 @@ public class OrderDialog extends Dialog {
         tvPhone.setText(order.getCarOwnerId() + "");
         tvPhone.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         tvPhone.getPaint().setAntiAlias(true);//抗锯齿
-        tvToRescueAdress.setText(order.getToRescueAdress());
+        tvAddress.setText(order.getAddress());
         tvIgnore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

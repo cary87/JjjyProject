@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.resp.Order;
 
 import butterknife.BindView;
@@ -18,7 +17,7 @@ import butterknife.OnClick;
  * Created by Administrator on 2018/1/15.
  */
 
-public class SignatureToFinishActivity extends AbsBaseActivity {
+public class SignatureToFinishActivity extends AbsSignatureActivity {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.rating_comment)
@@ -62,9 +61,15 @@ public class SignatureToFinishActivity extends AbsBaseActivity {
 
     @OnClick(R.id.btn_go_pay)
     public void onViewClicked() {
-        Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
-        intent.putExtra("order", order);
-        startActivity(intent);
-        finish();
+        saveSignature(mSignaturePad.getSignatureBitmap(), new OnSaveCompleteListener() {
+            @Override
+            public void onComplete() {
+                Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
+                intent.putExtra("order", order);
+                startActivity(intent);
+                finish();
+            }
+        });
+
     }
 }

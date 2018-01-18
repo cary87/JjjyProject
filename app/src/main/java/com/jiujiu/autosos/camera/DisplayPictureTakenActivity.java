@@ -13,6 +13,7 @@ import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.utils.LogUtils;
+import com.jiujiu.autosos.order.model.TakePhotoEvent;
 import com.jiujiu.autosos.resp.FileUploadResp;
 
 import org.greenrobot.eventbus.EventBus;
@@ -126,11 +127,13 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
                 break;
             case R.id.btn_finish_take:
                 if (mTag == TAG_ARRIVE_TAKE) {
-                    EventBus.getDefault().post(new Integer(TAG_ARRIVE_TAKE));
+                    EventBus.getDefault().post(new TakePhotoEvent(TAG_ARRIVE_TAKE, paths));
                 }else if (mTag == TAG_MOVE_UP_CAR_TAKE) {
-                    EventBus.getDefault().post(new Integer(TAG_MOVE_UP_CAR_TAKE));
+                    EventBus.getDefault().post(new TakePhotoEvent(TAG_MOVE_UP_CAR_TAKE, paths));
                 } else if (mTag == TAG_TO_DES_TAKE) {
-                    EventBus.getDefault().post(new Integer(TAG_TO_DES_TAKE));
+                    EventBus.getDefault().post(new TakePhotoEvent(TAG_TO_DES_TAKE, paths));
+                } else {
+                    EventBus.getDefault().post(new TakePhotoEvent(-1, paths));
                 }
                 finish();
                 break;

@@ -143,7 +143,6 @@ public class PersonalAuthActivity extends AbsBaseActivity {
                                 super.inProgress(progress, total, id);
                                 pbUpload.setProgress((int) progress *100);
                                 LogUtils.i("wzh", progress + "");
-
                             }
 
                             @Override
@@ -151,16 +150,16 @@ public class PersonalAuthActivity extends AbsBaseActivity {
                                 LogUtils.i("wzh", resp.toString());
                                 switch (tagOfPic) {
                                     case 1:
-                                        identiferpic1 = resp.getData().getUrl();
+                                        identiferpic1 = resp.getData().getPath();
                                         break;
                                     case 2:
-                                        identiferPid2 = resp.getData().getUrl();
+                                        identiferPid2 = resp.getData().getPath();
                                         break;
                                     case 3:
-                                        driverLicensePic = resp.getData().getUrl();
+                                        driverLicensePic = resp.getData().getPath();
                                         break;
                                     case 4:
-                                        carInsurance = resp.getData().getUrl();
+                                        carInsurance = resp.getData().getPath();
                                         break;
                                 }
                             }

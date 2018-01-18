@@ -22,6 +22,7 @@ import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.trace.LBSTraceClient;
 import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceStatusListener;
+import com.google.gson.Gson;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.camera.CameraActivity;
@@ -31,11 +32,13 @@ import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.DialogUtils;
 import com.jiujiu.autosos.order.SignatureToCheckActivity;
 import com.jiujiu.autosos.order.SignatureToFinishActivity;
+import com.jiujiu.autosos.order.model.TakePhotoEvent;
 import com.jiujiu.autosos.resp.Order;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -109,22 +112,46 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
 
     /**
      * 监听拍照上传完成回调
-     * @param integer
+     * @param event
      */
     @Subscribe
-    public void onPhotoTakenEvent(Integer integer) {
-        if (integer == TAG_ARRIVE_TAKE) {
+    public void onPhotoTakenEvent(TakePhotoEvent event) {
+        if (event.getPaths() != null && event.getPaths().size() > 0) {
+            sendPictures2Server(event.getPaths());
+        }
+        if (event.getTag() == TAG_ARRIVE_TAKE) {
             btnArrive.setText("把车辆挪上拖车拍照");
             btnArrive.setTag(TAG_MOVE_UP_CAR_TAKE);
-        } else if (integer == TAG_MOVE_UP_CAR_TAKE) {
+        } else if (event.getTag() == TAG_MOVE_UP_CAR_TAKE) {
             btnArrive.setText("到达拖车目的地拍照");
             btnArrive.setTag(TAG_TO_DES_TAKE);
-        } else if (integer == TAG_TO_DES_TAKE) {
+        } else if (event.getTag() == TAG_TO_DES_TAKE) {
             Intent sign = new Intent(this, SignatureToFinishActivity.class);
             order.setDistance(mAMapNavi.getNaviPath().getAllLength() / 1000.00);
             sign.putExtra("order", order);
             startActivityForResult(sign, REQ_TO_PAY);
         }
+    }
+
+    /**
+     * 提交服务端保存图片
+     * @param paths
+     */
+    public void sendPictures2Server(List<String> paths) {
+        HashMap<String, String> params = new HashMap<>();
+        params.put("orderId", order.getOrderId() + "");
+        params.put("pictures", new Gson().toJson(paths));
+        OrderApi.savePicFile(params, new ApiCallback<BaseResp>() {
+            @Override
+            public void onError(Call call, Exception e, int i) {
+                handleError(e);
+            }
+
+            @Override
+            public void onResponse(BaseResp resp, int i) {
+
+            }
+        });
     }
 
     /**
@@ -163,6 +190,10 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
         }
         if (order != null) {
             mEndLatlng = new NaviLatLng(order.getLatitude(), order.getLongitude());
+            if (order.getToRescueLongitude() > 0 && order.getToRescueLatitude() > 0) {
+                mWayPointList = new ArrayList<>();
+                mWayPointList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));
+            }
         }
         eList.add(mEndLatlng);
     }
