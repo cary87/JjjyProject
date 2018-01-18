@@ -40,4 +40,14 @@ public enum ServiceItemEnum {
     public void setLable(String lable) {
         this.lable = lable;
     }
+
+    public static ServiceItemEnum getEnum(int value) {
+        for (ServiceItemEnum serviceItemEnum : values()) {
+            if (serviceItemEnum.value == value) {
+                return serviceItemEnum;
+            }
+        }
+
+        return DragCar;
+    }
 }

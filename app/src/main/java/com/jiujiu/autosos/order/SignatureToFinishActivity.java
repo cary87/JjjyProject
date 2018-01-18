@@ -1,6 +1,9 @@
 package com.jiujiu.autosos.order;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.RatingBar;
@@ -61,7 +64,9 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
 
     @OnClick(R.id.btn_go_pay)
     public void onViewClicked() {
-        saveSignature(mSignaturePad.getSignatureBitmap(), new OnSaveCompleteListener() {
+        Resources res=getResources();
+        Bitmap bmp= BitmapFactory.decodeResource(res, R.drawable.sign_tablet_bg);
+        saveSignature(bmp, mSignaturePad.getSignatureBitmap(), new OnSaveCompleteListener() {
             @Override
             public void onComplete() {
                 Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);

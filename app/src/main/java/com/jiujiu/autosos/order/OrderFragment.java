@@ -1,6 +1,8 @@
 package com.jiujiu.autosos.order;
 
+import android.content.Intent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.jiujiu.autosos.R;
@@ -55,6 +57,14 @@ public class OrderFragment extends BaseListFragment<OrderModel> {
     protected void afterViewInited(View view) {
         super.afterViewInited(view);
         tvBarTitle.setText("订单");
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mActivity, OrderDetailActivity.class);
+                intent.putExtra("order", mAdapter.getItem(position));
+                startActivity(intent);
+            }
+        });
     }
 
 }

@@ -76,6 +76,7 @@
         </activity>
         <activity android:name=".order.SignatureToCheckActivity" android:screenOrientation="portrait"/>
         <activity android:name=".order.PaymentDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".order.OrderDetailActivity" android:screenOrientation="portrait"/>
 
         <!--高德地图定位服务-->
         <service android:name="com.amap.api.location.APSService"></service>

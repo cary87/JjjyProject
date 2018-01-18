@@ -65,7 +65,7 @@ public class SignatureToCheckActivity extends AbsSignatureActivity {
         if (cbConfirm.isChecked()) {
             switch (item.getItemId()) {
                 case R.id.menu_save:
-                    saveSignature(mSignaturePad.getSignatureBitmap(), new OnSaveCompleteListener() {
+                    saveSignature(null, mSignaturePad.getSignatureBitmap(), new OnSaveCompleteListener() {
                         @Override
                         public void onComplete() {
                             finish();

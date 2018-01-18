@@ -3,6 +3,7 @@ package com.jiujiu.autosos.order;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Environment;
 
 import com.jiujiu.autosos.api.UserApi;
@@ -36,38 +37,64 @@ public abstract class AbsSignatureActivity extends AbsBaseActivity {
 
     private List<String> paths = new ArrayList<>();
 
-    public void saveSignature(Bitmap signatureBitmap, final OnSaveCompleteListener listener) {
+    public void saveSignature(Bitmap backgroundBitmap, Bitmap signatureBitmap, final OnSaveCompleteListener listener) {
         if (signatureBitmap != null) {
-            File file = saveSignaturePicture(signatureBitmap);
-            if (file != null && file.exists()) {
-                showLoadingDialog("保存中");
-                HashMap<String, String> params = new HashMap<>();
-                params.put("key", "attach");
-                UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
-                    @Override
-                    public void onError(Call call, Exception e, int i) {
-                        handleError(e);
-                    }
+            if (backgroundBitmap != null) {
+                Bitmap mergedBitmap = mergeBitmap(backgroundBitmap, signatureBitmap);
+                if (mergedBitmap != null) {
+                    File file = saveSignaturePicture(mergedBitmap);
+                    if (file != null && file.exists()) {
+                        showLoadingDialog("保存中");
+                        HashMap<String, String> params = new HashMap<>();
+                        params.put("key", "attach");
+                        UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
+                            @Override
+                            public void onError(Call call, Exception e, int i) {
+                                handleError(e);
+                            }
 
-                    @Override
-                    public void inProgress(float progress, long total, int id) {
-                        super.inProgress(progress, total, id);
-                        LogUtils.i("wzh", progress + "");
-                    }
+                            @Override
+                            public void inProgress(float progress, long total, int id) {
+                                super.inProgress(progress, total, id);
+                                LogUtils.i("wzh", progress + "");
+                            }
 
-                    @Override
-                    public void onResponse(FileUploadResp resp, int i) {
-                        hideLoadingDialog();
-                        LogUtils.i("wzh", resp.toString());
-                        paths.add(resp.getData().getPath());
-                        EventBus.getDefault().post(new TakePhotoEvent(-1, paths));
-                        if (listener != null) {
-                            listener.onComplete();
-                        }
+                            @Override
+                            public void onResponse(FileUploadResp resp, int i) {
+                                hideLoadingDialog();
+                                LogUtils.i("wzh", resp.toString());
+                                paths.add(resp.getData().getPath());
+                                EventBus.getDefault().post(new TakePhotoEvent(-1, paths));
+                                if (listener != null) {
+                                    listener.onComplete();
+                                }
+                            }
+                        });
                     }
-                });
+                }
             }
         }
+    }
+
+    /**
+     * 把两个位图覆盖合成为一个位图，以底层位图的长宽为基准
+     * @param backBitmap 在底部的位图
+     * @param frontBitmap 盖在上面的位图
+     * @return
+     */
+    public static Bitmap mergeBitmap(Bitmap backBitmap, Bitmap frontBitmap) {
+
+        if (backBitmap == null || backBitmap.isRecycled()
+                || frontBitmap == null || frontBitmap.isRecycled()) {
+            LogUtils.e("wzh", "backBitmap=" + backBitmap + ";frontBitmap=" + frontBitmap);
+            return null;
+        }
+        Bitmap bitmap = backBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(bitmap);
+        Rect baseRect  = new Rect(0, 0, backBitmap.getWidth(), backBitmap.getHeight());
+        Rect frontRect = new Rect(0, 0, frontBitmap.getWidth(), frontBitmap.getHeight());
+        canvas.drawBitmap(frontBitmap, frontRect, baseRect, null);
+        return bitmap;
     }
 
     private File getPicDir(String albumName) {
