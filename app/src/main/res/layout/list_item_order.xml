@@ -1,112 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="10dp">
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tv_order_number"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="4"
-                android:text="订单号"/>
-            <TextView
-                android:id="@+id/tv_order_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="8852221"/>
-
-        </LinearLayout>
+            android:textSize="16sp"
+            android:text=""
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/tv_order_state"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorAccent"
-            android:layout_gravity="end"
-            android:text="已接单"/>
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/round_corner"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:text=""
+            android:textSize="12sp"
+            android:textColor="@color/white" />
 
-    </LinearLayout>
-
-    <!--<LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
+        <Space
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:layout_weight="1" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="4"
-                android:text="状态"/>
-            <TextView
-                android:id="@+id/tv_order_state"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="已接单"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tv_service_type"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="4"
-                android:text="下单时间"/>
-            <TextView
-                android:id="@+id/tv_order_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text=""/>
-
-        </LinearLayout>
-
-    </LinearLayout>-->
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="4"
-                android:text="车牌号"/>
-            <TextView
-                android:id="@+id/tv_car_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="桂88888"/>
-
-        </LinearLayout>
-
+            android:background="@drawable/round_corner_red"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:textSize="12sp"
+            android:text=""
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <LinearLayout
@@ -114,24 +52,17 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:text="车辆信息：" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="4"
-                android:text="手机"/>
-            <TextView
-                android:id="@+id/tv_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="18522222228"/>
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_car_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+             />
 
     </LinearLayout>
 
@@ -141,45 +72,37 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
+            android:text="事故地点：" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="4"
-                android:text="救援地"/>
-            <TextView
-                android:id="@+id/tv_occur_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="广州天河"/>
-
-        </LinearLayout>
-
-        <!--<LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/tv_occur_address"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ems="4"
-                android:text="目的地"/>
-            <TextView
-                android:id="@+id/tv_destination_address"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/black"
-                android:text="深圳龙岗"/>
-
-        </LinearLayout>-->
+            android:text=""
+            />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="接单时间：" />
+
+        <TextView
+            android:id="@+id/tv_order_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            />
+
+    </LinearLayout>
 
 </LinearLayout>

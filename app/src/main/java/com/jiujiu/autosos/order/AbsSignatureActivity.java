@@ -3,9 +3,12 @@ package com.jiujiu.autosos.order;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Environment;
+import android.support.v4.content.ContextCompat;
 
+import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
@@ -37,41 +40,51 @@ public abstract class AbsSignatureActivity extends AbsBaseActivity {
 
     private List<String> paths = new ArrayList<>();
 
+    public static Bitmap drawBg4Bitmap(int color, Bitmap orginBitmap) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        Bitmap bitmap = Bitmap.createBitmap(orginBitmap.getWidth(),
+                orginBitmap.getHeight(), orginBitmap.getConfig());
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawRect(0, 0, orginBitmap.getWidth(), orginBitmap.getHeight(), paint);
+        canvas.drawBitmap(orginBitmap, 0, 0, paint);
+        return bitmap;
+    }
+
     public void saveSignature(Bitmap backgroundBitmap, Bitmap signatureBitmap, final OnSaveCompleteListener listener) {
         if (signatureBitmap != null) {
             if (backgroundBitmap != null) {
-                Bitmap mergedBitmap = mergeBitmap(backgroundBitmap, signatureBitmap);
-                if (mergedBitmap != null) {
-                    File file = saveSignaturePicture(mergedBitmap);
-                    if (file != null && file.exists()) {
-                        showLoadingDialog("保存中");
-                        HashMap<String, String> params = new HashMap<>();
-                        params.put("key", "attach");
-                        UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
-                            @Override
-                            public void onError(Call call, Exception e, int i) {
-                                handleError(e);
-                            }
-
-                            @Override
-                            public void inProgress(float progress, long total, int id) {
-                                super.inProgress(progress, total, id);
-                                LogUtils.i("wzh", progress + "");
-                            }
-
-                            @Override
-                            public void onResponse(FileUploadResp resp, int i) {
-                                hideLoadingDialog();
-                                LogUtils.i("wzh", resp.toString());
-                                paths.add(resp.getData().getPath());
-                                EventBus.getDefault().post(new TakePhotoEvent(-1, paths));
-                                if (listener != null) {
-                                    listener.onComplete();
-                                }
-                            }
-                        });
+                signatureBitmap = drawBg4Bitmap(ContextCompat.getColor(this,R.color.translucent), signatureBitmap);
+                signatureBitmap = mergeBitmap(backgroundBitmap, signatureBitmap);
+            }
+            File file = saveSignaturePicture(signatureBitmap);
+            if (file != null && file.exists()) {
+                showLoadingDialog("保存中");
+                HashMap<String, String> params = new HashMap<>();
+                params.put("key", "attach");
+                UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
+                    @Override
+                    public void onError(Call call, Exception e, int i) {
+                        handleError(e);
                     }
-                }
+
+                    @Override
+                    public void inProgress(float progress, long total, int id) {
+                        super.inProgress(progress, total, id);
+                        LogUtils.i("wzh", progress + "");
+                    }
+
+                    @Override
+                    public void onResponse(FileUploadResp resp, int i) {
+                        hideLoadingDialog();
+                        LogUtils.i("wzh", resp.toString());
+                        paths.add(resp.getData().getPath());
+                        EventBus.getDefault().post(new TakePhotoEvent(-1, paths));
+                        if (listener != null) {
+                            listener.onComplete();
+                        }
+                    }
+                });
             }
         }
     }

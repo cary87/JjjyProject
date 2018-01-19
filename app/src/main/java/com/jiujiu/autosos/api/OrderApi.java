@@ -24,6 +24,10 @@ public class OrderApi {
         ApiHelper.httpRequest(HttpMethod.GET, FECTH_ORDER + currentPage, null, callback);
     }
 
+    public static <T> T syncfecthOrder(int currentPage, Class<T> clz) throws Exception {
+        return ApiHelper.syncHttpRequest(HttpMethod.GET, FECTH_ORDER + currentPage, null, clz);
+    }
+
     public static <T> void driverAcceptOrder(Map<String,String> param, Callback<T> callback) {
         ApiHelper.httpRequest(HttpMethod.POST, ACCEPTORDER, param, callback);
     }

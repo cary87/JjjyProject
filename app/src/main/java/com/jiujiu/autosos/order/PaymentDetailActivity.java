@@ -2,7 +2,6 @@ package com.jiujiu.autosos.order;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -78,12 +77,8 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                 }
             }
         }
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                getPaymentAmount();
-            }
-        }, 200);
+
+        getPaymentAmount();
     }
 
     @Override
@@ -204,7 +199,6 @@ public class PaymentDetailActivity extends AbsBaseActivity {
      * 拉取结算价格
      */
     public void getPaymentAmount() {
-        showLoadingDialog("加载中");
         HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
         params.put("distance", order.getDistance() + "");
@@ -219,7 +213,6 @@ public class PaymentDetailActivity extends AbsBaseActivity {
 
             @Override
             public void onResponse(FinishOrderResp resp, int i) {
-                hideLoadingDialog();
                 tvTotalAmount.setText(resp.getData().getPayableAmount() + "元");
             }
         });

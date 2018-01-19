@@ -74,7 +74,7 @@
                     android:id="@+id/tv_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
+                    android:textColor="@color/colorAccent"
                     android:text="1858888888"/>
 
             </LinearLayout>
@@ -99,9 +99,4 @@
             android:text="接单"/>
 
     </LinearLayout>
-
-
-
-
-
 </LinearLayout>

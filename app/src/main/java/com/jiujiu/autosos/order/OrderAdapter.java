@@ -6,10 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.code19.library.DateUtils;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.BaseListAdapter;
+import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,6 +23,7 @@ import butterknife.ButterKnife;
  */
 
 public class OrderAdapter extends BaseListAdapter<OrderModel> {
+
     public OrderAdapter(Context context) {
         super(context);
     }
@@ -34,14 +39,15 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
             holder = (OrderViewHolder) view.getTag();
         }
 
-        holder.tvCarNumber.setText(getItem(i).getCarNo());
+        holder.tvCarNumber.setText(getItem(i).getCarNo() + "/" + getItem(i).getCarOwnerId());
         holder.tvOccurAddress.setText(getItem(i).getAddress());
         holder.tvOrderNumber.setText(getItem(i).getOrderId() + "");
-        holder.tvPhone.setText(getItem(i).getCarOwnerId() + "");
         holder.tvOrderState.setText(OrderStateEnum.getOrderState(getItem(i).getState()).getLabel());
-        //holder.tvDestinationAddress.setText(getItem(i).getToRescueAdress());
-        //holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getOrderTime()));
-
+        holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getAcceptTime()));
+        List<OrderItem> orderItems = getItem(i).getOrderItems();
+        if (orderItems != null && orderItems.size() > 0) {
+            holder.tvServiceType.setText(orderItems.get(0).getItemName());
+        }
         return view;
     }
 
@@ -50,17 +56,14 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
         TextView tvOrderNumber;
         @BindView(R.id.tv_car_number)
         TextView tvCarNumber;
-        @BindView(R.id.tv_phone)
-        TextView tvPhone;
         @BindView(R.id.tv_occur_address)
         TextView tvOccurAddress;
         @BindView(R.id.tv_order_state)
         TextView tvOrderState;
-        /*
-        @BindView(R.id.tv_destination_address)
-        TextView tvDestinationAddress;
         @BindView(R.id.tv_order_time)
-        TextView tvOrderTime;*/
+        TextView tvOrderTime;
+        @BindView(R.id.tv_service_type)
+        TextView tvServiceType;
 
         OrderViewHolder(View view) {
             ButterKnife.bind(this, view);

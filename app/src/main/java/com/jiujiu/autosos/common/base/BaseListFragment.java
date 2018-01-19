@@ -224,7 +224,7 @@ public abstract class BaseListFragment<T> extends BaseFragment {
      *
      * @param e
      */
-    protected void handleError(Exception e) {
+    protected void handleError(Throwable e) {
         mIsLoading = false;
         if (getActivity() == null) {
             return;

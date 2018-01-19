@@ -211,4 +211,9 @@ public class MainActivity extends AbsBaseActivity {
             return mFragments.get(position);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
 }
