@@ -18,4 +18,10 @@
         <item>大托/五类车</item>
     </string-array>
 
+    <integer-array name="google_colors">
+        <item>@color/blue</item>
+        <item>@color/yellow</item>
+        <item>@color/green</item>
+    </integer-array>
+
 </resources>

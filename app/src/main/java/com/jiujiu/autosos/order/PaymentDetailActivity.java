@@ -20,9 +20,9 @@ import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.utils.DialogUtils;
 import com.jiujiu.autosos.order.model.CalculationTypeEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
+import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.PayWayEnum;
 import com.jiujiu.autosos.resp.FinishOrderResp;
-import com.jiujiu.autosos.resp.Order;
 import com.jiujiu.autosos.resp.QrResp;
 
 import java.util.Arrays;
@@ -55,7 +55,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
     @BindView(R.id.ll_other_fee)
     LinearLayout llOtherFee;
 
-    private Order order;
+    private OrderModel order;
     private OrderItem orderItem;//取数组第一个做计费明细
 
     private double crossBridgeAmount;//过桥过路费
@@ -64,11 +64,11 @@ public class PaymentDetailActivity extends AbsBaseActivity {
     protected void setup(Bundle savedInstanceState) {
         tvTitle.setText("救援详情");
         setupToolbar(toolbar);
-        order = (Order) getIntent().getSerializableExtra("order");
+        order = (OrderModel) getIntent().getSerializableExtra("order");
         if (order != null) {
             tvDistance.setText(order.getDistance() + "公里");
-            if (order.getItemsList() != null && order.getItemsList().size() > 0) {
-                orderItem = order.getItemsList().get(0);
+            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
+                orderItem = order.getOrderItems().get(0);
                 CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByValue(orderItem.getCalculationType());
                 if (calculationType != null) {
                     tvCalculationType.setText(calculationType.getLaybel());
@@ -204,7 +204,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         params.put("distance", order.getDistance() + "");
         params.put("crossBridgeAmount", Double.toString(crossBridgeAmount));
         Gson gson = new GsonBuilder().serializeNulls().create();
-        params.put("items", gson.toJson(order.getItemsList()));
+        params.put("items", gson.toJson(order.getOrderItems()));
         OrderApi.finishOrder(params, new ApiCallback<FinishOrderResp>() {
             @Override
             public void onError(Call call, Exception e, int i) {

@@ -41,7 +41,7 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
 
         holder.tvCarNumber.setText(getItem(i).getCarNo() + "/" + getItem(i).getCarOwnerId());
         holder.tvOccurAddress.setText(getItem(i).getAddress());
-        holder.tvOrderNumber.setText(getItem(i).getOrderId() + "");
+        holder.tvOrderNumber.setText(getItem(i).getOrderId() +"");
         holder.tvOrderState.setText(OrderStateEnum.getOrderState(getItem(i).getState()).getLabel());
         holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getAcceptTime()));
         List<OrderItem> orderItems = getItem(i).getOrderItems();

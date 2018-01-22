@@ -1,6 +1,5 @@
 package com.jiujiu.autosos.home;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,7 +20,6 @@ import com.jiujiu.autosos.common.model.BottomTabEntity;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.PushUtils;
 import com.jiujiu.autosos.me.MeFragment;
-import com.jiujiu.autosos.nav.GPSNaviActivity;
 import com.jiujiu.autosos.nav.TTSController;
 import com.jiujiu.autosos.order.OrderDialog;
 import com.jiujiu.autosos.order.OrderFragment;
@@ -141,9 +139,6 @@ public class MainActivity extends AbsBaseActivity {
             public void onResponse(BaseResp resp, int i) {
                 hideLoadingDialog();
                 showToast("接单成功");
-                Intent intent = new Intent(MainActivity.this, GPSNaviActivity.class);
-                intent.putExtra("order", order);
-                startActivity(intent);
             }
         });
     }

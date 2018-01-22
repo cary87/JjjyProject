@@ -3,9 +3,7 @@ package com.jiujiu.autosos.me;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -169,25 +167,6 @@ public class PersonalAuthActivity extends AbsBaseActivity {
                 }
             }
         }
-    }
-
-    private void alertBottomSheet() {
-        BottomSheetDialog dialog = new BottomSheetDialog(mActivity);
-        View dialogView = LayoutInflater.from(mActivity).inflate(R.layout.dialog_pick_photo, null);
-        dialogView.findViewById(R.id.tv_by_camera).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        dialogView.findViewById(R.id.tv_by_gallery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        dialog.setContentView(dialogView);
-        dialog.show();
     }
 
     public static void luanchSelf(Activity activity) {

@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.resp.Order;
+import com.jiujiu.autosos.order.model.OrderModel;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -30,11 +30,11 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private Order order;
+    private OrderModel order;
 
     @Override
     protected void setup(Bundle savedInstanceState) {
-        order = (Order) getIntent().getSerializableExtra("order");
+        order = (OrderModel) getIntent().getSerializableExtra("order");
         tvTitle.setText("签名");
         setupToolbar(toolbar);
         mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {

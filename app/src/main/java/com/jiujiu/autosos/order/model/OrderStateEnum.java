@@ -43,10 +43,18 @@ public enum OrderStateEnum {
 
     public static OrderStateEnum getOrderState(int value) {
         for (OrderStateEnum item : values()) {
-            if (item.getValue()== value) {
+            if (item.getValue() == value) {
                 return item;
             }
         }
         return null;
+    }
+
+    public static OrderStateEnum[] getTimeLineDisplay() {
+        return new OrderStateEnum[]{
+                Accept,
+                Arrive,
+                Finished,
+                Payed};
     }
 }

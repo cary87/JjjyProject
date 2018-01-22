@@ -32,8 +32,8 @@ import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.DialogUtils;
 import com.jiujiu.autosos.order.SignatureToCheckActivity;
 import com.jiujiu.autosos.order.SignatureToFinishActivity;
+import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.TakePhotoEvent;
-import com.jiujiu.autosos.resp.Order;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -70,7 +70,7 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
 
     private AMap aMap;
 
-    private Order order;
+    private OrderModel order;
 
     public static final int REQ_TO_PAY = 1222;
 
@@ -94,7 +94,7 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
         options.setLayoutVisible(false);
         mAMapNaviView.setViewOptions(options);
 
-        order = (Order) getIntent().getSerializableExtra("order");
+        order = (OrderModel) getIntent().getSerializableExtra("order");
 
         EventBus.getDefault().register(this);
     }

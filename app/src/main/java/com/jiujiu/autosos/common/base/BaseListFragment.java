@@ -1,5 +1,7 @@
 package com.jiujiu.autosos.common.base;
 
+import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
@@ -8,18 +10,18 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.AppException;
+import com.jiujiu.autosos.common.Constant;
 import com.jiujiu.autosos.common.ResultStatus;
+import com.jiujiu.autosos.common.utils.DialogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import in.srain.cube.views.ptr.PtrClassicFrameLayout;
-import in.srain.cube.views.ptr.PtrDefaultHandler;
-import in.srain.cube.views.ptr.PtrFrameLayout;
-import in.srain.cube.views.ptr.PtrHandler;
 
 /**
  * 列表fragment基类
@@ -28,8 +30,8 @@ public abstract class BaseListFragment<T> extends BaseFragment {
 
     @BindView(R.id.listView)
     protected ListView mListView;
-    @BindView(R.id.ptr_framelayout)
-    PtrClassicFrameLayout mPtrFramelayout;
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.layout_content)
     LinearLayout mLayoutContent;
     @BindView(R.id.layout_msg_error)
@@ -60,7 +62,7 @@ public abstract class BaseListFragment<T> extends BaseFragment {
     @Override
     protected void afterViewInited(final View view) {
         initListView();
-        initPtrFrame();
+        initSwipeRefresh();
         initMsgLayout();
     }
 
@@ -101,29 +103,17 @@ public abstract class BaseListFragment<T> extends BaseFragment {
         mListView.removeFooterView(mFooter);
     }
 
-    private void initPtrFrame() {
-        // the following are default settings
-        mPtrFramelayout.setResistance(1.7f);
-        mPtrFramelayout.setRatioOfHeaderHeightToRefresh(1.2f);
-        mPtrFramelayout.setDurationToClose(200);
-        mPtrFramelayout.setDurationToCloseHeader(1000);
-        // default is false
-        mPtrFramelayout.setPullToRefresh(false);
-        // default is true
-        mPtrFramelayout.setKeepHeaderWhenRefresh(true);
-        mPtrFramelayout.setLastUpdateTimeRelateObject(this);
-        mPtrFramelayout.setPtrHandler(new PtrHandler() {
+    private void initSwipeRefresh() {
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeResource(R.color.white);
+        int[] colors = getResources().getIntArray(R.array.google_colors);
+        mSwipeRefreshLayout.setColorSchemeColors(colors);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onRefreshBegin(PtrFrameLayout frame) {
+            public void onRefresh() {
                 loadData(true);
             }
-
-            @Override
-            public boolean checkCanDoRefresh(PtrFrameLayout frame, View content, View header) {
-                return PtrDefaultHandler.checkContentCanBePulledDown(frame, content, header);
-            }
         });
-        mPtrFramelayout.postDelayed(new Runnable() {
+        mSwipeRefreshLayout.postDelayed(new Runnable() {
             @Override
             public void run() {
                 autoRefresh();
@@ -139,7 +129,7 @@ public abstract class BaseListFragment<T> extends BaseFragment {
             @Override
             public void onClick(View view) {
                 modifyUiState(true);
-                mPtrFramelayout.postDelayed(new Runnable() {
+                mSwipeRefreshLayout.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         autoRefresh();
@@ -188,7 +178,7 @@ public abstract class BaseListFragment<T> extends BaseFragment {
      */
     protected void handleResponse(List<T> list, boolean... args) {
         mIsLoading = false;
-        if (getActivity() == null) {
+        if (getActivity() == null || !viewInited) {
             return;
         }
         if (args[0]) {
@@ -210,7 +200,7 @@ public abstract class BaseListFragment<T> extends BaseFragment {
         }
         mAdapter.getmDatas().addAll(list);
         mAdapter.notifyDataSetChanged();
-        mPtrFramelayout.refreshComplete();
+        mSwipeRefreshLayout.setRefreshing(false);
         mListView.removeFooterView(mFooter);
         if (mAdapter.getmDatas().size() == 0) {
             setResultStatus(ResultStatus.NODATA);
@@ -226,7 +216,7 @@ public abstract class BaseListFragment<T> extends BaseFragment {
      */
     protected void handleError(Throwable e) {
         mIsLoading = false;
-        if (getActivity() == null) {
+        if (getActivity() == null || !viewInited) {
             return;
         }
         if (e != null) {
@@ -235,14 +225,13 @@ public abstract class BaseListFragment<T> extends BaseFragment {
         if (e != null && e instanceof AppException) {
             AppException appException = (AppException) e;
             String code = appException.getCode();
-            /*if (Constant.CODE_SESSION_TIME_OUT.equals(code)) {
-                DialogUtils.showConfirmDialog(mActivity, getString(R.string.account_other_device_login), new MaterialDialog.SingleButtonCallback() {
+            if (Constant.CODE_SESSION_TIME_OUT.equals(code)) {
+                DialogUtils.showConfirmDialog(mActivity, "该账号已在其他设备登录，请重新登录", new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
                         switch (which) {
                             case POSITIVE:
-                                //SystemUtil.logout(mActivity, LoginActivity.class);
                                 break;
                             case NEGATIVE:
                                 break;
@@ -251,21 +240,14 @@ public abstract class BaseListFragment<T> extends BaseFragment {
                 });
             } else {
                 mActivity.showToast(e.getMessage());
-            }*/
+            }
         }
 
         mListView.removeFooterView(mFooter);
-        mPtrFramelayout.refreshComplete();
+        mSwipeRefreshLayout.setRefreshing(false);
         if (mAdapter.getmDatas().size() == 0) {
             setResultStatus(ResultStatus.NETWORKERR);
         }
-    }
-
-    protected void handleEmpty() {
-        mIsLoading = false;
-        mListView.removeFooterView(mFooter);
-        mPtrFramelayout.refreshComplete();
-        setResultStatus(ResultStatus.NODATA);
     }
 
     /**
@@ -298,7 +280,8 @@ public abstract class BaseListFragment<T> extends BaseFragment {
 
     public void autoRefresh() {
         if (viewInited) {
-            mPtrFramelayout.autoRefresh();
+            mSwipeRefreshLayout.setRefreshing(true);
+            loadData(true);
         }
     }
 
