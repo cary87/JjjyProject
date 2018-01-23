@@ -9,6 +9,10 @@ import android.widget.TextView;
 
 import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.jiujiu.autosos.R;
+import com.jiujiu.autosos.order.model.OrderModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 
@@ -26,8 +30,11 @@ public class SignatureToCheckActivity extends AbsSignatureActivity {
     @BindView(R.id.cb_confirm)
     CheckBox cbConfirm;
 
+    private OrderModel order;
+
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
+        order = (OrderModel) getIntent().getSerializableExtra("order");
         tvTitle.setText("验车确认");
         setupToolbar(toolbar);
         mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {
@@ -67,7 +74,10 @@ public class SignatureToCheckActivity extends AbsSignatureActivity {
                 case R.id.menu_save:
                     saveSignature(null, mSignaturePad.getSignatureBitmap(), new OnSaveCompleteListener() {
                         @Override
-                        public void onComplete() {
+                        public void onComplete(String path) {
+                            List<String> paths = new ArrayList<>();
+                            paths.add(path);
+                            OrderUtil.savePicturesForOrder(SignatureToCheckActivity.this, order, paths);
                             finish();
                         }
                     });

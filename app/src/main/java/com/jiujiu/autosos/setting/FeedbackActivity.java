@@ -27,7 +27,7 @@ public class FeedbackActivity extends AbsBaseActivity {
     Toolbar toolbar;
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("意见反馈");
         setupToolbar(toolbar);
 

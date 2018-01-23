@@ -23,7 +23,7 @@ public class AboutAcitvity extends AbsBaseActivity {
 
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         setupToolbar(toolbar);
         tvTitle.setText("关于");
 

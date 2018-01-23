@@ -13,18 +13,13 @@ import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.utils.LogUtils;
-import com.jiujiu.autosos.order.model.TakePhotoEvent;
 import com.jiujiu.autosos.resp.FileUploadResp;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import okhttp3.Call;
 
@@ -35,10 +30,8 @@ import okhttp3.Call;
 public abstract class AbsSignatureActivity extends AbsBaseActivity {
 
     public interface OnSaveCompleteListener {
-        void onComplete();
+        void onComplete(String path);
     }
-
-    private List<String> paths = new ArrayList<>();
 
     public static Bitmap drawBg4Bitmap(int color, Bitmap orginBitmap) {
         Paint paint = new Paint();
@@ -59,7 +52,6 @@ public abstract class AbsSignatureActivity extends AbsBaseActivity {
             }
             File file = saveSignaturePicture(signatureBitmap);
             if (file != null && file.exists()) {
-                showLoadingDialog("保存中");
                 HashMap<String, String> params = new HashMap<>();
                 params.put("key", "attach");
                 UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
@@ -76,12 +68,9 @@ public abstract class AbsSignatureActivity extends AbsBaseActivity {
 
                     @Override
                     public void onResponse(FileUploadResp resp, int i) {
-                        hideLoadingDialog();
                         LogUtils.i("wzh", resp.toString());
-                        paths.add(resp.getData().getPath());
-                        EventBus.getDefault().post(new TakePhotoEvent(-1, paths));
                         if (listener != null) {
-                            listener.onComplete();
+                            listener.onComplete(resp.getData().getPath());
                         }
                     }
                 });

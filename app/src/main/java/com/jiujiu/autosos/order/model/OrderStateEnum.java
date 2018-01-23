@@ -11,7 +11,7 @@ public enum OrderStateEnum {
     Accept(2, "已接单"),
     Arrive(3, "已到达"),
     Finished(4, "待付款"),
-    Payed(5, "已付款"),
+    Payed(5, "已完成"),
     Evaluated(6, "已评价"),
     Cancel(7, "已取消"),
     Refused(8, "已拒绝"),
@@ -50,7 +50,7 @@ public enum OrderStateEnum {
         return null;
     }
 
-    public static OrderStateEnum[] getTimeLineDisplay() {
+    public static OrderStateEnum[] getTimeLineStates() {
         return new OrderStateEnum[]{
                 Accept,
                 Arrive,

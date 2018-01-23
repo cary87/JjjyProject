@@ -90,7 +90,6 @@ public class OrderFragment extends BaseListFragment<OrderModel> {
         tvBarTitle.setText("订单");
         mListView.setDivider(new ColorDrawable(ContextCompat.getColor(mActivity, R.color.colorBg)));
         mListView.setDividerHeight(DensityUtil.dip2px(mActivity, 10.0f));
-        mListView.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.white));
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

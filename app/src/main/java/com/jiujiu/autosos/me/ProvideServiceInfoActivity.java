@@ -112,7 +112,7 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
             "甘", "青", "宁", "新"};
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("服务信息录入");
         setupToolbar(toolbar);
         cbTuoche.setOnCheckedChangeListener(this);

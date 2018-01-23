@@ -40,7 +40,7 @@ public class LoginActivity extends AbsBaseActivity {
     EditText etPwd;
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
     }
 
     @Override

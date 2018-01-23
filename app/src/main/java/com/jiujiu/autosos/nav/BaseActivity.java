@@ -71,7 +71,7 @@ public class BaseActivity extends AbsBaseActivity implements AMapNaviListener, A
     }
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         //实例化语音引擎
         mTtsManager = TTSController.getInstance(getApplicationContext());
         mTtsManager.init();

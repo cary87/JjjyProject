@@ -56,7 +56,7 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
     private List<String> paths = new ArrayList<>();
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("拍照结果");
         mTag = getIntent().getIntExtra(PHOTO_TAG, -1);
 

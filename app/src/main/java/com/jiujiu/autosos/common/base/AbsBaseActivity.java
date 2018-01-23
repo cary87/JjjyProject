@@ -46,7 +46,7 @@ public abstract class AbsBaseActivity extends AppCompatActivity {
         unbinder = ButterKnife.bind(this);
         ActivityStack.getInstance().addActivity(this);
         mActivity = this;
-        setup(savedInstanceState);
+        onActivityCreate(savedInstanceState);
     }
 
     @Override
@@ -76,7 +76,7 @@ public abstract class AbsBaseActivity extends AppCompatActivity {
     /**
      * 初始化数据
      */
-    protected abstract void setup(Bundle savedInstanceState);
+    protected abstract void onActivityCreate(Bundle savedInstanceState);
 
     /**
      * 获取布局文件

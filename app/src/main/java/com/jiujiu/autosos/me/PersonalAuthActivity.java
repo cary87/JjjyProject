@@ -47,7 +47,7 @@ public class PersonalAuthActivity extends AbsBaseActivity {
     private int tagOfPic = -1;
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("个人资料认证");
         setupToolbar(toolbar);
     }

@@ -234,7 +234,36 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
                     android:layout_marginLeft="10dp"
-                    android:text="到达拍照"
+                    android:text="已到达"
+                    />
+                <Button
+                    android:id="@+id/btn_take_photo"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="10dp"
+                    android:text="拍照"
+                    />
+
+                <Button
+                    android:id="@+id/btn_finish"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="10dp"
+                    android:text="完成救援"
+                    />
+
+                <Button
+                    android:id="@+id/btn_pay"
+                    android:visibility="gone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:layout_marginLeft="10dp"
+                    android:text="车主支付"
                     />
 
             </LinearLayout>

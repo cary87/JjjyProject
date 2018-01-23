@@ -41,7 +41,7 @@ public class CameraActivity extends AbsBaseActivity {
     private int mTag = -1;
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
         }

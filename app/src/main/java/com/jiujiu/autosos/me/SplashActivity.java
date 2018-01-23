@@ -17,7 +17,7 @@ import com.jiujiu.autosos.home.MainActivity;
 public class SplashActivity extends AbsBaseActivity {
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         StatusBarUtil.setTransparent(this);
         jump();
 

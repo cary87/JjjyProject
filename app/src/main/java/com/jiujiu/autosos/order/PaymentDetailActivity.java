@@ -13,6 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.sumimakito.awesomeqr.AwesomeQRCode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
@@ -25,8 +26,11 @@ import com.jiujiu.autosos.order.model.PayWayEnum;
 import com.jiujiu.autosos.resp.FinishOrderResp;
 import com.jiujiu.autosos.resp.QrResp;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -58,10 +62,8 @@ public class PaymentDetailActivity extends AbsBaseActivity {
     private OrderModel order;
     private OrderItem orderItem;//取数组第一个做计费明细
 
-    private double crossBridgeAmount;//过桥过路费
-
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("救援详情");
         setupToolbar(toolbar);
         order = (OrderModel) getIntent().getSerializableExtra("order");
@@ -121,7 +123,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvCrossBridgePrice.setText(input);
-                        crossBridgeAmount = Double.parseDouble(input.toString());
+                        order.setCrossBridgeAmount(Double.parseDouble(input.toString()));
                         getPaymentAmount();
                     }
                 });
@@ -202,7 +204,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
         params.put("distance", order.getDistance() + "");
-        params.put("crossBridgeAmount", Double.toString(crossBridgeAmount));
+        params.put("crossBridgeAmount", Double.toString(order.getCrossBridgeAmount()));
         Gson gson = new GsonBuilder().serializeNulls().create();
         params.put("items", gson.toJson(order.getOrderItems()));
         OrderApi.finishOrder(params, new ApiCallback<FinishOrderResp>() {
@@ -212,8 +214,18 @@ public class PaymentDetailActivity extends AbsBaseActivity {
             }
 
             @Override
+            public FinishOrderResp parseResponse(String string) throws Exception {
+                FinishOrderResp resp = super.parseResponse(string);
+                String items = resp.getData().getItems();
+                List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {}.getType());
+                resp.getData().setOrderItems(orderItems);
+                return resp;
+            }
+
+            @Override
             public void onResponse(FinishOrderResp resp, int i) {
                 tvTotalAmount.setText(resp.getData().getPayableAmount() + "元");
+                EventBus.getDefault().post(resp.getData());//完成订单后发送消息给订单详情页面，以便刷新页面
             }
         });
     }

@@ -144,7 +144,7 @@ public class MainActivity extends AbsBaseActivity {
     }
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         mFragments.add(new WorkbenchFragment());
         mFragments.add(new OrderFragment());
         mFragments.add(new MeFragment());

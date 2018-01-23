@@ -30,6 +30,7 @@ import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.SignatureToCheckActivity;
 import com.jiujiu.autosos.order.SignatureToFinishActivity;
 import com.jiujiu.autosos.order.model.OrderModel;
@@ -75,8 +76,8 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
     public static final int REQ_TO_PAY = 1222;
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
-        super.setup(savedInstanceState);
+    protected void onActivityCreate(Bundle savedInstanceState) {
+        super.onActivityCreate(savedInstanceState);
         mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
         mAMapNaviView.onCreate(savedInstanceState);
         mAMapNaviView.setAMapNaviViewListener(this);
@@ -117,7 +118,7 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
     @Subscribe
     public void onPhotoTakenEvent(TakePhotoEvent event) {
         if (event.getPaths() != null && event.getPaths().size() > 0) {
-            sendPictures2Server(event.getPaths());
+            OrderUtil.savePicturesForOrder(this, order, event.getPaths());
         }
         if (event.getTag() == TAG_ARRIVE_TAKE) {
             btnArrive.setText("把车辆挪上拖车拍照");
@@ -299,6 +300,7 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
                 break;
             case R.id.btn_signature:
                 Intent sign = new Intent(this, SignatureToCheckActivity.class);
+                sign.putExtra("order", order);
                 startActivity(sign);
                 break;
             case R.id.btn_look:

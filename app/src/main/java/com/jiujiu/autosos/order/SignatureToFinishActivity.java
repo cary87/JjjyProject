@@ -13,6 +13,9 @@ import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.order.model.OrderModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
 
@@ -33,7 +36,7 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
     private OrderModel order;
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         order = (OrderModel) getIntent().getSerializableExtra("order");
         tvTitle.setText("签名");
         setupToolbar(toolbar);
@@ -68,7 +71,10 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
         Bitmap bmp= BitmapFactory.decodeResource(res, R.drawable.sign_tablet_bg);
         saveSignature(bmp, mSignaturePad.getSignatureBitmap(), new OnSaveCompleteListener() {
             @Override
-            public void onComplete() {
+            public void onComplete(String path) {
+                List<String> paths = new ArrayList<>();
+                paths.add(path);
+                OrderUtil.savePicturesForOrder(SignatureToFinishActivity.this, order, paths);
                 Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
                 intent.putExtra("order", order);
                 startActivity(intent);

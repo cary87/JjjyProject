@@ -47,7 +47,7 @@ public class ChangePasswordActivity extends AbsBaseActivity {
     Toolbar toolbar;
 
     @Override
-    protected void setup(Bundle savedInstanceState) {
+    protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("修改密码");
         setupToolbar(toolbar);
     }
