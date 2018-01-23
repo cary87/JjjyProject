@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -35,12 +38,14 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import me.iwf.photopicker.PhotoPicker;
+import me.iwf.photopicker.PhotoPreview;
 import okhttp3.Call;
 
 import static com.jiujiu.autosos.order.model.OrderStateEnum.getTimeLineStates;
@@ -107,6 +112,31 @@ public class OrderDetailActivity extends AbsBaseActivity {
         setupView();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.see_photo_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (TextUtils.isEmpty(mOrder.getPictures())) {
+            showToast("没有图片");
+        } else {
+            List<String> photoPaths = Arrays.asList(mOrder.getPictures().split("\\|"));
+            ArrayList<String> absolutePaths = new ArrayList<>();
+            for (String photoPath : photoPaths) {
+                absolutePaths.add(UserStorage.getInstance().getUser().getFastDFSFileUrlPrefix() + photoPath);
+            }
+            PhotoPreview.builder()
+                    .setPhotos(absolutePaths)
+                    .setCurrentItem(0)
+                    .setShowDeleteButton(false)
+                    .start(OrderDetailActivity.this);
+        }
+        return true;
+    }
+
     private void setupView() {
         tvDriverOwner.setText(mOrder.getCarOwner());
         tvDriverMobile.setText(mOrder.getCarOwnerId() + "");
@@ -130,7 +160,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
     }
 
     private void updateViewByState() {
-        setSetpView();//变更timeline
+        //变更timeline
+        setSetpView();
         switch (OrderStateEnum.getOrderState(mOrder.getState())) {
             case Accept:
                 btnNav.setVisibility(View.VISIBLE);

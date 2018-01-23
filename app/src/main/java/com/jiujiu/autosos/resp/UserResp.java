@@ -89,6 +89,15 @@ public class UserResp extends BaseResp {
         private String passwordFlag;
         private String password;
         private String province;
+        private String fastDFSFileUrlPrefix;
+
+        public String getFastDFSFileUrlPrefix() {
+            return fastDFSFileUrlPrefix;
+        }
+
+        public void setFastDFSFileUrlPrefix(String fastDFSFileUrlPrefix) {
+            this.fastDFSFileUrlPrefix = fastDFSFileUrlPrefix;
+        }
 
         public String getProvince() {
             return province;
