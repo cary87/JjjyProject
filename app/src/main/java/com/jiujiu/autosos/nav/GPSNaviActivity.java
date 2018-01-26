@@ -22,7 +22,6 @@ import com.amap.api.navi.model.NaviLatLng;
 import com.amap.api.trace.LBSTraceClient;
 import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceStatusListener;
-import com.google.gson.Gson;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.camera.CameraActivity;
@@ -30,6 +29,7 @@ import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.order.OrderDetailActivity;
 import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.SignatureToCheckActivity;
 import com.jiujiu.autosos.order.SignatureToFinishActivity;
@@ -132,27 +132,6 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
             sign.putExtra("order", order);
             startActivityForResult(sign, REQ_TO_PAY);
         }
-    }
-
-    /**
-     * 提交服务端保存图片
-     * @param paths
-     */
-    public void sendPictures2Server(List<String> paths) {
-        HashMap<String, String> params = new HashMap<>();
-        params.put("orderId", order.getOrderId() + "");
-        params.put("pictures", new Gson().toJson(paths));
-        OrderApi.savePicFile(params, new ApiCallback<BaseResp>() {
-            @Override
-            public void onError(Call call, Exception e, int i) {
-                handleError(e);
-            }
-
-            @Override
-            public void onResponse(BaseResp resp, int i) {
-
-            }
-        });
     }
 
     /**
@@ -297,6 +276,9 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
                 }
                 break;
             case R.id.btn_order_detail:
+                Intent intent = new Intent(mActivity, OrderDetailActivity.class);
+                intent.putExtra("order", order);
+                startActivity(intent);
                 break;
             case R.id.btn_signature:
                 Intent sign = new Intent(this, SignatureToCheckActivity.class);

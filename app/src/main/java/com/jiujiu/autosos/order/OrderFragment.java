@@ -1,13 +1,10 @@
 package com.jiujiu.autosos.order;
 
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
-import com.code19.library.DensityUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jiujiu.autosos.R;
@@ -88,8 +85,6 @@ public class OrderFragment extends BaseListFragment<OrderModel> {
     protected void afterViewInited(View view) {
         super.afterViewInited(view);
         tvBarTitle.setText("订单");
-        mListView.setDivider(new ColorDrawable(ContextCompat.getColor(mActivity, R.color.colorBg)));
-        mListView.setDividerHeight(DensityUtil.dip2px(mActivity, 10.0f));
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

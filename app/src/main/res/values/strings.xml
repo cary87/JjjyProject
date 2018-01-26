@@ -10,10 +10,10 @@
     <string name="loading">加载中...</string>
 
     <!--底部tab栏-->
-    <string name="tab_work">工作</string>
+    <string name="tab_work">待接单</string>
     <string name="tab_order">订单</string>
     <string name="tab_profile">我的</string>
     <string name="tab_setting">设置</string>
-    <string name="see_more_order_detail"><u>查看更多订单信息</u></string>
+    <string name="see_more_order_detail"><u>查看图片</u></string>
     <string name="order_coming">您有新的救援订单，请接收</string>
 </resources>

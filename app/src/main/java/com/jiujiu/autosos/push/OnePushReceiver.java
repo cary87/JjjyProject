@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.jiujiu.autosos.R;
+import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.resp.Order;
 import com.sdbc.onepushlib.OnePushAbsReceiver;
@@ -48,7 +49,7 @@ public class OnePushReceiver extends OnePushAbsReceiver {
             @Override
             public Order call() throws Exception {
                 MessageBody messageBody = new Gson().fromJson(content, MessageBody.class);
-                if (messageBody == null) {
+                if (messageBody == null || !messageBody.getTo().equals(UserStorage.getInstance().getUser().getUserId())) {
                     return null;
                 }
                 //解析MessageBody-content

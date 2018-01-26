@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.amap.api.navi.model.NaviLatLng;
+import com.amap.api.services.core.LatLonPoint;
 import com.baoyachi.stepview.HorizontalStepView;
 import com.baoyachi.stepview.bean.StepBean;
 import com.code19.library.DateUtils;
@@ -27,6 +28,7 @@ import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.GPSNaviActivity;
 import com.jiujiu.autosos.nav.NavigateUtils;
+import com.jiujiu.autosos.nav.RouteSearchManager;
 import com.jiujiu.autosos.order.model.ChargeTypeEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
@@ -92,6 +94,13 @@ public class OrderDetailActivity extends AbsBaseActivity {
 
     private OrderModel mOrder;
 
+    private RouteSearchManager routeSearchManager;
+
+    private static final int MAX_TRY_COUNT = 3;
+
+    private int currentCount = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,6 +119,56 @@ public class OrderDetailActivity extends AbsBaseActivity {
         setupToolbar(toolbar);
         mOrder = (OrderModel) getIntent().getSerializableExtra("order");
         setupView();
+        getDistanceForOrder();
+
+    }
+
+    /**
+     * 获取救援距离,以便计价
+     */
+    private void getDistanceForOrder() {
+        if (mOrder.getState() < OrderStateEnum.Finished.getValue()) {
+            routeSearchManager = RouteSearchManager.getInstance(this);
+            routeSearchManager.setListener(new RouteSearchManager.RouteQueryListener() {
+                @Override
+                public void onQuerySuccess(double km, float tollDistance) {
+                    mOrder.setDistance(km);
+                    LogUtils.i("wzh", "救援公里 " +km + "公里" + " 高速路距离（米） " + tollDistance);
+                }
+
+                @Override
+                public void onQueryFail() {
+                    LogUtils.e("wzh", "获取救援距离失败");
+                    currentCount++;
+                    if (currentCount < MAX_TRY_COUNT) {
+                        startRouteQuery(routeSearchManager);// 失败再重试
+                    }
+
+                }
+            });
+            startRouteQuery(routeSearchManager);
+        }
+    }
+
+    /**
+     * 启动驾车规划
+     * @param manager
+     */
+    private void startRouteQuery(RouteSearchManager manager) {
+        /*if (mOrder.getTraces() != null && mOrder.getTraces().size() > 0) {
+            OrderTrace driverStatrTrace = null;
+            //拿到接单的起始位置
+            for (OrderTrace orderTrace : mOrder.getTraces()) {
+                if (orderTrace.getTraceType() != null && orderTrace.getTraceType().intValue() == TraceTypeEnum.accept.getType()) {
+                    driverStatrTrace = orderTrace;
+                    break;
+                }
+            }
+            if (driverStatrTrace != null) {
+                manager.driverRouteQuery(new LatLonPoint(driverStatrTrace.getLatitude(), driverStatrTrace.getLongitude()), new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), null);
+            }
+        }*/
+        manager.driverRouteQuery(new LatLonPoint(UserStorage.getInstance().getLastSubmitLatitude(), UserStorage.getInstance().getLastSubmitLongitude()), new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), null);
     }
 
     @Override

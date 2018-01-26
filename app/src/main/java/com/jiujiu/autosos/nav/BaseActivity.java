@@ -22,6 +22,7 @@ import com.amap.api.navi.model.NaviInfo;
 import com.amap.api.navi.model.NaviLatLng;
 import com.autonavi.tbt.TrafficFacilityInfo;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
+import com.jiujiu.autosos.common.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +113,7 @@ public class BaseActivity extends AbsBaseActivity implements AMapNaviListener, A
     @Override
     public void onLocationChange(AMapNaviLocation location) {
         //当前位置回调
-        Log.i("wzh", location.toString());
+        LogUtils.i("wzh", location.toString());
     }
 
     @Override
@@ -138,10 +139,10 @@ public class BaseActivity extends AbsBaseActivity implements AMapNaviListener, A
     @Override
     public void onCalculateRouteFailure(int errorInfo) {
         //路线计算失败
-        Log.e("dm", "--------------------------------------------");
-        Log.i("dm", "路线计算失败：错误码=" + errorInfo + ",Error Message= " + ErrorInfo.getError(errorInfo));
-        Log.i("dm", "错误码详细链接见：http://lbs.amap.com/api/android-navi-sdk/guide/tools/errorcode/");
-        Log.e("dm", "--------------------------------------------");
+        LogUtils.e("dm", "--------------------------------------------");
+        LogUtils.i("dm", "路线计算失败：错误码=" + errorInfo + ",Error Message= " + ErrorInfo.getError(errorInfo));
+        LogUtils.i("dm", "错误码详细链接见：http://lbs.amap.com/api/android-navi-sdk/guide/tools/errorcode/");
+        LogUtils.e("dm", "--------------------------------------------");
         Toast.makeText(this, "errorInfo：" + errorInfo + ",Message：" + ErrorInfo.getError(errorInfo), Toast.LENGTH_LONG).show();
     }
 

@@ -99,7 +99,7 @@ public class OrderModel implements Serializable {
     private double paidAmount;
     private String items;
     private List<?> logs;
-    private List<?> traces;
+    private List<OrderTrace> traces;
 
     public String getToRescueAdress() {
         return toRescueAdress;
@@ -469,11 +469,11 @@ public class OrderModel implements Serializable {
         this.logs = logs;
     }
 
-    public List<?> getTraces() {
+    public List<OrderTrace> getTraces() {
         return traces;
     }
 
-    public void setTraces(List<?> traces) {
+    public void setTraces(List<OrderTrace> traces) {
         this.traces = traces;
     }
 }

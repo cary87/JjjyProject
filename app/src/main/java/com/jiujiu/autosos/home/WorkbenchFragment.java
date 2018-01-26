@@ -1,21 +1,34 @@
 package com.jiujiu.autosos.home;
 
+import android.content.Intent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jiujiu.autosos.R;
+import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
-import com.jiujiu.autosos.common.base.BaseFragment;
+import com.jiujiu.autosos.common.base.BaseListAdapter;
+import com.jiujiu.autosos.common.base.BaseListFragment;
+import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.nav.LocationManeger;
+import com.jiujiu.autosos.order.OrderAdapter;
+import com.jiujiu.autosos.order.OrderDetailActivity;
 import com.jiujiu.autosos.order.model.OnlineStateEnum;
+import com.jiujiu.autosos.order.model.OrderItem;
+import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.resp.FecthOrderResp;
 import com.jiujiu.autosos.resp.UserResp;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import butterknife.BindView;
@@ -24,12 +37,13 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.Call;
 
 /**
  * Created by Administrator on 2017/12/21 0021.
  */
 
-public class WorkbenchFragment extends BaseFragment {
+public class WorkbenchFragment extends BaseListFragment<OrderModel> {
 
     @BindView(R.id.switch_online)
     Switch switchOnline;
@@ -42,7 +56,44 @@ public class WorkbenchFragment extends BaseFragment {
     }
 
     @Override
+    protected void loadData(final boolean isPullToReflesh) {
+        if (isPullToReflesh) {
+            currentPage = 1;
+        }
+        OrderApi.fecthCanAcceptOrder(currentPage, new ApiCallback<FecthOrderResp>() {
+            @Override
+            public void onError(Call call, Exception e, int i) {
+                handleError(e);
+            }
+
+            @Override
+            public FecthOrderResp parseResponse(String string) throws Exception {
+                FecthOrderResp resp =  super.parseResponse(string);
+                if (mActivity.isSuccessResp(resp)) {
+                    for (OrderModel orderModel : resp.getData()) {
+                        String items = orderModel.getItems();
+                        List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {}.getType());
+                        orderModel.setOrderItems(orderItems);
+                    }
+                }
+                return resp;
+            }
+
+            @Override
+            public void onResponse(FecthOrderResp resp, int i) {
+                handleResponse(resp.getData(), isPullToReflesh);
+            }
+        });
+    }
+
+    @Override
+    protected BaseListAdapter<OrderModel> getListAdapter() {
+        return new OrderAdapter(mActivity);
+    }
+
+    @Override
     protected void afterViewInited(View view) {
+        super.afterViewInited(view);
         switchOnline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, final boolean b) {
@@ -51,6 +102,14 @@ public class WorkbenchFragment extends BaseFragment {
         });
         switchOnline.setChecked(UserStorage.getInstance().getUser().getOnlineState() == OnlineStateEnum.Online.getValue());
         setOnlineText(switchOnline.isChecked());
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mActivity, OrderDetailActivity.class);
+                intent.putExtra("order", mAdapter.getItem(position));
+                startActivity(intent);
+            }
+        });
     }
 
     public void setOnlineText(boolean online) {

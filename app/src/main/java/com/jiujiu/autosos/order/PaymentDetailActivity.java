@@ -19,6 +19,7 @@ import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.order.model.CalculationTypeEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
@@ -226,6 +227,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
             public void onResponse(FinishOrderResp resp, int i) {
                 tvTotalAmount.setText(resp.getData().getPayableAmount() + "元");
                 EventBus.getDefault().post(resp.getData());//完成订单后发送消息给订单详情页面，以便刷新页面
+                LocationManeger.getInstance().startLocation();//接单成功时关闭位置信息更新，完成订单后重启位置信息更新
             }
         });
     }

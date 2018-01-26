@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 
 import com.flyco.tablayout.CommonTabLayout;
 import com.flyco.tablayout.listener.CustomTabEntity;
@@ -20,6 +21,7 @@ import com.jiujiu.autosos.common.model.BottomTabEntity;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.PushUtils;
 import com.jiujiu.autosos.me.MeFragment;
+import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.nav.TTSController;
 import com.jiujiu.autosos.order.OrderDialog;
 import com.jiujiu.autosos.order.OrderFragment;
@@ -94,14 +96,6 @@ public class MainActivity extends AbsBaseActivity {
         OrderDialog dialog = new OrderDialog(this, order, new OrderDialog.OnAcceptOrderListener() {
             @Override
             public void onAcceptOrder() {
-                /*if (UserStorage.getInstance().getLastSubmitLongitude() == 0 || UserStorage.getInstance().getLastSubmitLatitude() == 0) {
-                    LocationManeger.getInstance().addMyLocationListener(new LocationManeger.OnMyLocationListener() {
-                        @Override
-                        public void onLocationChanged(Double longitude, Double latitude, String province, String detailAddress) {
-
-                        }
-                    });
-                }*/
                 acceptOrder(order);
             }
         });
@@ -114,7 +108,7 @@ public class MainActivity extends AbsBaseActivity {
      */
     public void acceptOrder(final Order order) {
         showLoadingDialog("接受订单中");
-        HashMap<String, String> params = new HashMap<>();
+        final HashMap<String, String> params = new HashMap<>();
         params.put("province", order.getProvince() + "");
         params.put("orderId", order.getOrderId() + "");
         params.put("svrId", UserStorage.getInstance().getUser().getBelongOrg() + "");
@@ -124,9 +118,9 @@ public class MainActivity extends AbsBaseActivity {
         params.put("toRescueAdress", order.getToRescueAdress());
         params.put("toRescueLongitude", order.getToRescueLongitude() + "");
         params.put("toRescueLatitude", order.getToRescueLatitude() + "");
-        params.put("driverAdress", "广州天河");
         Gson gson = new GsonBuilder().serializeNulls().create();
         params.put("items", gson.toJson(order.getItemsList()));
+        params.put("driverAdress", TextUtils.isEmpty(UserStorage.getInstance().getNowLocationAddress()) ? "未知" : UserStorage.getInstance().getNowLocationAddress());
         params.put("driverLongitude", String.valueOf(UserStorage.getInstance().getLastSubmitLongitude()));
         params.put("driverLatitude", String.valueOf(UserStorage.getInstance().getLastSubmitLatitude()));
         OrderApi.driverAcceptOrder(params, new ApiCallback<BaseResp>() {
@@ -139,6 +133,7 @@ public class MainActivity extends AbsBaseActivity {
             public void onResponse(BaseResp resp, int i) {
                 hideLoadingDialog();
                 showToast("接单成功");
+                LocationManeger.getInstance().stopLocation();//接单成功，关掉位置信息更新，当前司机为忙碌状态，不可再接单
             }
         });
     }

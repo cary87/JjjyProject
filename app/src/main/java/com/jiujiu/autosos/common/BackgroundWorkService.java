@@ -29,7 +29,7 @@ public class BackgroundWorkService extends AbsWorkService {
 
     @Override
     public void startWork(Intent intent, int flags, int startId) {
-        LogUtils.i("wzh", "startWork");
+        LogUtils.i("wzh", "---loop-----startWork-----");
         if (mLocationManeger == null) {
             mLocationManeger = LocationManeger.getInstance();
         }
@@ -56,4 +56,6 @@ public class BackgroundWorkService extends AbsWorkService {
     public void onServiceKilled(Intent rootIntent) {
 
     }
+
+
 }
