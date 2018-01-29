@@ -25,7 +25,7 @@ import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.nav.TTSController;
 import com.jiujiu.autosos.order.OrderDialog;
 import com.jiujiu.autosos.order.OrderFragment;
-import com.jiujiu.autosos.resp.Order;
+import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.setting.SettingFragment;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,7 +91,7 @@ public class MainActivity extends AbsBaseActivity {
     }
 
     @Subscribe
-    public void onReceiveOrder(final Order order) {
+    public void onReceiveOrder(final OrderModel order) {
         mTtsManager.playText(getString(R.string.order_coming));
         OrderDialog dialog = new OrderDialog(this, order, new OrderDialog.OnAcceptOrderListener() {
             @Override
@@ -106,7 +106,7 @@ public class MainActivity extends AbsBaseActivity {
      * 接单
      * @param order
      */
-    public void acceptOrder(final Order order) {
+    public void acceptOrder(final OrderModel order) {
         showLoadingDialog("接受订单中");
         final HashMap<String, String> params = new HashMap<>();
         params.put("province", order.getProvince() + "");
@@ -119,7 +119,7 @@ public class MainActivity extends AbsBaseActivity {
         params.put("toRescueLongitude", order.getToRescueLongitude() + "");
         params.put("toRescueLatitude", order.getToRescueLatitude() + "");
         Gson gson = new GsonBuilder().serializeNulls().create();
-        params.put("items", gson.toJson(order.getItemsList()));
+        params.put("items", gson.toJson(order.getOrderItems()));
         params.put("driverAdress", TextUtils.isEmpty(UserStorage.getInstance().getNowLocationAddress()) ? "未知" : UserStorage.getInstance().getNowLocationAddress());
         params.put("driverLongitude", String.valueOf(UserStorage.getInstance().getLastSubmitLongitude()));
         params.put("driverLatitude", String.valueOf(UserStorage.getInstance().getLastSubmitLatitude()));

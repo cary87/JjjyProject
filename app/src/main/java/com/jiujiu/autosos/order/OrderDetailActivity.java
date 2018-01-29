@@ -155,19 +155,6 @@ public class OrderDetailActivity extends AbsBaseActivity {
      * @param manager
      */
     private void startRouteQuery(RouteSearchManager manager) {
-        /*if (mOrder.getTraces() != null && mOrder.getTraces().size() > 0) {
-            OrderTrace driverStatrTrace = null;
-            //拿到接单的起始位置
-            for (OrderTrace orderTrace : mOrder.getTraces()) {
-                if (orderTrace.getTraceType() != null && orderTrace.getTraceType().intValue() == TraceTypeEnum.accept.getType()) {
-                    driverStatrTrace = orderTrace;
-                    break;
-                }
-            }
-            if (driverStatrTrace != null) {
-                manager.driverRouteQuery(new LatLonPoint(driverStatrTrace.getLatitude(), driverStatrTrace.getLongitude()), new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), null);
-            }
-        }*/
         manager.driverRouteQuery(new LatLonPoint(UserStorage.getInstance().getLastSubmitLatitude(), UserStorage.getInstance().getLastSubmitLongitude()), new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), null);
     }
 

@@ -1,8 +1,11 @@
 package com.jiujiu.autosos.order.model;
+import org.litepal.annotation.Column;
+import org.litepal.crud.DataSupport;
+
 import java.io.Serializable;
 import java.util.List;
 
-public class OrderModel implements Serializable {
+public class OrderModel extends DataSupport implements Serializable {
     /**
      * toRescueAdress : 的说法是短发沙发上
      * driverCar : 粤A000001
@@ -62,6 +65,7 @@ public class OrderModel implements Serializable {
     private String itemIds;
     private int chargeType;
     private String remark;
+    @Column(ignore = true)
     private List<OrderItem> orderItems;
     private String pictures;
     private double payableAmount;
@@ -98,8 +102,6 @@ public class OrderModel implements Serializable {
     private String payCode;
     private double paidAmount;
     private String items;
-    private List<?> logs;
-    private List<OrderTrace> traces;
 
     public String getToRescueAdress() {
         return toRescueAdress;
@@ -461,19 +463,4 @@ public class OrderModel implements Serializable {
         this.items = items;
     }
 
-    public List<?> getLogs() {
-        return logs;
-    }
-
-    public void setLogs(List<?> logs) {
-        this.logs = logs;
-    }
-
-    public List<OrderTrace> getTraces() {
-        return traces;
-    }
-
-    public void setTraces(List<OrderTrace> traces) {
-        this.traces = traces;
-    }
 }

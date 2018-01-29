@@ -9,8 +9,8 @@ import com.jiujiu.autosos.api.ConfigApi;
 import com.jiujiu.autosos.common.Constant;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.push.OnePushReceiver;
-import com.jiujiu.autosos.resp.Order;
 import com.jiujiu.autosos.resp.PushConfigResp;
 import com.sdbc.onepushlib.OnePush;
 import com.sdbc.onepushlib.bean.AppTypeEnum;
@@ -81,7 +81,7 @@ public class PushUtils {
         }
         intentHandled = intentFrom;
 
-        Order order = (Order) intentFrom.getSerializableExtra(OnePushReceiver.KEY_ORDER);
+        OrderModel order = (OrderModel) intentFrom.getSerializableExtra(OnePushReceiver.KEY_ORDER);
         if (order == null) {
             return;
         }

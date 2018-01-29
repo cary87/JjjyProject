@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.storage.UserStorage;
-import com.jiujiu.autosos.resp.Order;
+import com.jiujiu.autosos.order.model.OrderModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,11 +42,11 @@ public class OrderDialog extends Dialog {
     @BindView(R.id.tv_photo)
     TextView tvPhoto;
     private AbsBaseActivity context;
-    private Order order;
+    private OrderModel order;
 
     private OnAcceptOrderListener mListener;
 
-    public OrderDialog(@NonNull AbsBaseActivity context, Order order, OnAcceptOrderListener listener) {
+    public OrderDialog(@NonNull AbsBaseActivity context, OrderModel order, OnAcceptOrderListener listener) {
         super(context);
         this.context = context;
         this.order = order;
@@ -68,6 +68,8 @@ public class OrderDialog extends Dialog {
         tvIgnore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                order.setDriverId(Long.parseLong(UserStorage.getInstance().getUser().getUserId()));
+                order.save();
                 dismiss();
             }
         });

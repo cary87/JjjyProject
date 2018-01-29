@@ -21,8 +21,8 @@ public class OrderApi {
     public static final String CREATE_QR_CODE = "/common/order/createQRCode";
     public static final String FECTH_CAN_ACCEPT_ORDER = "/common/order/findDriverCanAcceptOrders/" + Constant.PAGESIZE + "/";
 
-    public static <T> void fecthCanAcceptOrder(int currentPage, Callback<T> callback) {
-        ApiHelper.httpRequest(HttpMethod.GET, FECTH_CAN_ACCEPT_ORDER + currentPage, null, callback);
+    public static <T> T syncFecthCanAcceptOrder(int currentPage, Class<T> clz) throws Exception {
+        return ApiHelper.syncHttpRequest(HttpMethod.GET, FECTH_CAN_ACCEPT_ORDER + currentPage, null, clz);
     }
 
     public static <T> T syncfecthOrder(int currentPage, Class<T> clz) throws Exception {

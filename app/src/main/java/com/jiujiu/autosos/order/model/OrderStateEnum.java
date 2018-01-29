@@ -6,7 +6,7 @@ package com.jiujiu.autosos.order.model;
  */
 
 public enum OrderStateEnum {
-    Order(0, "车主下单"),
+    Order(0, "可接单"),
     Post(1, "已派单"),
     Accept(2, "已接单"),
     Arrive(3, "已到达"),

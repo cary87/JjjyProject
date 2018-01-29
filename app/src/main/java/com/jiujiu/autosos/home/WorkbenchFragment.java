@@ -15,7 +15,6 @@ import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.base.BaseListAdapter;
 import com.jiujiu.autosos.common.base.BaseListFragment;
-import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.nav.LocationManeger;
@@ -27,6 +26,8 @@ import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.resp.FecthOrderResp;
 import com.jiujiu.autosos.resp.UserResp;
 
+import org.litepal.crud.DataSupport;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -37,7 +38,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.Call;
 
 /**
  * Created by Administrator on 2017/12/21 0021.
@@ -60,30 +60,48 @@ public class WorkbenchFragment extends BaseListFragment<OrderModel> {
         if (isPullToReflesh) {
             currentPage = 1;
         }
-        OrderApi.fecthCanAcceptOrder(currentPage, new ApiCallback<FecthOrderResp>() {
-            @Override
-            public void onError(Call call, Exception e, int i) {
-                handleError(e);
-            }
 
+        Single.fromCallable(new Callable<List<OrderModel>>() {
             @Override
-            public FecthOrderResp parseResponse(String string) throws Exception {
-                FecthOrderResp resp =  super.parseResponse(string);
+            public List<OrderModel> call() throws Exception {
+                List<OrderModel> list = DataSupport.where("driverId = ?", UserStorage.getInstance().getUser().getUserId()).find(OrderModel.class, false);
+                for (OrderModel orderModel : list) {
+                    String items = orderModel.getItems();
+                    List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {}.getType());
+                    orderModel.setOrderItems(orderItems);
+                }
+                FecthOrderResp resp = OrderApi.syncFecthCanAcceptOrder(currentPage, FecthOrderResp.class);
                 if (mActivity.isSuccessResp(resp)) {
                     for (OrderModel orderModel : resp.getData()) {
                         String items = orderModel.getItems();
                         List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {}.getType());
                         orderModel.setOrderItems(orderItems);
                     }
+                    if (list != null) {
+                        list.addAll(resp.getData());
+                    }
                 }
-                return resp;
+                return list;
             }
+        }).observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(new Consumer<List<OrderModel>>() {
+                    @Override
+                    public void accept(List<OrderModel> list) throws Exception {
+                        handleResponse(list, isPullToReflesh);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        handleError(throwable);
+                    }
+                });
 
-            @Override
-            public void onResponse(FecthOrderResp resp, int i) {
-                handleResponse(resp.getData(), isPullToReflesh);
-            }
-        });
+    }
+
+    @Override
+    protected boolean supportLoadMore() {
+        return false;
     }
 
     @Override

@@ -9,15 +9,18 @@ import android.content.Intent;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.LogUtils;
-import com.jiujiu.autosos.resp.Order;
+import com.jiujiu.autosos.order.model.OrderItem;
+import com.jiujiu.autosos.order.model.OrderModel;
 import com.sdbc.onepushlib.OnePushAbsReceiver;
 import com.sdbc.onepushlib.bean.MessageBody;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import io.reactivex.Single;
@@ -45,22 +48,24 @@ public class OnePushReceiver extends OnePushAbsReceiver {
             return;
         }
 
-        Single.fromCallable(new Callable<Order>() {
+        Single.fromCallable(new Callable<OrderModel>() {
             @Override
-            public Order call() throws Exception {
+            public OrderModel call() throws Exception {
                 MessageBody messageBody = new Gson().fromJson(content, MessageBody.class);
                 if (messageBody == null || !messageBody.getTo().equals(UserStorage.getInstance().getUser().getUserId())) {
                     return null;
                 }
                 //解析MessageBody-content
-                Order order = new Gson().fromJson(messageBody.getContent(), Order.class);
+                OrderModel order = new Gson().fromJson(messageBody.getContent(), OrderModel.class);
+                List<OrderItem> orderItems = new Gson().fromJson(order.getItems(), new TypeToken<List<OrderItem>>() {}.getType());
+                order.setOrderItems(orderItems);
                 return order;
             }
         }).observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(new Consumer<Order>() {
+                .subscribe(new Consumer<OrderModel>() {
                     @Override
-                    public void accept(Order order) throws Exception {
+                    public void accept(OrderModel order) throws Exception {
                         if (order != null) {
                             showNotification(context, order, notificationId++);
                             EventBus.getDefault().post(order);
@@ -80,7 +85,7 @@ public class OnePushReceiver extends OnePushAbsReceiver {
      * @param order
      * @param notificationId
      */
-    private void showNotification(Context context, Order order, int notificationId) {
+    private void showNotification(Context context, OrderModel order, int notificationId) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Activity.NOTIFICATION_SERVICE);
         Intent intentLaunch = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
         PendingIntent contentIntent = PendingIntent.getActivity(context, notificationId, intentLaunch,
