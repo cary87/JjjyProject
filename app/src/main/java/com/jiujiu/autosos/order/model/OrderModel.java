@@ -463,4 +463,20 @@ public class OrderModel extends DataSupport implements Serializable {
         this.items = items;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof OrderModel) {
+            OrderModel model = (OrderModel) obj;
+            if (model.getOrderId() == this.orderId) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

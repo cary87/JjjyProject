@@ -33,10 +33,12 @@ import com.jiujiu.autosos.order.model.ChargeTypeEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
+import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.resp.FileUploadResp;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -91,6 +93,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
     Button btnFinish;
     @BindView(R.id.btn_pay)
     Button btnPay;
+    @BindView(R.id.btn_accept_order)
+    Button btnAcceptOrder;
 
     private OrderModel mOrder;
 
@@ -133,7 +137,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 @Override
                 public void onQuerySuccess(double km, float tollDistance) {
                     mOrder.setDistance(km);
-                    LogUtils.i("wzh", "救援公里 " +km + "公里" + " 高速路距离（米） " + tollDistance);
+                    LogUtils.i("wzh", "救援公里 " + km + "公里" + " 高速路距离（米） " + tollDistance);
                 }
 
                 @Override
@@ -152,6 +156,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
 
     /**
      * 启动驾车规划
+     *
      * @param manager
      */
     private void startRouteQuery(RouteSearchManager manager) {
@@ -194,7 +199,12 @@ public class OrderDetailActivity extends AbsBaseActivity {
         tvRemark.setText(mOrder.getRemark());
         List<OrderItem> orderItems = mOrder.getOrderItems();
         if (orderItems != null && orderItems.size() > 0) {
-            tvServiceType.setText(orderItems.get(0).getItemName());
+            StringBuffer buffer = new StringBuffer();
+            for (OrderItem orderItem : orderItems) {
+                buffer.append(orderItem.getItemName() + "-");
+            }
+            String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
+            tvServiceType.setText(itemsName);
         }
         updateViewByState();
     }
@@ -209,12 +219,17 @@ public class OrderDetailActivity extends AbsBaseActivity {
         //变更timeline
         setSetpView();
         switch (OrderStateEnum.getOrderState(mOrder.getState())) {
+            case Post:
+            case Order:
+                btnAcceptOrder.setVisibility(View.VISIBLE);
+                break;
             case Accept:
                 btnNav.setVisibility(View.VISIBLE);
-                btnArrive.setVisibility(View.GONE);
+                btnArrive.setVisibility(View.VISIBLE);
                 btnTakePhoto.setVisibility(View.GONE);
                 btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.GONE);
+                btnAcceptOrder.setVisibility(View.GONE);
                 break;
             case Arrive:
                 btnNav.setVisibility(View.GONE);
@@ -222,6 +237,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnTakePhoto.setVisibility(View.VISIBLE);
                 btnFinish.setVisibility(View.VISIBLE);
                 btnPay.setVisibility(View.GONE);
+                btnAcceptOrder.setVisibility(View.GONE);
                 break;
             case Finished:
                 btnNav.setVisibility(View.GONE);
@@ -229,6 +245,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnTakePhoto.setVisibility(View.GONE);
                 btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.VISIBLE);
+                btnAcceptOrder.setVisibility(View.GONE);
                 break;
             case Payed:
                 btnNav.setVisibility(View.GONE);
@@ -236,6 +253,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnTakePhoto.setVisibility(View.GONE);
                 btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.GONE);
+                btnAcceptOrder.setVisibility(View.GONE);
                 break;
         }
     }
@@ -268,7 +286,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 .setStepsViewIndicatorAttentionIcon(ContextCompat.getDrawable(this, R.drawable.attention));//设置StepsViewIndicator AttentionIcon
     }
 
-    @OnClick({R.id.btn_nav, R.id.btn_arrive, R.id.btn_take_photo, R.id.btn_finish, R.id.btn_pay})
+    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_arrive, R.id.btn_take_photo, R.id.btn_finish, R.id.btn_pay})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_nav:
@@ -289,6 +307,22 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 Intent intent = new Intent(this, PaymentDetailActivity.class);
                 intent.putExtra("order", mOrder);
                 startActivity(intent);
+                break;
+            case R.id.btn_accept_order:
+                OrderUtil.acceptOrder(OrderDetailActivity.this, mOrder, new OrderUtil.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        mOrder.setState(OrderStateEnum.Accept.getValue());
+                        DataSupport.deleteAll(OrderModel.class, "orderId = ?", mOrder.getOrderId() + "");
+                        updateViewByState();
+                        EventBus.getDefault().post(new RefreshViewEvent());
+                    }
+
+                    @Override
+                    public void onFail() {
+
+                    }
+                });
                 break;
         }
     }
@@ -312,6 +346,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 hideLoadingDialog();
                 mOrder.setState(OrderStateEnum.Arrive.getValue());
                 updateViewByState();
+                EventBus.getDefault().post(new RefreshViewEvent());
             }
         });
     }
@@ -325,7 +360,6 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 if (NavigateUtils.isInstallByread("com.autonavi.minimap")) {
                     NaviLatLng endLatlng = new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude());
                     NavigateUtils.startAMNavi(OrderDetailActivity.this, endLatlng);
-                    btnArrive.setVisibility(View.VISIBLE);
                 } else {
                     showToast("请安装高德地图");
                 }
@@ -338,7 +372,6 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 Intent intent = new Intent(OrderDetailActivity.this, GPSNaviActivity.class);
                 intent.putExtra("order", mOrder);
                 startActivity(intent);
-                btnArrive.setVisibility(View.VISIBLE);
                 dialog.dismiss();
             }
         });

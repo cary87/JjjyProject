@@ -5,26 +5,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.TextUtils;
 
 import com.flyco.tablayout.CommonTabLayout;
 import com.flyco.tablayout.listener.CustomTabEntity;
 import com.flyco.tablayout.listener.OnTabSelectListener;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
-import com.jiujiu.autosos.common.http.ApiCallback;
-import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.model.BottomTabEntity;
-import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.PushUtils;
 import com.jiujiu.autosos.me.MeFragment;
-import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.nav.TTSController;
 import com.jiujiu.autosos.order.OrderDialog;
 import com.jiujiu.autosos.order.OrderFragment;
+import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.setting.SettingFragment;
 
@@ -32,10 +25,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import butterknife.BindView;
-import okhttp3.Call;
 
 public class MainActivity extends AbsBaseActivity {
     @BindView(R.id.vp_container)
@@ -96,46 +87,10 @@ public class MainActivity extends AbsBaseActivity {
         OrderDialog dialog = new OrderDialog(this, order, new OrderDialog.OnAcceptOrderListener() {
             @Override
             public void onAcceptOrder() {
-                acceptOrder(order);
+                OrderUtil.acceptOrder(MainActivity.this, order, null);
             }
         });
         dialog.show();
-    }
-
-    /**
-     * 接单
-     * @param order
-     */
-    public void acceptOrder(final OrderModel order) {
-        showLoadingDialog("接受订单中");
-        final HashMap<String, String> params = new HashMap<>();
-        params.put("province", order.getProvince() + "");
-        params.put("orderId", order.getOrderId() + "");
-        params.put("svrId", UserStorage.getInstance().getUser().getBelongOrg() + "");
-        params.put("svrName", UserStorage.getInstance().getUser().getBelongOrgName());
-        params.put("driverType", order.getDriverType());
-        params.put("driverCar", order.getCarNo());
-        params.put("toRescueAdress", order.getToRescueAdress());
-        params.put("toRescueLongitude", order.getToRescueLongitude() + "");
-        params.put("toRescueLatitude", order.getToRescueLatitude() + "");
-        Gson gson = new GsonBuilder().serializeNulls().create();
-        params.put("items", gson.toJson(order.getOrderItems()));
-        params.put("driverAdress", TextUtils.isEmpty(UserStorage.getInstance().getNowLocationAddress()) ? "未知" : UserStorage.getInstance().getNowLocationAddress());
-        params.put("driverLongitude", String.valueOf(UserStorage.getInstance().getLastSubmitLongitude()));
-        params.put("driverLatitude", String.valueOf(UserStorage.getInstance().getLastSubmitLatitude()));
-        OrderApi.driverAcceptOrder(params, new ApiCallback<BaseResp>() {
-            @Override
-            public void onError(Call call, Exception e, int i) {
-                handleError(e);
-            }
-
-            @Override
-            public void onResponse(BaseResp resp, int i) {
-                hideLoadingDialog();
-                showToast("接单成功");
-                LocationManeger.getInstance().stopLocation();//接单成功，关掉位置信息更新，当前司机为忙碌状态，不可再接单
-            }
-        });
     }
 
     @Override

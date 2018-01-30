@@ -43,10 +43,20 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
         holder.tvOccurAddress.setText(getItem(i).getAddress());
         holder.tvOrderNumber.setText(getItem(i).getOrderId() +"");
         holder.tvOrderState.setText(OrderStateEnum.getOrderState(getItem(i).getState()).getLabel());
-        holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getAcceptTime()));
+        if (getItem(i).getAcceptTime() > 0) {
+            holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getAcceptTime()));
+        } else {
+            holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getOrderTime()));
+            holder.tvTimeName.setText("下单时间：");
+        }
         List<OrderItem> orderItems = getItem(i).getOrderItems();
         if (orderItems != null && orderItems.size() > 0) {
-            holder.tvServiceType.setText(orderItems.get(0).getItemName());
+            StringBuffer buffer = new StringBuffer();
+            for (OrderItem orderItem : orderItems) {
+                buffer.append(orderItem.getItemName() + "-");
+            }
+            String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
+            holder.tvServiceType.setText(itemsName);
         }
         return view;
     }
@@ -64,6 +74,8 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
         TextView tvOrderTime;
         @BindView(R.id.tv_service_type)
         TextView tvServiceType;
+        @BindView(R.id.tv_time_name)
+        TextView tvTimeName;
 
         OrderViewHolder(View view) {
             ButterKnife.bind(this, view);

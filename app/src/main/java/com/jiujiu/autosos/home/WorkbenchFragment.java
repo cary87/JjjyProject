@@ -1,6 +1,8 @@
 package com.jiujiu.autosos.home;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
@@ -23,12 +25,16 @@ import com.jiujiu.autosos.order.OrderDetailActivity;
 import com.jiujiu.autosos.order.model.OnlineStateEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.resp.FecthOrderResp;
 import com.jiujiu.autosos.resp.UserResp;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 import org.litepal.crud.DataSupport;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -51,6 +57,23 @@ public class WorkbenchFragment extends BaseListFragment<OrderModel> {
     TextView tvTitle;
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void receiveRefreshEvent(RefreshViewEvent event) {
+        autoRefresh();
+    }
+
+    @Override
     protected int getLayoutID() {
         return R.layout.fragment_work;
     }
@@ -60,16 +83,17 @@ public class WorkbenchFragment extends BaseListFragment<OrderModel> {
         if (isPullToReflesh) {
             currentPage = 1;
         }
-
-        Single.fromCallable(new Callable<List<OrderModel>>() {
+        Disposable disposable = Single.fromCallable(new Callable<List<OrderModel>>() {
             @Override
             public List<OrderModel> call() throws Exception {
+                //已收到推送但选择忽略的单
                 List<OrderModel> list = DataSupport.where("driverId = ?", UserStorage.getInstance().getUser().getUserId()).find(OrderModel.class, false);
                 for (OrderModel orderModel : list) {
                     String items = orderModel.getItems();
                     List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {}.getType());
                     orderModel.setOrderItems(orderItems);
                 }
+                //省公司特地指派给当前救援司机的单
                 FecthOrderResp resp = OrderApi.syncFecthCanAcceptOrder(currentPage, FecthOrderResp.class);
                 if (mActivity.isSuccessResp(resp)) {
                     for (OrderModel orderModel : resp.getData()) {
@@ -81,6 +105,9 @@ public class WorkbenchFragment extends BaseListFragment<OrderModel> {
                         list.addAll(resp.getData());
                     }
                 }
+                LinkedHashSet hashSet = new LinkedHashSet(list);
+                list.clear();
+                list.addAll(hashSet);
                 return list;
             }
         }).observeOn(AndroidSchedulers.mainThread())
@@ -96,7 +123,7 @@ public class WorkbenchFragment extends BaseListFragment<OrderModel> {
                         handleError(throwable);
                     }
                 });
-
+        cd.add(disposable);
     }
 
     @Override

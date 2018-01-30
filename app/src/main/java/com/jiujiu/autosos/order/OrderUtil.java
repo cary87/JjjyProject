@@ -1,6 +1,9 @@
 package com.jiujiu.autosos.order;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
@@ -13,6 +16,7 @@ import com.jiujiu.autosos.common.model.AreaModel;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.AreaUtil;
 import com.jiujiu.autosos.common.utils.LogUtils;
+import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.order.model.OrderModel;
 
 import java.util.HashMap;
@@ -55,6 +59,48 @@ public class OrderUtil {
             @Override
             public void onResponse(BaseResp resp, int i) {
 
+            }
+        });
+    }
+
+    /**
+     * 接单
+     * @param order
+     */
+    public static void acceptOrder(final AbsBaseActivity context, final OrderModel order, final ActionListener listener) {
+        context.showLoadingDialog("接受订单中");
+        final HashMap<String, String> params = new HashMap<>();
+        params.put("province", order.getProvince() + "");
+        params.put("orderId", order.getOrderId() + "");
+        params.put("svrId", UserStorage.getInstance().getUser().getBelongOrg() + "");
+        params.put("svrName", UserStorage.getInstance().getUser().getBelongOrgName());
+        params.put("driverType", order.getDriverType());
+        params.put("driverCar", order.getCarNo());
+        params.put("toRescueAdress", order.getToRescueAdress());
+        params.put("toRescueLongitude", order.getToRescueLongitude() + "");
+        params.put("toRescueLatitude", order.getToRescueLatitude() + "");
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        params.put("items", gson.toJson(order.getOrderItems()));
+        params.put("driverAdress", TextUtils.isEmpty(UserStorage.getInstance().getNowLocationAddress()) ? "未知" : UserStorage.getInstance().getNowLocationAddress());
+        params.put("driverLongitude", String.valueOf(UserStorage.getInstance().getLastSubmitLongitude()));
+        params.put("driverLatitude", String.valueOf(UserStorage.getInstance().getLastSubmitLatitude()));
+        OrderApi.driverAcceptOrder(params, new ApiCallback<BaseResp>() {
+            @Override
+            public void onError(Call call, Exception e, int i) {
+                context.handleError(e);
+                if (listener != null) {
+                    listener.onFail();
+                }
+            }
+
+            @Override
+            public void onResponse(BaseResp resp, int i) {
+                context.hideLoadingDialog();
+                context.showToast("接单成功");
+                if (listener != null) {
+                    listener.onSuccess();
+                }
+                LocationManeger.getInstance().stopLocation();//接单成功，关掉位置信息更新，当前司机为忙碌状态，不可再接单
             }
         });
     }
@@ -108,5 +154,11 @@ public class OrderUtil {
                         }
                     });
         }
+    }
+
+    public interface ActionListener {
+        void onSuccess();
+
+        void onFail();
     }
 }

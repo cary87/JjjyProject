@@ -161,21 +161,19 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
      * 初始化起始点和终点
      */
     protected void setupStartAndEndLocation() {
-        //设置当前位置，如果有的话
+        //设置当前位置，定位获取不到，取缓存
         if (sList.isEmpty()) {
             if (UserStorage.getInstance().getLastSubmitLongitude() != 0 && UserStorage.getInstance().getLastSubmitLatitude() != 0) {
                 mStartLatlng = new NaviLatLng(UserStorage.getInstance().getLastSubmitLatitude(), UserStorage.getInstance().getLastSubmitLongitude());
             }
             sList.add(mStartLatlng);
         }
-        if (order != null) {
-            mEndLatlng = new NaviLatLng(order.getLatitude(), order.getLongitude());
-            if (order.getToRescueLongitude() > 0 && order.getToRescueLatitude() > 0) {
-                mWayPointList = new ArrayList<>();
-                mWayPointList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));
-            }
+        mWayPointList = new ArrayList<>();
+        mWayPointList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));//救援点
+        if (order.getToRescueLatitude() > 0 && order.getToRescueLongitude() > 0) {//拖车目的地
+            mEndLatlng = new NaviLatLng(order.getToRescueLatitude(), order.getToRescueLongitude());
+            eList.add(mEndLatlng);
         }
-        eList.add(mEndLatlng);
     }
 
     @Override

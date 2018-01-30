@@ -24,6 +24,7 @@ import com.jiujiu.autosos.order.model.CalculationTypeEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.PayWayEnum;
+import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.resp.FinishOrderResp;
 import com.jiujiu.autosos.resp.QrResp;
 
@@ -227,6 +228,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
             public void onResponse(FinishOrderResp resp, int i) {
                 tvTotalAmount.setText(resp.getData().getPayableAmount() + "元");
                 EventBus.getDefault().post(resp.getData());//完成订单后发送消息给订单详情页面，以便刷新页面
+                EventBus.getDefault().post(new RefreshViewEvent());//订单列表刷新
                 LocationManeger.getInstance().startLocation();//接单成功时关闭位置信息更新，完成订单后重启位置信息更新
             }
         });

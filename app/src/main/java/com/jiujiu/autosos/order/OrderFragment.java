@@ -1,6 +1,8 @@
 package com.jiujiu.autosos.order;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
@@ -14,7 +16,11 @@ import com.jiujiu.autosos.common.base.BaseListAdapter;
 import com.jiujiu.autosos.common.base.BaseListFragment;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.resp.FecthOrderResp;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.List;
 
@@ -34,6 +40,23 @@ import io.reactivex.schedulers.Schedulers;
 public class OrderFragment extends BaseListFragment<OrderModel> {
     @BindView(R.id.tv_title)
     TextView tvBarTitle;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe
+    public void receiveRefreshEvent(RefreshViewEvent event) {
+        autoRefresh();
+    }
 
     @Override
     protected int getLayoutID() {
