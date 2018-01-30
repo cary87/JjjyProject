@@ -63,6 +63,7 @@
         <activity android:name=".setting.FeedbackActivity" android:screenOrientation="portrait"/>
         <activity android:name=".me.ChangePasswordActivity" android:screenOrientation="portrait"/>
         <activity android:name=".me.PersonalAuthActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".me.MyAccountActivity" android:screenOrientation="portrait"/>
 
         <activity android:name="me.iwf.photopicker.PhotoPickerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity android:name="me.iwf.photopicker.PhotoPagerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
