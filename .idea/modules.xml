@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Autosos.iml" filepath="$PROJECT_DIR$/Autosos.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/cameraview/cameraview.iml" filepath="$PROJECT_DIR$/cameraview/cameraview.iml" />
+      <module fileurl="file://$PROJECT_DIR$/onepushlib/onepushlib.iml" filepath="$PROJECT_DIR$/onepushlib/onepushlib.iml" />
     </modules>
   </component>
 </project>

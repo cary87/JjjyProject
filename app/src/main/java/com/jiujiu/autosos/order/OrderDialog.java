@@ -15,6 +15,10 @@ import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.RefreshViewEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.litepal.crud.callback.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +73,14 @@ public class OrderDialog extends Dialog {
             @Override
             public void onClick(View view) {
                 order.setDriverId(Long.parseLong(UserStorage.getInstance().getUser().getUserId()));
-                order.save();
+                order.saveAsync().listen(new SaveCallback() {
+                    @Override
+                    public void onFinish(boolean success) {
+                        if (success) {
+                            EventBus.getDefault().post(new RefreshViewEvent());
+                        }
+                    }
+                });
                 dismiss();
             }
         });

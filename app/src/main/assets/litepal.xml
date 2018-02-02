@@ -7,5 +7,6 @@
     <list>
         <!--这里是类映射-->
         <mapping class="com.jiujiu.autosos.order.model.OrderModel"></mapping>
+        <mapping class="com.jiujiu.autosos.me.BankCard"></mapping>
     </list>
 </litepal>

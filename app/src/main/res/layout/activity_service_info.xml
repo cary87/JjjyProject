@@ -8,7 +8,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -172,7 +173,9 @@
 
             </LinearLayout>
 
-            <RelativeLayout android:id="@+id/layout_diaoche" android:visibility="gone" style="@style/service_section">
+            <RelativeLayout android:id="@+id/layout_diaoche"
+                android:visibility="gone"
+                style="@style/service_section">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -189,6 +192,9 @@
                     android:text=""/>
 
             </RelativeLayout>
+
+            <View
+                style="@style/line_horizontal"/>
 
             <LinearLayout
                 android:id="@+id/layout_tuoche"
@@ -215,12 +221,16 @@
 
                 </RelativeLayout>
 
+                <View
+                    style="@style/line_horizontal"/>
+
                 <RelativeLayout
                     style="@style/service_section">
 
                     <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="6dp"
                         android:text="是否落地"/>
 
                     <RadioGroup
@@ -246,12 +256,16 @@
 
                 </RelativeLayout>
 
+                <View
+                    style="@style/line_horizontal"/>
+
                 <RelativeLayout
                     style="@style/service_section">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
                         android:text="辅助轮"/>
 
                     <RadioGroup
@@ -277,12 +291,16 @@
 
                 </RelativeLayout>
 
+                <View
+                    style="@style/line_horizontal"/>
+
                 <RelativeLayout
                     style="@style/service_section">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
                         android:text="是否有起吊功能"/>
 
                     <RadioGroup
@@ -308,10 +326,10 @@
 
                 </RelativeLayout>
 
+                <View
+                    style="@style/line_horizontal"/>
+
             </LinearLayout>
-
-
-
 
         </LinearLayout>
 

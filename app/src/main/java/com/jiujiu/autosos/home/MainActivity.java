@@ -19,6 +19,8 @@ import com.jiujiu.autosos.order.OrderDialog;
 import com.jiujiu.autosos.order.OrderFragment;
 import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.PushOrderEvent;
+import com.jiujiu.autosos.push.OnePushReceiver;
 import com.jiujiu.autosos.setting.SettingFragment;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,6 +61,13 @@ public class MainActivity extends AbsBaseActivity {
         mTtsManager = TTSController.getInstance(getApplicationContext());
         mTtsManager.setTTSType(TTSController.TTSType.SYSTEMTTS);
         mTtsManager.init();
+
+        if (getIntent() != null) {
+            OrderModel orderModel = (OrderModel) getIntent().getSerializableExtra(OnePushReceiver.KEY_ORDER);
+            if (orderModel != null) {
+                EventBus.getDefault().post(new PushOrderEvent(orderModel));
+            }
+        }
     }
 
     @Override
@@ -82,8 +91,9 @@ public class MainActivity extends AbsBaseActivity {
     }
 
     @Subscribe
-    public void onReceiveOrder(final OrderModel order) {
+    public void onReceiveOrder(PushOrderEvent event) {
         mTtsManager.playText(getString(R.string.order_coming));
+        final OrderModel order = event.getOrder();
         OrderDialog dialog = new OrderDialog(this, order, new OrderDialog.OnAcceptOrderListener() {
             @Override
             public void onAcceptOrder() {

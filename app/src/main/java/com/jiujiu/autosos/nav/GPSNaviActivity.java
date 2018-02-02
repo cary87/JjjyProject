@@ -168,10 +168,19 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
             }
             sList.add(mStartLatlng);
         }
-        mWayPointList = new ArrayList<>();
-        mWayPointList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));//救援点
-        if (order.getToRescueLatitude() > 0 && order.getToRescueLongitude() > 0) {//拖车目的地
-            mEndLatlng = new NaviLatLng(order.getToRescueLatitude(), order.getToRescueLongitude());
+
+        if (order.getToRescueLatitude() > 0 && order.getToRescueLongitude() > 0) {
+            if (order.getLatitude() == order.getToRescueLatitude() && order.getLongitude() == order.getToRescueLongitude()) {
+                mEndLatlng = new NaviLatLng(order.getToRescueLatitude(), order.getToRescueLongitude());
+                eList.add(mEndLatlng);
+            } else {
+                mWayPointList = new ArrayList<>();
+                mWayPointList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));
+                mEndLatlng = new NaviLatLng(order.getToRescueLatitude(), order.getToRescueLongitude());
+                eList.add(mEndLatlng);
+            }
+        } else {
+            mEndLatlng = new NaviLatLng(order.getLatitude(), order.getLongitude());//救援点
             eList.add(mEndLatlng);
         }
     }

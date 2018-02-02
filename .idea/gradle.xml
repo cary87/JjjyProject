@@ -10,6 +10,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/cameraview" />
+            <option value="$PROJECT_DIR$/onepushlib" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

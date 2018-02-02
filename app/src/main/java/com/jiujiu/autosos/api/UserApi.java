@@ -25,6 +25,9 @@ public class UserApi {
     public static final String DRIVERINFOUPDATE = "/common/users/driverInfoUpdate";
     public static final String UPDATEPOSITION = "/common/position/updatePosition";
     public static final String SAVELICENSE = "/common/users/saveLicenseFile";
+    public static final String ADD_BANK_ACCOUNT = "/common/finance/addDriverFinance";
+
+    public static final String CHANGE_ACCOUNT = "/common/finance/changeAccount";//提现充值
 
 
     public static final String VCCODE = "/common/sendVCode";
@@ -64,6 +67,14 @@ public class UserApi {
 
     public static <T> void saveLicense(Map<String,String> param, Callback<T> callback) {
         ApiHelper.httpRequest(HttpMethod.POST, SAVELICENSE, param, callback);
+    }
+
+    public static <T> void addBankAccount(Map<String,String> param, Callback<T> callback) {
+        ApiHelper.httpRequest(HttpMethod.POST, ADD_BANK_ACCOUNT, param, callback);
+    }
+
+    public static <T> void changeAccount(Map<String,String> param, Callback<T> callback) {
+        ApiHelper.httpRequest(HttpMethod.POST, CHANGE_ACCOUNT, param, callback);
     }
 
     public static <T> void sendVCCode(Map<String,String> param, Callback<T> callback) {

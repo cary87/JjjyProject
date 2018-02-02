@@ -43,6 +43,7 @@ public class MeFragment extends BaseFragment {
                 ChangePasswordActivity.luanchSelf(mActivity);
                 break;
             case R.id.ll_my_account:
+                MyAccountActivity.luanchSelf(mActivity);
                 break;
             case R.id.ll_my_auth:
                 PersonalAuthActivity.luanchSelf(mActivity);

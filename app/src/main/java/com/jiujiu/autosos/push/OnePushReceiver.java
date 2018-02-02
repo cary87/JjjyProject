@@ -15,6 +15,7 @@ import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.PushOrderEvent;
 import com.sdbc.onepushlib.OnePushAbsReceiver;
 import com.sdbc.onepushlib.bean.MessageBody;
 
@@ -52,7 +53,7 @@ public class OnePushReceiver extends OnePushAbsReceiver {
             @Override
             public OrderModel call() throws Exception {
                 MessageBody messageBody = new Gson().fromJson(content, MessageBody.class);
-                if (messageBody == null || !messageBody.getTo().equals(UserStorage.getInstance().getUser().getUserId())) {
+                if (messageBody == null || TextUtils.isEmpty(messageBody.getTo()) || !messageBody.getTo().equals(UserStorage.getInstance().getUser().getUserId())) {
                     return null;
                 }
                 //解析MessageBody-content
@@ -68,7 +69,7 @@ public class OnePushReceiver extends OnePushAbsReceiver {
                     public void accept(OrderModel order) throws Exception {
                         if (order != null) {
                             showNotification(context, order, notificationId++);
-                            EventBus.getDefault().post(order);
+                            EventBus.getDefault().post(new PushOrderEvent(order));
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -88,9 +89,9 @@ public class OnePushReceiver extends OnePushAbsReceiver {
     private void showNotification(Context context, OrderModel order, int notificationId) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Activity.NOTIFICATION_SERVICE);
         Intent intentLaunch = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        intentLaunch.putExtra(KEY_ORDER, order);
         PendingIntent contentIntent = PendingIntent.getActivity(context, notificationId, intentLaunch,
                 PendingIntent.FLAG_UPDATE_CURRENT);
-        intentLaunch.putExtra(KEY_ORDER, order);
         Notification notification = new Notification.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("新订单")

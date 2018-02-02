@@ -192,7 +192,11 @@ public class OrderDetailActivity extends AbsBaseActivity {
         tvDriverOwner.setText(mOrder.getCarOwner());
         tvDriverMobile.setText(mOrder.getCarOwnerId() + "");
         tvOrderId.setText(mOrder.getOrderId() + "");
-        tvAcceptTime.setText(DateUtils.formatDataTime(mOrder.getAcceptTime()));
+        if (mOrder.getAcceptTime() > 0) {
+            tvAcceptTime.setText(DateUtils.formatDataTime(mOrder.getAcceptTime()));
+        } else {
+            tvAcceptTime.setText("无");
+        }
         tvAddress.setText(mOrder.getAddress());
         tvChargeType.setText(ChargeTypeEnum.getType(mOrder.getChargeType()).getLabel());
         tvFee.setText("￥" + mOrder.getPayableAmount());

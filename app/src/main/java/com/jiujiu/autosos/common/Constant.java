@@ -23,7 +23,7 @@ public class Constant {
 
     public static final String KEY_VERSIONCODE = "versionCode";
 
-    public static final String APPID = "102";
+    public static final String APPID = "103";
 
     public static final String PLATFORM = "2";
 

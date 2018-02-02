@@ -64,6 +64,9 @@
         <activity android:name=".me.ChangePasswordActivity" android:screenOrientation="portrait"/>
         <activity android:name=".me.PersonalAuthActivity" android:screenOrientation="portrait"/>
         <activity android:name=".me.MyAccountActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".me.WithDrawActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".me.BankCardListActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".me.AddBankCardActivity" android:screenOrientation="portrait"/>
 
         <activity android:name="me.iwf.photopicker.PhotoPickerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity android:name="me.iwf.photopicker.PhotoPagerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
