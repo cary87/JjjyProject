@@ -13,7 +13,11 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewOptions;
@@ -54,7 +58,7 @@ import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_MOVE_UP_CAR_TAKE;
 import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_TO_DES_TAKE;
 import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_VIN_TAKE;
 
-public class GPSNaviActivity extends BaseActivity implements View.OnClickListener {
+public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickListener, View.OnClickListener {
     @BindView(R.id.btn_order_detail)
     ImageButton btnOrderDetail;
     @BindView(R.id.btn_signature)
@@ -75,6 +79,17 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
 
     public static final int REQ_TO_PAY = 1222;
 
+    // 手选位置坐标
+    private LatLng centerLatLng = null;
+    // 中心点marker
+    private Marker centerMarker;
+
+
+    private BitmapDescriptor ICON_RED = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+    private MarkerOptions markerOption = null;
+
+    private boolean arrive = false;//是否到达事故点
+
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         super.onActivityCreate(savedInstanceState);
@@ -94,6 +109,8 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
         AMapNaviViewOptions options = mAMapNaviView.getViewOptions();
         options.setLayoutVisible(false);
         mAMapNaviView.setViewOptions(options);
+
+        markerOption = new MarkerOptions().draggable(true);
 
         order = (OrderModel) getIntent().getSerializableExtra("order");
 
@@ -146,6 +163,7 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
         //aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
         aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
+        aMap.setOnMapClickListener(this);
         aMap.setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
@@ -160,12 +178,25 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
     /**
      * 初始化起始点和终点
      */
-    protected void setupStartAndEndLocation() {
-        //设置当前位置，定位获取不到，取缓存
-        if (sList.isEmpty()) {
-            if (UserStorage.getInstance().getLastSubmitLongitude() != 0 && UserStorage.getInstance().getLastSubmitLatitude() != 0) {
-                mStartLatlng = new NaviLatLng(UserStorage.getInstance().getLastSubmitLatitude(), UserStorage.getInstance().getLastSubmitLongitude());
+    protected boolean setupStartAndEndLocation() {
+        //已到达救援地然后导航到拖车目的地
+        boolean ok = true;
+        if (arrive && order.getToRescueLatitude() == 0 && order.getToRescueLongitude() == 0) {
+            if (centerLatLng == null) {
+                showToast("请点击地图选择一个救援目的地再进行导航");
+                ok = false;
+            } else {
+                sList.clear();
+                sList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));
+                eList.clear();
+                eList.add(new NaviLatLng(centerLatLng.latitude, centerLatLng.longitude));
             }
+            return ok;
+        }
+
+        //设置救援司机起始位置，定位获取不到，取缓存
+        if (sList.isEmpty()) {
+            mStartLatlng = new NaviLatLng(UserStorage.getInstance().getLastSubmitLatitude(), UserStorage.getInstance().getLastSubmitLongitude());
             sList.add(mStartLatlng);
         }
 
@@ -183,6 +214,7 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
             mEndLatlng = new NaviLatLng(order.getLatitude(), order.getLongitude());//救援点
             eList.add(mEndLatlng);
         }
+        return ok;
     }
 
     @Override
@@ -209,7 +241,10 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
          *  注意: 不走高速与高速优先不能同时为true 高速优先与避免收费不能同时为true
          */
 
-        setupStartAndEndLocation();//先初始化起始点和终点
+        boolean ok = setupStartAndEndLocation();//先初始化起始点和终点
+        if (!ok) {
+            return;
+        }
 
         int strategy = 0;
         try {
@@ -330,6 +365,7 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
                 Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
                 intent.putExtra(PHOTO_TAG, TAG_ARRIVE_TAKE);
                 startActivity(intent);
+                arrive = true;
             }
         });
     }
@@ -342,5 +378,19 @@ public class GPSNaviActivity extends BaseActivity implements View.OnClickListene
                 finish();
             }
         }
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        markerOption.icon(ICON_RED);
+        centerLatLng = latLng;
+        addCenterMarker(centerLatLng);
+    }
+
+    private void addCenterMarker(LatLng latlng) {
+        if (null == centerMarker) {
+            centerMarker = aMap.addMarker(markerOption);
+        }
+        centerMarker.setPosition(latlng);
     }
 }
