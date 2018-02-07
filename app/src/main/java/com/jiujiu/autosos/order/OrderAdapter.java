@@ -38,30 +38,13 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
         } else {
             holder = (OrderViewHolder) view.getTag();
         }
-
-        holder.tvCarNumber.setText(getItem(i).getCarNo() + "/" + getItem(i).getCarOwnerId());
-        holder.tvOccurAddress.setText(getItem(i).getAddress());
-        holder.tvOrderNumber.setText(getItem(i).getOrderId() +"");
-        holder.tvOrderState.setText(OrderStateEnum.getOrderState(getItem(i).getState()).getLabel());
-        if (getItem(i).getAcceptTime() > 0) {
-            holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getAcceptTime()));
-        } else {
-            holder.tvOrderTime.setText(DateUtils.formatDataTime(getItem(i).getOrderTime()));
-            holder.tvTimeName.setText("下单时间：");
-        }
-        List<OrderItem> orderItems = getItem(i).getOrderItems();
-        if (orderItems != null && orderItems.size() > 0) {
-            StringBuffer buffer = new StringBuffer();
-            for (OrderItem orderItem : orderItems) {
-                buffer.append(orderItem.getItemName() + "-");
-            }
-            String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
-            holder.tvServiceType.setText(itemsName);
-        }
+        holder.bindData(getItem(i));
         return view;
     }
 
-    static class OrderViewHolder {
+
+
+    public static class OrderViewHolder {
         @BindView(R.id.tv_order_number)
         TextView tvOrderNumber;
         @BindView(R.id.tv_car_number)
@@ -77,8 +60,30 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
         @BindView(R.id.tv_time_name)
         TextView tvTimeName;
 
-        OrderViewHolder(View view) {
+        public OrderViewHolder(View view) {
             ButterKnife.bind(this, view);
+        }
+
+        public void bindData(OrderModel item) {
+            this.tvCarNumber.setText(item.getCarNo() + "/" + item.getCarOwnerId());
+            this.tvOccurAddress.setText(item.getAddress());
+            this.tvOrderNumber.setText(item.getOrderId() +"");
+            this.tvOrderState.setText(OrderStateEnum.getOrderState(item.getState()).getLabel());
+            if (item.getAcceptTime() > 0) {
+                this.tvOrderTime.setText(DateUtils.formatDataTime(item.getAcceptTime()));
+            } else {
+                this.tvOrderTime.setText(DateUtils.formatDataTime(item.getOrderTime()));
+                this.tvTimeName.setText("下单时间：");
+            }
+            List<OrderItem> orderItems = item.getOrderItems();
+            if (orderItems != null && orderItems.size() > 0) {
+                StringBuffer buffer = new StringBuffer();
+                for (OrderItem orderItem : orderItems) {
+                    buffer.append(orderItem.getItemName() + "-");
+                }
+                String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
+                this.tvServiceType.setText(itemsName);
+            }
         }
     }
 }

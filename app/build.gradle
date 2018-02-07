@@ -74,6 +74,8 @@ dependencies {
     compile 'com.code19.library:library:0.1.0'
     //compile 'in.srain.cube:ultra-ptr:1.0.11'
     compile(name: 'luban', ext: 'aar')
+    compile(name: 'library-release', ext: 'aar')
+
     //compile(name: 'onepushlib-release', ext: 'aar')
     //compile(name:'cameraview-library', ext: 'aar')
     compile 'com.jaeger.statusbarutil:library:1.4.0'
@@ -87,5 +89,6 @@ dependencies {
     compile 'com.github.gcacace:signature-pad:1.2.1'
     compile 'com.github.SumiMakito:AwesomeQRCode:1.0.6'
     compile 'com.github.baoyachi:StepView:1.9'
+    compile 'com.facebook.rebound:rebound:0.3.8'
     compile project(':onepushlib')
 }
