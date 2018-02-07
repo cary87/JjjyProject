@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.jiujiu.autosos.R;
@@ -45,6 +46,10 @@ public class OrderDialog extends Dialog {
     Button btnAcceptOrder;
     @BindView(R.id.tv_photo)
     TextView tvPhoto;
+    @BindView(R.id.tv_remark)
+    TextView tvRemark;
+    @BindView(R.id.btn_show_location)
+    ImageButton btnLocation;
     private AbsBaseActivity context;
     private OrderModel order;
 
@@ -69,6 +74,7 @@ public class OrderDialog extends Dialog {
         tvPhone.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         tvPhone.getPaint().setAntiAlias(true);//抗锯齿
         tvAddress.setText(order.getAddress());
+        tvRemark.setText(order.getRemark());
         tvIgnore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,6 +114,15 @@ public class OrderDialog extends Dialog {
                             .setShowDeleteButton(false)
                             .start(context);
                 }
+            }
+        });
+        btnLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, DisplayLocationActivity.class);
+                intent.putExtra("lat", order.getLatitude());
+                intent.putExtra("lng", order.getLongitude());
+                context.startActivity(intent);
             }
         });
 

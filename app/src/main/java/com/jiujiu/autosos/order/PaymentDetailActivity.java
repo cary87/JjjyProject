@@ -157,19 +157,36 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         showLoadingDialog("加载中");
         HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
-        params.put("payWay", payway.getValue());
-        OrderApi.createQRCode(params, new ApiCallback<QrResp>() {
-            @Override
-            public void onError(Call call, Exception e, int i) {
-                handleError(e);
-            }
+        switch (payway) {
+            case AliPay:
+                OrderApi.createAliQRCode(params, new ApiCallback<QrResp>() {
+                    @Override
+                    public void onError(Call call, Exception e, int i) {
+                        handleError(e);
+                    }
 
-            @Override
-            public void onResponse(QrResp resp, int i) {
-                hideLoadingDialog();
-                generateQR2View(resp.getData().getPayQR(), payway);
-            }
-        });
+                    @Override
+                    public void onResponse(QrResp resp, int i) {
+                        hideLoadingDialog();
+                        generateQR2View(resp.getData().getPayQR(), payway);
+                    }
+                });
+                break;
+            case WxPay:
+                OrderApi.createWechatQRCode(params, new ApiCallback<QrResp>() {
+                    @Override
+                    public void onError(Call call, Exception e, int i) {
+                        handleError(e);
+                    }
+
+                    @Override
+                    public void onResponse(QrResp resp, int i) {
+                        hideLoadingDialog();
+                        generateQR2View(resp.getData().getPayQR(), payway);
+                    }
+                });
+                break;
+        }
     }
 
     /**

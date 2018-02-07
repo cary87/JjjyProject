@@ -6,7 +6,7 @@ package com.jiujiu.autosos.order.model;
 
 public enum PayWayEnum {
     AliPay("aliPay"),
-    WxPay("wxPay");
+    WxPay("wechatPay");
     private String value;
 
     PayWayEnum(String value) {

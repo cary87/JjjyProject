@@ -63,7 +63,7 @@ public class OnePush {
                 // 是小米系统
                 MiPushClient.registerPush(context, appTypeEnum.getMiAppId(), appTypeEnum.getMiAppKey());
                 String regId = MiPushClient.getRegId(context);
-                PushLogs.d("regId", "regId:" + regId);
+                PushLogs.d("wzh", "regId:" + regId);
                 if (StringUtils.isNotBlank(regId)) {
                     Config.getInstance().setToken(regId);
                     Config.getInstance().setOsType(OsTypeEnum.MIA);

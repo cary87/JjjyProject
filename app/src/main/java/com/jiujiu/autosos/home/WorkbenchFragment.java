@@ -34,6 +34,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.litepal.crud.DataSupport;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -55,6 +56,8 @@ public class WorkbenchFragment extends BaseListFragment<OrderModel> {
     Switch switchOnline;
     @BindView(R.id.tv_title)
     TextView tvTitle;
+
+    private static final long EXPIRE_TIME = 60 * 60 * 1000;//可接订单时效性
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -108,6 +111,14 @@ public class WorkbenchFragment extends BaseListFragment<OrderModel> {
                 LinkedHashSet hashSet = new LinkedHashSet(list);
                 list.clear();
                 list.addAll(hashSet);
+                Iterator<OrderModel> it = list.iterator();
+                while (it.hasNext()) {//时效性为1小时
+                    OrderModel order = it.next();
+                    if (order.getOrderTime() + EXPIRE_TIME < System.currentTimeMillis()) {
+                        it.remove();
+                        order.delete();
+                    }
+                }
                 return list;
             }
         }).observeOn(AndroidSchedulers.mainThread())

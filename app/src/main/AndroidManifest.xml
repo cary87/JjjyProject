@@ -57,6 +57,7 @@
         </activity>
 
         <activity android:name=".nav.GPSNaviActivity" android:configChanges="orientation|keyboardHidden|screenSize"/>
+        <activity android:name=".order.DisplayLocationActivity" android:screenOrientation="portrait"/>
 
         <activity android:name=".me.LoginActivity" android:screenOrientation="portrait"/>
         <activity android:name=".setting.AboutAcitvity" android:screenOrientation="portrait"/>
