@@ -9,7 +9,7 @@
         android:id="@+id/iv_icon"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@drawable/icon_no_data" />
 
     <TextView
         android:id="@+id/tv_content"
@@ -18,7 +18,7 @@
         android:layout_below="@id/iv_icon"
         android:layout_marginTop="5dp"
         android:gravity="center"
-        android:text="@string/net_error"
+        android:text="@string/no_data"
         android:textSize="14sp" />
 
 </LinearLayout>

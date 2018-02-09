@@ -220,6 +220,8 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
             if (cbTuoche.isChecked()) {
                 buffer.append(ServiceItemEnum.DragCar.getValue());
                 buffer.append("|");
+                buffer.append(ServiceItemEnum.NotAccidentDragCar.getValue());
+                buffer.append("|");
 
                 driverInfoReq.setDriverPlateType(TextUtils.isEmpty(tvTuocheTon.getText().toString()) ? "" : PlateTypeEnum.getPlateTypeByLable(tvTuocheTon.getText().toString()).getValue());
 

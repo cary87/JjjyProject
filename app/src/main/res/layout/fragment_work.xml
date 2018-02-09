@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include layout="@layout/layout_home_top_bar"/>
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_tips"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:text="没有可接单"
-        android:layout_gravity="center_horizontal"/>
+    <include layout="@layout/layout_home_top_bar" />
 
-    <com.stone.card.library.CardSlidePanel
-        android:id="@+id/image_slide_panel"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        card:bottomMarginTop="38dp"
-        card:itemMarginTop="10dp"
-        card:yOffsetStep="13dp" />
+        android:layout_height="match_parent">
 
+        <TextView
+            android:id="@+id/tv_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:text="左滑删除，右滑查看" />
+
+        <com.stone.card.library.CardSlidePanel
+            android:id="@+id/image_slide_panel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            card:bottomMarginTop="38dp"
+            card:itemMarginTop="10dp"
+            card:yOffsetStep="13dp" />
+
+        <include
+            android:id="@+id/layout_msg_error"
+            layout="@layout/layout_msg_error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            />
+
+    </FrameLayout>
 </LinearLayout>

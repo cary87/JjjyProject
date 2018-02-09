@@ -90,7 +90,7 @@ public class LocalUDPDataReciever {
             } catch (Exception e) {
                 e.printStackTrace();
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(500);
                 } catch (Exception e1) {}
             }
         }

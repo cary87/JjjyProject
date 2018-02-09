@@ -18,11 +18,14 @@ import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
+import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.order.model.CalculationTypeEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.PayWayEnum;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.resp.FinishOrderResp;
@@ -33,9 +36,13 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import okhttp3.Call;
 
 /**
@@ -169,6 +176,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                     public void onResponse(QrResp resp, int i) {
                         hideLoadingDialog();
                         generateQR2View(resp.getData().getPayQR(), payway);
+                        timerQueryPayResult();
                     }
                 });
                 break;
@@ -183,10 +191,39 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                     public void onResponse(QrResp resp, int i) {
                         hideLoadingDialog();
                         generateQR2View(resp.getData().getPayQR(), payway);
+                        timerQueryPayResult();
                     }
                 });
                 break;
         }
+    }
+
+    public void timerQueryPayResult() {
+        Disposable disposable = Observable.interval(2, TimeUnit.SECONDS).subscribe(new Consumer<Long>() {
+            @Override
+            public void accept(Long aLong) throws Exception {
+                HashMap<String, String> params = new HashMap<>();
+                params.put("orderId", order.getOrderId() + "");
+                OrderApi.queryPayResult(params, new ApiCallback<BaseResp>() {
+                    @Override
+                    public void onError(Call call, Exception e, int i) {
+                        LogUtils.e("wzh", e.toString());
+                    }
+
+                    @Override
+                    public void onResponse(BaseResp baseResp, int i) {
+                        cd.clear();
+                        showToast("支付成功");
+                        order.setState(OrderStateEnum.Payed.getValue());
+                        EventBus.getDefault().post(order);
+                        EventBus.getDefault().post(new RefreshViewEvent());
+                        LocationManeger.getInstance().startLocation();//接单成功时关闭位置信息更新，完成订单后重启位置信息更新
+                        finish();
+                    }
+                });
+            }
+        });
+        cd.add(disposable);
     }
 
     /**
@@ -243,10 +280,10 @@ public class PaymentDetailActivity extends AbsBaseActivity {
 
             @Override
             public void onResponse(FinishOrderResp resp, int i) {
-                tvTotalAmount.setText(resp.getData().getPayableAmount() + "元");
+                order = resp.getData();
+                tvTotalAmount.setText(order.getPayableAmount() + "元");
                 EventBus.getDefault().post(resp.getData());//完成订单后发送消息给订单详情页面，以便刷新页面
                 EventBus.getDefault().post(new RefreshViewEvent());//订单列表刷新
-                LocationManeger.getInstance().startLocation();//接单成功时关闭位置信息更新，完成订单后重启位置信息更新
             }
         });
     }

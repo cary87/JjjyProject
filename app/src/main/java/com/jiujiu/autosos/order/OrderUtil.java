@@ -13,10 +13,12 @@ import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.model.AreaModel;
+import com.jiujiu.autosos.common.model.ServiceItemEnum;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.AreaUtil;
 import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.LocationManeger;
+import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 
 import java.util.HashMap;
@@ -38,6 +40,28 @@ public class OrderUtil {
 
     private OrderUtil() {
         
+    }
+
+    /**
+     * 查看是否拖车服务
+     * @param item
+     * @return
+     */
+    public static boolean checkIsDragcar(OrderModel item) {
+        List<OrderItem> orderItems = item.getOrderItems();
+        if (orderItems != null && orderItems.size() > 0) {
+            boolean found = false;
+            for (OrderItem orderItem : orderItems) {
+                if (String.valueOf(ServiceItemEnum.DragCar.getValue().intValue()).equals(orderItem.getItemId())
+                        || String.valueOf(ServiceItemEnum.NotAccidentDragCar.getValue().intValue()).equals(orderItem.getItemId())) {
+                    found = true;
+                    break;
+                }
+            }
+            return found;
+        } else {
+            return false;
+        }
     }
 
     /**

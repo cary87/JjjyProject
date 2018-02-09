@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -63,6 +64,8 @@ public class WorkbenchFragment extends BaseFragment {
     TextView tvTips;
     @BindView(R.id.image_slide_panel)
     CardSlidePanel slidePanel;
+    @BindView(R.id.layout_msg_error)
+    LinearLayout mLayoutMsgError;
 
     private CardSlidePanel.CardSwitchListener cardSwitchListener;
 
@@ -139,9 +142,9 @@ public class WorkbenchFragment extends BaseFragment {
                         dataList.addAll(list);
                         slidePanel.getAdapter().notifyDataSetChanged();
                         if (dataList.size() == 0) {
-                            tvTips.setText("没有可接单");
+                            setEmptyView(true);
                         } else {
-                            tvTips.setText("左滑删除，右滑查看");
+                            setEmptyView(false);
                         }
                     }
                 }, new Consumer<Throwable>() {
@@ -151,6 +154,11 @@ public class WorkbenchFragment extends BaseFragment {
                     }
                 });
         cd.add(disposable);
+    }
+
+    public void setEmptyView(boolean empty) {
+        mLayoutMsgError.setVisibility(empty ? View.VISIBLE : View.GONE);
+        tvTips.setVisibility(empty ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -175,7 +183,7 @@ public class WorkbenchFragment extends BaseFragment {
             @Override
             public void onCardVanish(final int index, int type) {
                 if (index == 0) {
-                    tvTips.setText("没有可接单");
+                    setEmptyView(true);
                 }
                 if (type == CardSlidePanel.VANISH_TYPE_LEFT) {
                     dataList.get(index).deleteAsync().listen(null);

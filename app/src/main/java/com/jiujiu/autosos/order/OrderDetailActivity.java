@@ -112,7 +112,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
     }
 
     @Subscribe
-    public void onFinishOrderEvent(OrderModel orderModel) {
+    public void onOrderStateChangeEvent(OrderModel orderModel) {
         this.mOrder = orderModel;
         setupView();
     }
@@ -123,7 +123,9 @@ public class OrderDetailActivity extends AbsBaseActivity {
         setupToolbar(toolbar);
         mOrder = (OrderModel) getIntent().getSerializableExtra("order");
         setupView();
-        getDistanceForOrder();
+        if (OrderUtil.checkIsDragcar(mOrder)) {
+            getDistanceForOrder();
+        }
 
     }
 
@@ -131,7 +133,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
      * 获取救援距离,以便计价
      */
     private void getDistanceForOrder() {
-        if (mOrder.getState() < OrderStateEnum.Finished.getValue()) {
+        //在支付前计算事故地点到拖车目的地距离，如果有拖车目的地的话
+        if (mOrder.getState() < OrderStateEnum.Finished.getValue() && (mOrder.getToRescueLatitude() * mOrder.getToRescueLongitude()) > 0) {
             routeSearchManager = RouteSearchManager.getInstance(this);
             routeSearchManager.setListener(new RouteSearchManager.RouteQueryListener() {
                 @Override
@@ -145,22 +148,14 @@ public class OrderDetailActivity extends AbsBaseActivity {
                     LogUtils.e("wzh", "获取救援距离失败");
                     currentCount++;
                     if (currentCount < MAX_TRY_COUNT) {
-                        startRouteQuery(routeSearchManager);// 失败再重试
+                        // 失败再重试
+                        routeSearchManager.driverRouteQuery(new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), new LatLonPoint(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude()), null);
                     }
 
                 }
             });
-            startRouteQuery(routeSearchManager);
+            routeSearchManager.driverRouteQuery(new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), new LatLonPoint(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude()), null);
         }
-    }
-
-    /**
-     * 启动驾车规划
-     *
-     * @param manager
-     */
-    private void startRouteQuery(RouteSearchManager manager) {
-        manager.driverRouteQuery(new LatLonPoint(UserStorage.getInstance().getLastSubmitLatitude(), UserStorage.getInstance().getLastSubmitLongitude()), new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), null);
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.amap.api.navi.AMapNaviView;
 import com.amap.api.navi.AMapNaviViewOptions;
 import com.amap.api.navi.enums.NaviType;
 import com.amap.api.navi.model.NaviLatLng;
+import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.trace.LBSTraceClient;
 import com.amap.api.trace.TraceLocation;
 import com.amap.api.trace.TraceStatusListener;
@@ -33,11 +34,13 @@ import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.order.OrderDetailActivity;
 import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.SignatureToCheckActivity;
 import com.jiujiu.autosos.order.SignatureToFinishActivity;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.TakePhotoEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -75,15 +78,20 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
 
     private AMap aMap;
 
-    private OrderModel order;
+    private OrderModel mOrder;
 
     public static final int REQ_TO_PAY = 1222;
 
-    // 手选位置坐标
-    private LatLng centerLatLng = null;
+    // 手选拖车目的地位置坐标
+    private LatLng toRescueLatLng = null;
     // 中心点marker
     private Marker centerMarker;
 
+    private RouteSearchManager routeSearchManager;
+
+    private static final int MAX_TRY_COUNT = 3;
+
+    private int currentCount = 0;
 
     private BitmapDescriptor ICON_RED = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
     private MarkerOptions markerOption = null;
@@ -112,7 +120,11 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
 
         markerOption = new MarkerOptions().draggable(true);
 
-        order = (OrderModel) getIntent().getSerializableExtra("order");
+        mOrder = (OrderModel) getIntent().getSerializableExtra("mOrder");
+
+        if (OrderUtil.checkIsDragcar(mOrder)) {
+            getDistanceForOrder();
+        }
 
         EventBus.getDefault().register(this);
     }
@@ -135,7 +147,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     @Subscribe
     public void onPhotoTakenEvent(TakePhotoEvent event) {
         if (event.getPaths() != null && event.getPaths().size() > 0) {
-            OrderUtil.savePicturesForOrder(this, order, event.getPaths());
+            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths());
         }
         if (event.getTag() == TAG_ARRIVE_TAKE) {
             btnArrive.setText("把车辆挪上拖车拍照");
@@ -145,8 +157,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             btnArrive.setTag(TAG_TO_DES_TAKE);
         } else if (event.getTag() == TAG_TO_DES_TAKE) {
             Intent sign = new Intent(this, SignatureToFinishActivity.class);
-            order.setDistance(mAMapNavi.getNaviPath().getAllLength() / 1000.00);
-            sign.putExtra("order", order);
+            sign.putExtra("mOrder", mOrder);
             startActivityForResult(sign, REQ_TO_PAY);
         }
     }
@@ -181,15 +192,15 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     protected boolean setupStartAndEndLocation() {
         //已到达救援地然后导航到拖车目的地
         boolean ok = true;
-        if (arrive && order.getToRescueLatitude() == 0 && order.getToRescueLongitude() == 0) {
-            if (centerLatLng == null) {
+        if (arrive && mOrder.getToRescueLatitude() == 0 && mOrder.getToRescueLongitude() == 0) {
+            if (toRescueLatLng == null) {
                 showToast("请点击地图选择一个救援目的地再进行导航");
                 ok = false;
             } else {
                 sList.clear();
-                sList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));
+                sList.add(new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude()));
                 eList.clear();
-                eList.add(new NaviLatLng(centerLatLng.latitude, centerLatLng.longitude));
+                eList.add(new NaviLatLng(toRescueLatLng.latitude, toRescueLatLng.longitude));
             }
             return ok;
         }
@@ -200,18 +211,18 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             sList.add(mStartLatlng);
         }
 
-        if (order.getToRescueLatitude() > 0 && order.getToRescueLongitude() > 0) {
-            if (order.getLatitude() == order.getToRescueLatitude() && order.getLongitude() == order.getToRescueLongitude()) {
-                mEndLatlng = new NaviLatLng(order.getToRescueLatitude(), order.getToRescueLongitude());
+        if (mOrder.getToRescueLatitude() > 0 && mOrder.getToRescueLongitude() > 0) {
+            if (mOrder.getLatitude() == mOrder.getToRescueLatitude() && mOrder.getLongitude() == mOrder.getToRescueLongitude()) {
+                mEndLatlng = new NaviLatLng(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude());
                 eList.add(mEndLatlng);
             } else {
                 mWayPointList = new ArrayList<>();
-                mWayPointList.add(new NaviLatLng(order.getLatitude(), order.getLongitude()));
-                mEndLatlng = new NaviLatLng(order.getToRescueLatitude(), order.getToRescueLongitude());
+                mWayPointList.add(new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude()));
+                mEndLatlng = new NaviLatLng(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude());
                 eList.add(mEndLatlng);
             }
         } else {
-            mEndLatlng = new NaviLatLng(order.getLatitude(), order.getLongitude());//救援点
+            mEndLatlng = new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude());//救援点
             eList.add(mEndLatlng);
         }
         return ok;
@@ -319,12 +330,12 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
                 break;
             case R.id.btn_order_detail:
                 Intent intent = new Intent(mActivity, OrderDetailActivity.class);
-                intent.putExtra("order", order);
+                intent.putExtra("mOrder", mOrder);
                 startActivity(intent);
                 break;
             case R.id.btn_signature:
                 Intent sign = new Intent(this, SignatureToCheckActivity.class);
-                sign.putExtra("order", order);
+                sign.putExtra("mOrder", mOrder);
                 startActivity(sign);
                 break;
             case R.id.btn_look:
@@ -352,7 +363,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
         showLoadingDialog("加载中");
         HashMap<String, String> params = new HashMap<>();
         params.put("province", UserStorage.getInstance().getUser().getProvince());
-        params.put("orderId", order.getOrderId() + "");
+        params.put("orderId", mOrder.getOrderId() + "");
         OrderApi.driverArrive(params, new ApiCallback<BaseResp>() {
             @Override
             public void onError(Call call, Exception e, int i) {
@@ -383,8 +394,13 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     @Override
     public void onMapClick(LatLng latLng) {
         markerOption.icon(ICON_RED);
-        centerLatLng = latLng;
-        addCenterMarker(centerLatLng);
+        toRescueLatLng = latLng;
+        addCenterMarker(toRescueLatLng);
+        mOrder.setToRescueLatitude(latLng.latitude);
+        mOrder.setToRescueLongitude(latLng.longitude);
+        if (OrderUtil.checkIsDragcar(mOrder)) {
+            getDistanceForOrder();
+        }
     }
 
     private void addCenterMarker(LatLng latlng) {
@@ -392,5 +408,34 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             centerMarker = aMap.addMarker(markerOption);
         }
         centerMarker.setPosition(latlng);
+    }
+
+    /**
+     * 获取救援距离,以便计价
+     */
+    private void getDistanceForOrder() {
+        //在支付前计算事故地点到拖车目的地距离，如果有拖车目的地的话
+        if (mOrder.getState() < OrderStateEnum.Finished.getValue() && (mOrder.getToRescueLatitude() * mOrder.getToRescueLongitude()) > 0) {
+            routeSearchManager = RouteSearchManager.getInstance(this);
+            routeSearchManager.setListener(new RouteSearchManager.RouteQueryListener() {
+                @Override
+                public void onQuerySuccess(double km, float tollDistance) {
+                    mOrder.setDistance(km);
+                    LogUtils.i("wzh", "救援公里 " + km + "公里" + " 高速路距离（米） " + tollDistance);
+                }
+
+                @Override
+                public void onQueryFail() {
+                    LogUtils.e("wzh", "获取救援距离失败");
+                    currentCount++;
+                    if (currentCount < MAX_TRY_COUNT) {
+                        // 失败再重试
+                        routeSearchManager.driverRouteQuery(new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), new LatLonPoint(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude()), null);
+                    }
+
+                }
+            });
+            routeSearchManager.driverRouteQuery(new LatLonPoint(mOrder.getLatitude(), mOrder.getLongitude()), new LatLonPoint(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude()), null);
+        }
     }
 }

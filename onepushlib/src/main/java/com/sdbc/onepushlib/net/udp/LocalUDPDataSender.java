@@ -74,10 +74,6 @@ public class LocalUDPDataSender {
         }
 
         boolean result = UDPUtils.send(localUDPSocket, fullProtocalBytes, dataLen);
-        if (!result) {
-            //fix bug 失败后关掉失败的socket，防止一直使用失败的socket
-            LocalUDPSocketProvider.getInstance().closeLocalUDPSocket();
-        }
 
         return result ? ErrorCodeEnum.OK : ErrorCodeEnum.COMMON_DATA_SEND_FAIL;
     }

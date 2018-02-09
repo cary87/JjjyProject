@@ -15,7 +15,8 @@ public enum ServiceItemEnum {
     DeliverOil(7, "送水送油"),
     Survery(8, "勘查拍照"),
     PlightRescue(9, "困境救援"),
-    YearlyCheck(10, "代办年检");
+    YearlyCheck(10, "代办年检"),
+    NotAccidentDragCar(11, "非事故拖车");
 
 
     ServiceItemEnum(Integer value, String lable) {
