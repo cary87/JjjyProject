@@ -19,7 +19,9 @@ import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.base.BaseFragment;
 import com.jiujiu.autosos.common.http.BaseResp;
+import com.jiujiu.autosos.common.model.User;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.order.CardHolder;
 import com.jiujiu.autosos.order.OrderDetailActivity;
@@ -28,7 +30,6 @@ import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.resp.FecthOrderResp;
-import com.jiujiu.autosos.resp.UserResp;
 import com.stone.card.library.CardAdapter;
 import com.stone.card.library.CardSlidePanel;
 
@@ -108,18 +109,21 @@ public class WorkbenchFragment extends BaseFragment {
                     orderModel.setOrderItems(orderItems);
                 }
                 //省公司特地指派给当前救援司机的单
-                FecthOrderResp resp = OrderApi.syncFecthCanAcceptOrder(1, FecthOrderResp.class);
-                if (mActivity.isSuccessResp(resp)) {
-                    for (OrderModel orderModel : resp.getData()) {
-                        String items = orderModel.getItems();
-                        List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {
-                        }.getType());
-                        orderModel.setOrderItems(orderItems);
-                    }
-                    if (list != null) {
+                try {
+                    FecthOrderResp resp = OrderApi.syncFecthCanAcceptOrder(1, FecthOrderResp.class);
+                    if (mActivity.isSuccessResp(resp)) {
+                        for (OrderModel orderModel : resp.getData()) {
+                            String items = orderModel.getItems();
+                            List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {
+                            }.getType());
+                            orderModel.setOrderItems(orderItems);
+                        }
                         list.addAll(resp.getData());
                     }
+                } catch (Exception e) {
+                    LogUtils.e("wzh", e.toString());
                 }
+
                 LinkedHashSet hashSet = new LinkedHashSet(list);
                 list.clear();
                 list.addAll(hashSet);
@@ -158,7 +162,17 @@ public class WorkbenchFragment extends BaseFragment {
 
     public void setEmptyView(boolean empty) {
         mLayoutMsgError.setVisibility(empty ? View.VISIBLE : View.GONE);
-        tvTips.setVisibility(empty ? View.GONE : View.VISIBLE);
+        final int visiable = empty ? View.GONE : View.VISIBLE;
+        if (visiable == View.VISIBLE) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    tvTips.setVisibility(visiable);
+                }
+            }, 500);
+        } else {
+            tvTips.setVisibility(visiable);
+        }
     }
 
     @Override
@@ -172,6 +186,13 @@ public class WorkbenchFragment extends BaseFragment {
         switchOnline.setChecked(UserStorage.getInstance().getUser().getOnlineState() == OnlineStateEnum.Online.getValue());
         setOnlineText(switchOnline.isChecked());
 
+        mLayoutMsgError.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadData();
+            }
+        });
+
         // 1. 左右滑动监听
         cardSwitchListener = new CardSlidePanel.CardSwitchListener() {
 
@@ -182,9 +203,6 @@ public class WorkbenchFragment extends BaseFragment {
 
             @Override
             public void onCardVanish(final int index, int type) {
-                if (index == 0) {
-                    setEmptyView(true);
-                }
                 if (type == CardSlidePanel.VANISH_TYPE_LEFT) {
                     dataList.get(index).deleteAsync().listen(null);
                 } else if (type == CardSlidePanel.VANISH_TYPE_RIGHT) {
@@ -196,6 +214,9 @@ public class WorkbenchFragment extends BaseFragment {
                             startActivity(intent);
                         }
                     }, 200);
+                }
+                if (index == dataList.size() - 1) {
+                    setEmptyView(true);
                 }
             }
         };
@@ -283,7 +304,7 @@ public class WorkbenchFragment extends BaseFragment {
                     @Override
                     public void accept(BaseResp o) throws Exception {
                         if (mActivity.isSuccessResp(o)) {
-                            UserResp.DataBean user = UserStorage.getInstance().getUser();
+                            User user = UserStorage.getInstance().getUser();
                             user.setOnlineState(b ? OnlineStateEnum.Online.getValue() : OnlineStateEnum.Offline.getValue());
                             UserStorage.getInstance().setUser(user);
                             setOnlineText(b);

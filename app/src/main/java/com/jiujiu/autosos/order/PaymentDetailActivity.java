@@ -69,7 +69,6 @@ public class PaymentDetailActivity extends AbsBaseActivity {
     LinearLayout llOtherFee;
 
     private OrderModel order;
-    private OrderItem orderItem;//取数组第一个做计费明细
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
@@ -79,7 +78,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         if (order != null) {
             tvDistance.setText(order.getDistance() + "公里");
             if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
-                orderItem = order.getOrderItems().get(0);
+                OrderItem orderItem = order.getOrderItems().get(0);
                 CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByValue(orderItem.getCalculationType());
                 if (calculationType != null) {
                     tvCalculationType.setText(calculationType.getLaybel());
@@ -107,21 +106,32 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                     public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                         tvCalculationType.setText(text);
                         CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByLabel(text.toString());
-                        if (calculationType != null && calculationType.equals(CalculationTypeEnum.Once)) {
-                            orderItem.setCalculationType(calculationType.getValue());
+                        if (calculationType.equals(CalculationTypeEnum.Once)) {
+                            order.getOrderItems().get(0).setCalculationType(calculationType.getValue());
                             llOtherFee.setVisibility(View.GONE);
                             DialogUtils.showInputDialog(mActivity, "一口价费用", "", InputType.TYPE_CLASS_NUMBER, "请输入一口价", new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     double oncePrice = Double.parseDouble(input.toString());
-                                    orderItem.setPrice(oncePrice);
+                                    order.setCrossBridgeAmount(0);
+                                    tvCrossBridgePrice.setText("");
+
+                                    tvAdditionalPrice.setText("");
+                                    order.getOrderItems().get(0).setAdditional(0);
+
+                                    order.getOrderItems().get(0).setPrice(oncePrice);
                                     tvTotalAmount.setText(Double.toString(oncePrice) + "元");
-                                    // 触发重新计算价格
+                                    // 一口价触发重新计算价格
                                     getPaymentAmount();
                                 }
                             });
                         } else {
+                            // 公里价触发重新计算价格
+                            order.getOrderItems().get(0).setCalculationType(calculationType.getValue());
+                            order.getOrderItems().get(0).setPrice(0);
+                            tvTotalAmount.setText("" + "元");
                             llOtherFee.setVisibility(View.VISIBLE);
+                            getPaymentAmount();
                         }
                         return true;
                     }
@@ -142,7 +152,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvAdditionalPrice.setText(input);
-                        orderItem.setAdditional(Double.parseDouble(input.toString()));
+                        order.getOrderItems().get(0).setAdditional(Double.parseDouble(input.toString()));
                         getPaymentAmount();
                     }
                 });

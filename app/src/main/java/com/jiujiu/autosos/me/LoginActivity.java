@@ -10,12 +10,13 @@ import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.BaseResp;
+import com.jiujiu.autosos.common.model.User;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.RSACoder;
 import com.jiujiu.autosos.home.MainActivity;
 import com.jiujiu.autosos.order.model.OnlineStateEnum;
-import com.jiujiu.autosos.resp.UserResp;
 import com.jiujiu.autosos.resp.PublicKeyResp;
+import com.jiujiu.autosos.resp.UserResp;
 
 import java.util.HashMap;
 
@@ -73,7 +74,7 @@ public class LoginActivity extends AbsBaseActivity {
                             param.put("onlineState", OnlineStateEnum.Online.getValue() + "");
                             BaseResp resp = UserApi.setOnlineState(param, BaseResp.class);
                             if (isSuccessResp(resp)) {
-                                UserResp.DataBean user = UserStorage.getInstance().getUser();
+                                User user = UserStorage.getInstance().getUser();
                                 //更新在线状态后重写入持久化
                                 user.setOnlineState(0);
                                 UserStorage.getInstance().setUser(user);

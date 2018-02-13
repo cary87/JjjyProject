@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -57,7 +58,9 @@ public class OnePushReceiver extends OnePushAbsReceiver {
                     return null;
                 }
                 //解析MessageBody-content
-                OrderModel order = new Gson().fromJson(messageBody.getContent(), OrderModel.class);
+                String realContent = new String(Base64.decode(messageBody.getContent(), Base64.DEFAULT));
+                LogUtils.i("wzh", "---decoded push content---:" + realContent);
+                OrderModel order = new Gson().fromJson(realContent, OrderModel.class);
                 List<OrderItem> orderItems = new Gson().fromJson(order.getItems(), new TypeToken<List<OrderItem>>() {}.getType());
                 order.setOrderItems(orderItems);
                 return order;

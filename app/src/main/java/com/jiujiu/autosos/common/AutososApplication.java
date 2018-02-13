@@ -24,6 +24,7 @@ public class AutososApplication extends MultiDexApplication {
         DaemonEnv.initialize(this, BackgroundWorkService.class, DaemonEnv.DEFAULT_WAKE_UP_INTERVAL);
         BackgroundWorkService.mShouldStopService = false;
         DaemonEnv.startServiceMayBind(BackgroundWorkService.class);
+
     }
 
     public static AutososApplication getApp() {

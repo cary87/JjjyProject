@@ -23,6 +23,7 @@ import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.model.PlateTypeEnum;
 import com.jiujiu.autosos.common.model.ServiceItemEnum;
+import com.jiujiu.autosos.common.model.User;
 import com.jiujiu.autosos.common.model.YesNoEnum;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.DialogUtils;
@@ -120,7 +121,7 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
         layoutDiaoche.setOnClickListener(this);
         layoutTuoche.setOnClickListener(this);
         tvProvinceOfCar.setOnClickListener(this);
-        UserResp.DataBean user = UserStorage.getInstance().getUser();
+        User user = UserStorage.getInstance().getUser();
         if (!TextUtils.isEmpty(user.getDriverLicensePlateNumber())) {
             tvProvinceOfCar.setText(user.getDriverLicensePlateNumber().substring(0, 1));
             etCardNumber.setText(user.getDriverLicensePlateNumber().substring(1));
