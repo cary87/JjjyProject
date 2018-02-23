@@ -60,7 +60,7 @@ public class MainActivity extends AbsBaseActivity {
 
         //实例化语音引擎
         mTtsManager = TTSController.getInstance(getApplicationContext());
-        mTtsManager.setTTSType(TTSController.TTSType.SYSTEMTTS);
+        //mTtsManager.setTTSType(TTSController.TTSType.SYSTEMTTS);
         mTtsManager.init();
 
         if (getIntent() != null) {
