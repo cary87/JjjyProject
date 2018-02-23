@@ -34,7 +34,7 @@ public class SignatureToCheckActivity extends AbsSignatureActivity {
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
-        order = (OrderModel) getIntent().getSerializableExtra("order");
+        order = (OrderModel) getIntent().getSerializableExtra(OrderUtil.KEY_ORDER);
         tvTitle.setText("验车确认");
         setupToolbar(toolbar);
         mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {

@@ -38,6 +38,8 @@ import okhttp3.Call;
 
 public class OrderUtil {
 
+    public static final String KEY_ORDER = "order";
+
     private OrderUtil() {
         
     }
@@ -97,10 +99,10 @@ public class OrderUtil {
         params.put("province", order.getProvince() + "");
         params.put("orderId", order.getOrderId() + "");
         params.put("svrId", UserStorage.getInstance().getUser().getBelongOrg() + "");
-        params.put("svrName", UserStorage.getInstance().getUser().getBelongOrgName());
-        params.put("driverType", order.getDriverType());
-        params.put("driverCar", order.getCarNo());
-        params.put("toRescueAdress", order.getToRescueAdress());
+        params.put("svrName", UserStorage.getInstance().getUser().getBelongOrgName() + "");
+        params.put("driverType", order.getDriverType() + "");
+        params.put("driverCar", order.getCarNo() + "");
+        params.put("toRescueAdress", order.getToRescueAdress() + "");
         params.put("toRescueLongitude", order.getToRescueLongitude() + "");
         params.put("toRescueLatitude", order.getToRescueLatitude() + "");
         Gson gson = new GsonBuilder().serializeNulls().create();

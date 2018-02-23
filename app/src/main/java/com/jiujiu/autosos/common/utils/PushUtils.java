@@ -43,7 +43,7 @@ public class PushUtils {
                                 OnePush.setDebug(Constant.DEBUG);
                                 OnePush.init(context, AppTypeEnum.AUTOSOS,
                                         userIdStr, pushConfig.getServerIP(), pushConfig.getServerPort(),
-                                        pushConfig.isForceMIPush());
+                                        /*pushConfig.isForceMIPush()*/Constant.FORCE_MIPUSH);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

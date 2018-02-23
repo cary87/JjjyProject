@@ -112,7 +112,7 @@ public class OrderFragment extends BaseListFragment<OrderModel> {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(mActivity, OrderDetailActivity.class);
-                intent.putExtra("order", mAdapter.getItem(position));
+                intent.putExtra(OrderUtil.KEY_ORDER, mAdapter.getItem(position));
                 startActivity(intent);
             }
         });

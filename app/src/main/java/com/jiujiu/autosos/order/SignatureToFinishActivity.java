@@ -37,7 +37,7 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
-        order = (OrderModel) getIntent().getSerializableExtra("order");
+        order = (OrderModel) getIntent().getSerializableExtra(OrderUtil.KEY_ORDER);
         tvTitle.setText("签名");
         setupToolbar(toolbar);
         mSignaturePad.setOnSignedListener(new SignaturePad.OnSignedListener() {
@@ -76,8 +76,9 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
                 paths.add(path);
                 OrderUtil.savePicturesForOrder(SignatureToFinishActivity.this, order, paths);
                 Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
-                intent.putExtra("order", order);
+                intent.putExtra(OrderUtil.KEY_ORDER, order);
                 startActivity(intent);
+                setResult(RESULT_OK);
                 finish();
             }
         });

@@ -20,6 +20,7 @@ import com.jiujiu.autosos.order.OrderFragment;
 import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.PushOrderEvent;
+import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.push.OnePushReceiver;
 import com.jiujiu.autosos.setting.SettingFragment;
 
@@ -97,7 +98,17 @@ public class MainActivity extends AbsBaseActivity {
         OrderDialog dialog = new OrderDialog(this, order, new OrderDialog.OnAcceptOrderListener() {
             @Override
             public void onAcceptOrder() {
-                OrderUtil.acceptOrder(MainActivity.this, order, null);
+                OrderUtil.acceptOrder(MainActivity.this, order, new OrderUtil.ActionListener() {
+                    @Override
+                    public void onSuccess() {
+                        EventBus.getDefault().post(new RefreshViewEvent());
+                    }
+
+                    @Override
+                    public void onFail() {
+
+                    }
+                });
             }
         });
         dialog.show();

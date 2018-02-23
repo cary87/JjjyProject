@@ -1,6 +1,7 @@
 package com.jiujiu.autosos.common.base;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -16,7 +17,9 @@ import com.jiujiu.autosos.common.ActivityStack;
 import com.jiujiu.autosos.common.AppException;
 import com.jiujiu.autosos.common.Constant;
 import com.jiujiu.autosos.common.http.BaseResp;
+import com.jiujiu.autosos.common.utils.AppTools;
 import com.jiujiu.autosos.common.utils.DialogUtils;
+import com.jiujiu.autosos.me.LoginActivity;
 
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
@@ -111,6 +114,9 @@ public abstract class AbsBaseActivity extends AppCompatActivity {
                         dialog.dismiss();
                         switch (which) {
                             case POSITIVE:
+                                AppTools.logout(mActivity);
+                                Intent loginIntent = new Intent(mActivity, LoginActivity.class);
+                                startActivity(loginIntent);
                                 break;
                             case NEGATIVE:
                                 break;

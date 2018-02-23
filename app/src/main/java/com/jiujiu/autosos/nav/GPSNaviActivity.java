@@ -120,7 +120,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
 
         markerOption = new MarkerOptions().draggable(true);
 
-        mOrder = (OrderModel) getIntent().getSerializableExtra("mOrder");
+        mOrder = (OrderModel) getIntent().getSerializableExtra(OrderUtil.KEY_ORDER);
 
         if (OrderUtil.checkIsDragcar(mOrder)) {
             getDistanceForOrder();
@@ -157,7 +157,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             btnArrive.setTag(TAG_TO_DES_TAKE);
         } else if (event.getTag() == TAG_TO_DES_TAKE) {
             Intent sign = new Intent(this, SignatureToFinishActivity.class);
-            sign.putExtra("mOrder", mOrder);
+            sign.putExtra(OrderUtil.KEY_ORDER, mOrder);
             startActivityForResult(sign, REQ_TO_PAY);
         }
     }
@@ -330,12 +330,12 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
                 break;
             case R.id.btn_order_detail:
                 Intent intent = new Intent(mActivity, OrderDetailActivity.class);
-                intent.putExtra("mOrder", mOrder);
+                intent.putExtra(OrderUtil.KEY_ORDER, mOrder);
                 startActivity(intent);
                 break;
             case R.id.btn_signature:
                 Intent sign = new Intent(this, SignatureToCheckActivity.class);
-                sign.putExtra("mOrder", mOrder);
+                sign.putExtra(OrderUtil.KEY_ORDER, mOrder);
                 startActivity(sign);
                 break;
             case R.id.btn_look:

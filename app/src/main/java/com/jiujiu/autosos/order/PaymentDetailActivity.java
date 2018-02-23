@@ -74,7 +74,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
     protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("救援详情");
         setupToolbar(toolbar);
-        order = (OrderModel) getIntent().getSerializableExtra("order");
+        order = (OrderModel) getIntent().getSerializableExtra(OrderUtil.KEY_ORDER);
         if (order != null) {
             tvDistance.setText(order.getDistance() + "公里");
             if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
@@ -109,7 +109,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                         if (calculationType.equals(CalculationTypeEnum.Once)) {
                             order.getOrderItems().get(0).setCalculationType(calculationType.getValue());
                             llOtherFee.setVisibility(View.GONE);
-                            DialogUtils.showInputDialog(mActivity, "一口价费用", "", InputType.TYPE_CLASS_NUMBER, "请输入一口价", new MaterialDialog.InputCallback() {
+                            DialogUtils.showInputDialog(mActivity, "一口价费用", "", InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入一口价", new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                                     double oncePrice = Double.parseDouble(input.toString());
@@ -138,7 +138,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                 }, null);
                 break;
             case R.id.fl_cross_bridge:
-                DialogUtils.showInputDialog(mActivity, "过桥过路费", tvCrossBridgePrice.getText().toString(), InputType.TYPE_CLASS_NUMBER, "请输入过桥过路费", new MaterialDialog.InputCallback() {
+                DialogUtils.showInputDialog(mActivity, "过桥过路费", tvCrossBridgePrice.getText().toString(), InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入过桥过路费", new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvCrossBridgePrice.setText(input);
@@ -148,7 +148,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                 });
                 break;
             case R.id.fl_additional:
-                DialogUtils.showInputDialog(mActivity, "特殊加价费", tvAdditionalPrice.getText().toString(), InputType.TYPE_CLASS_NUMBER, "请输入特殊加价费", new MaterialDialog.InputCallback() {
+                DialogUtils.showInputDialog(mActivity, "特殊加价费", tvAdditionalPrice.getText().toString(), InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入特殊加价费", new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvAdditionalPrice.setText(input);

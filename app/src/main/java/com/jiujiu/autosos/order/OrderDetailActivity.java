@@ -121,7 +121,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
     protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("订单详情");
         setupToolbar(toolbar);
-        mOrder = (OrderModel) getIntent().getSerializableExtra("order");
+        mOrder = (OrderModel) getIntent().getSerializableExtra(OrderUtil.KEY_ORDER);
         setupView();
         if (OrderUtil.checkIsDragcar(mOrder)) {
             getDistanceForOrder();
@@ -299,12 +299,12 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 break;
             case R.id.btn_finish:
                 Intent sign = new Intent(this, SignatureToFinishActivity.class);
-                sign.putExtra("order", mOrder);
+                sign.putExtra(OrderUtil.KEY_ORDER, mOrder);
                 startActivity(sign);
                 break;
             case R.id.btn_pay:
                 Intent intent = new Intent(this, PaymentDetailActivity.class);
-                intent.putExtra("order", mOrder);
+                intent.putExtra(OrderUtil.KEY_ORDER, mOrder);
                 startActivity(intent);
                 break;
             case R.id.btn_accept_order:
@@ -369,7 +369,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(OrderDetailActivity.this, GPSNaviActivity.class);
-                intent.putExtra("order", mOrder);
+                intent.putExtra(OrderUtil.KEY_ORDER, mOrder);
                 startActivity(intent);
                 dialog.dismiss();
             }

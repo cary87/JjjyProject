@@ -7,19 +7,13 @@ import android.widget.TextView;
 
 import com.code19.library.AppUtils;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.BaseFragment;
-import com.jiujiu.autosos.common.http.ApiCallback;
-import com.jiujiu.autosos.common.http.BaseResp;
-import com.jiujiu.autosos.common.storage.UserStorage;
-import com.jiujiu.autosos.nav.LocationManeger;
-import com.sdbc.onepushlib.OnePush;
+import com.jiujiu.autosos.common.utils.AppTools;
 import com.xdandroid.hellodaemon.IntentWrapper;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.pedant.SweetAlert.SweetAlertDialog;
-import okhttp3.Call;
 
 /**
  * Created by Administrator on 2017/12/27 0027.
@@ -58,26 +52,9 @@ public class SettingFragment extends BaseFragment {
                 IntentWrapper.whiteListMatters(mActivity, "轨迹跟踪服务的持续运行");
                 break;
             case R.id.ll_logout:
-                logout();
+                AppTools.logout(mActivity);
                 break;
         }
     }
 
-    public void logout() {
-        UserApi.logout(null, new ApiCallback<BaseResp>() {
-            @Override
-            public void onError(Call call, Exception e, int i) {
-
-            }
-
-            @Override
-            public void onResponse(BaseResp baseResp, int i) {
-
-            }
-        });
-        OnePush.logout(mActivity);
-        UserStorage.getInstance().clear();
-        LocationManeger.getInstance().stopLocation();
-        mActivity.finish();
-    }
 }

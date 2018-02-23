@@ -9,6 +9,11 @@ public class Constant {
 
     public static final boolean DEBUG = true;
 
+    /**
+     * 是否强制走小米推送
+     */
+    public static final boolean FORCE_MIPUSH = true;
+
     public static final int PAGESIZE = 20;
 
     public static final String CODE_SUCCESS = "600000";
@@ -30,8 +35,6 @@ public class Constant {
     public static String VERSION;
 
     public static String VERSIONCODE;
-
-    public static final String WX_APPID = "wxe859933ddeb5ac1f";
 
     static {
         VERSION = SystemUtils.getAppVersionName(AutososApplication.getApp());

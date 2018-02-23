@@ -25,6 +25,7 @@ import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.order.CardHolder;
 import com.jiujiu.autosos.order.OrderDetailActivity;
+import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.model.OnlineStateEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
@@ -210,7 +211,7 @@ public class WorkbenchFragment extends BaseFragment {
                         @Override
                         public void run() {
                             Intent intent = new Intent(mActivity, OrderDetailActivity.class);
-                            intent.putExtra("order", dataList.get(index));
+                            intent.putExtra(OrderUtil.KEY_ORDER, dataList.get(index));
                             startActivity(intent);
                         }
                     }, 200);
