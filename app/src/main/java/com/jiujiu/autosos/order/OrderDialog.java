@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -65,6 +66,7 @@ public class OrderDialog extends Dialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         View view = View.inflate(context, R.layout.dialog_order, null);
         ButterKnife.bind(this, view);
         setContentView(view);
@@ -74,7 +76,7 @@ public class OrderDialog extends Dialog {
         tvPhone.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         tvPhone.getPaint().setAntiAlias(true);//抗锯齿
         tvAddress.setText(order.getAddress());
-        tvRemark.setText(order.getRemark());
+        tvRemark.setText(TextUtils.isEmpty(order.getRemark()) ? "无" : order.getRemark());
         tvIgnore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

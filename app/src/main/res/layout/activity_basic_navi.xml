@@ -37,47 +37,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentRight="true">
-
-        <ImageButton
-            android:id="@+id/btn_order_detail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector_order_detail"/>
-
-        <ImageButton
-            android:id="@+id/btn_signature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btn_order_detail"
-            android:background="@drawable/selector_signature"/>
-
-        <ImageButton
-            android:id="@+id/btn_look"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btn_signature"
-            android:background="@drawable/selector_look"/>
-
-        <ImageButton
-            android:id="@+id/btn_vin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btn_look"
-            android:background="@drawable/selector_vin"/>
-
-        <ImageButton
-            android:id="@+id/btn_construction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/btn_vin"
-            android:background="@drawable/selector_construction"/>
-
-    </RelativeLayout>
-
+    <include layout="@layout/layout_option"/>
 
 </RelativeLayout>

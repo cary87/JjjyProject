@@ -141,14 +141,11 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     }
 
     /**
-     * 监听拍照上传完成回调
+     * 监听拍照上传完成回调, 此页面不上传，OrderDetailActivity页面监听上传
      * @param event
      */
     @Subscribe
     public void onPhotoTakenEvent(TakePhotoEvent event) {
-        if (event.getPaths() != null && event.getPaths().size() > 0) {
-            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths());
-        }
         if (event.getTag() == TAG_ARRIVE_TAKE) {
             btnArrive.setText("把车辆挪上拖车拍照");
             btnArrive.setTag(TAG_MOVE_UP_CAR_TAKE);

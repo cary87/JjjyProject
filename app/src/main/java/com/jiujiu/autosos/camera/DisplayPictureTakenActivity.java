@@ -74,10 +74,11 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
         pbUpload.setVisibility(View.VISIBLE);
         HashMap<String, String> params = new HashMap<>();
         params.put("key", "attach");
+        showLoadingDialog("上传中");
         UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
             @Override
             public void onError(Call call, Exception e, int i) {
-
+                hideLoadingDialog();
             }
 
             @Override
@@ -91,6 +92,7 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
             @Override
             public void onResponse(FileUploadResp resp, int i) {
                 LogUtils.i("wzh", resp.toString());
+                hideLoadingDialog();
                 paths.add(resp.getData().getPath());
             }
         });

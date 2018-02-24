@@ -6,7 +6,7 @@ package com.jiujiu.autosos.order.model;
 
 public enum ChargeTypeEnum {
     Cash(0, "收现"),
-    ChageUp(1, "挂账");
+    ChargeUp(1, "挂账");
 
     private int value;
     private String label;

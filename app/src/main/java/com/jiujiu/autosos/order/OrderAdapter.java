@@ -1,6 +1,7 @@
 package com.jiujiu.autosos.order;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,8 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
         }
 
         public void bindData(OrderModel item) {
-            this.tvCarNumber.setText(item.getCarNo() + "/" + item.getCarOwnerId());
+            String carNo = TextUtils.isEmpty(item.getCarNo()) ? "" : item.getCarNo() + "/";
+            this.tvCarNumber.setText(carNo + item.getCarOwnerId());
             this.tvOccurAddress.setText(item.getAddress());
             this.tvOrderNumber.setText(item.getOrderId() +"");
             this.tvOrderState.setText(OrderStateEnum.getOrderState(item.getState()).getLabel());

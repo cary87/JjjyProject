@@ -10,44 +10,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorAccent"
-                android:padding="6dp">
-
-                <com.baoyachi.stepview.HorizontalStepView
-                    android:id="@+id/step_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:textColor="@android:color/white"
-                    />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@color/white"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:background="@color/colorAccent"
+                    android:padding="6dp">
+
+                    <com.baoyachi.stepview.HorizontalStepView
+                        android:id="@+id/step_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:textColor="@android:color/white"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:layout_marginTop="10dp"
+                    android:padding="10dp">
 
                     <TextView
                         android:id="@+id/tv_driver_owner"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="王八蛋"
+                        android:text="张三"
                         android:textColor="@color/black" />
 
                     <TextView
@@ -63,221 +62,231 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
+                    android:layout_marginTop="10dp"
+                    android:background="@color/white"
+                    android:orientation="vertical">
 
-                    <TextView
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="救援地：" />
+
+                        <TextView
+                            android:id="@+id/tv_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="广州天河区" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="订单编号：" />
+
+                        <TextView
+                            android:id="@+id/tv_order_id"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="34534534534535" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="接单时间：" />
+
+                        <TextView
+                            android:id="@+id/tv_accept_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2018-01-13 11:33:04" />
+                    </LinearLayout>
+
+                    <!--<View style="@style/line_horizontal" />-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="服务类型：" />
+
+                        <TextView
+                            android:id="@+id/tv_service_type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="拖车" />
+
+                    </LinearLayout>
+
+                    <!--<View style="@style/line_horizontal" />-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="支付方式：" />
+
+                        <TextView
+                            android:id="@+id/tv_charge_type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="收现" />
+
+                    </LinearLayout>
+
+                    <!--<View style="@style/line_horizontal" />-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="备注：" />
+
+                        <TextView
+                            android:id="@+id/tv_remark"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="来快点" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="救援费用：" />
+
+                        <TextView
+                            android:id="@+id/tv_fee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="￥10000"
+                            android:textColor="@android:color/holo_red_light" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/btn_accept_order"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="救援地：" />
+                        android:textColor="@color/white"
+                        android:layout_marginRight="10dp"
+                        android:text="接单"/>
 
-                    <TextView
-                        android:id="@+id/tv_address"
+                    <Button
+                        android:id="@+id/btn_nav"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:layout_marginRight="10dp"
+                        android:text="导航"/>
+
+                    <Button
+                        android:id="@+id/btn_arrive"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
                         android:layout_marginLeft="10dp"
-                        android:text="广州天河区" />
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@color/white"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <TextView
+                        android:text="已到达"
+                        />
+                    <Button
+                        android:id="@+id/btn_take_photo"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="订单编号：" />
+                        android:textColor="@color/white"
+                        android:layout_marginLeft="10dp"
+                        android:text="拍照"
+                        />
 
-                    <TextView
-                        android:id="@+id/tv_order_id"
+                    <Button
+                        android:id="@+id/btn_finish"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="34534534534535" />
-                </LinearLayout>
+                        android:textColor="@color/white"
+                        android:layout_marginLeft="10dp"
+                        android:text="完成救援"
+                        />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <TextView
+                    <Button
+                        android:id="@+id/btn_pay"
+                        android:visibility="gone"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="接单时间：" />
-
-                    <TextView
-                        android:id="@+id/tv_accept_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2018-01-13 11:33:04" />
-                </LinearLayout>
-
-                <View style="@style/line_horizontal" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="服务类型：" />
-
-                    <TextView
-                        android:id="@+id/tv_service_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="拖车" />
-
-                </LinearLayout>
-
-                <View style="@style/line_horizontal" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="支付方式：" />
-
-                    <TextView
-                        android:id="@+id/tv_charge_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="收现" />
-
-                </LinearLayout>
-
-                <View style="@style/line_horizontal" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="备注：" />
-
-                    <TextView
-                        android:id="@+id/tv_remark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="来快点" />
+                        android:textColor="@color/white"
+                        android:layout_marginLeft="10dp"
+                        android:text="车主支付"
+                        />
 
                 </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@color/white"
-                android:orientation="vertical">
+            <include layout="@layout/layout_option"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="救援费用：" />
-
-                    <TextView
-                        android:id="@+id/tv_fee"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="￥10000"
-                        android:textColor="@android:color/holo_red_light" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/btn_accept_order"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginRight="10dp"
-                    android:text="接单"/>
-
-                <Button
-                    android:id="@+id/btn_nav"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginRight="10dp"
-                    android:text="导航"/>
-
-                <Button
-                    android:id="@+id/btn_arrive"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="10dp"
-                    android:text="已到达"
-                    />
-                <Button
-                    android:id="@+id/btn_take_photo"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="10dp"
-                    android:text="拍照"
-                    />
-
-                <Button
-                    android:id="@+id/btn_finish"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="10dp"
-                    android:text="完成救援"
-                    />
-
-                <Button
-                    android:id="@+id/btn_pay"
-                    android:visibility="gone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:layout_marginLeft="10dp"
-                    android:text="车主支付"
-                    />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        </RelativeLayout>
 
     </ScrollView>
 

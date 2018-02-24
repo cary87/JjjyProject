@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.navi.model.NaviLatLng;
@@ -21,6 +23,7 @@ import com.code19.library.DateUtils;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.api.UserApi;
+import com.jiujiu.autosos.camera.CameraActivity;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
@@ -34,6 +37,7 @@ import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
+import com.jiujiu.autosos.order.model.TakePhotoEvent;
 import com.jiujiu.autosos.resp.FileUploadResp;
 
 import org.greenrobot.eventbus.EventBus;
@@ -52,6 +56,10 @@ import me.iwf.photopicker.PhotoPicker;
 import me.iwf.photopicker.PhotoPreview;
 import okhttp3.Call;
 
+import static com.jiujiu.autosos.order.TakePhotoConstant.PHOTO_TAG;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_CONSTRUCTION_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_LOOK_TAKE;
+import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_VIN_TAKE;
 import static com.jiujiu.autosos.order.model.OrderStateEnum.getTimeLineStates;
 
 /**
@@ -95,6 +103,10 @@ public class OrderDetailActivity extends AbsBaseActivity {
     Button btnPay;
     @BindView(R.id.btn_accept_order)
     Button btnAcceptOrder;
+    @BindView(R.id.ll_order_detail)
+    LinearLayout llOrderDetail;
+    @BindView(R.id.rl_option)
+    RelativeLayout rlOption;
 
     private OrderModel mOrder;
 
@@ -115,6 +127,13 @@ public class OrderDetailActivity extends AbsBaseActivity {
     public void onOrderStateChangeEvent(OrderModel orderModel) {
         this.mOrder = orderModel;
         setupView();
+    }
+
+    @Subscribe
+    public void onSavePicturePaths(TakePhotoEvent event) {
+        if (event.getPaths() != null && event.getPaths().size() > 0) {
+            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths());
+        }
     }
 
     @Override
@@ -208,6 +227,23 @@ public class OrderDetailActivity extends AbsBaseActivity {
         updateViewByState();
     }
 
+    /**
+     * 是否需要显示车架号，验车签名等操作选项
+     * @param needDisplay
+     */
+    private void displayOptionLayout(boolean needDisplay) {
+        if (needDisplay) {
+            rlOption.setVisibility(View.VISIBLE);
+            llOrderDetail.setVisibility(View.INVISIBLE);
+            btnTakePhoto.setVisibility(View.GONE);//原有这个按钮就不需要了
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlOption.getLayoutParams();
+            params.addRule(RelativeLayout.CENTER_VERTICAL);
+            rlOption.setLayoutParams(params);
+        } else {
+            rlOption.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -217,10 +253,12 @@ public class OrderDetailActivity extends AbsBaseActivity {
     private void updateViewByState() {
         //变更timeline
         setSetpView();
+
         switch (OrderStateEnum.getOrderState(mOrder.getState())) {
             case Post:
             case Order:
                 btnAcceptOrder.setVisibility(View.VISIBLE);
+                displayOptionLayout(false);
                 break;
             case Accept:
                 btnNav.setVisibility(View.VISIBLE);
@@ -229,6 +267,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
+
+                displayOptionLayout(false);
                 break;
             case Arrive:
                 btnNav.setVisibility(View.GONE);
@@ -237,6 +277,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnFinish.setVisibility(View.VISIBLE);
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
+
+                displayOptionLayout(OrderUtil.checkIsDragcar(mOrder));
                 break;
             case Finished:
                 btnNav.setVisibility(View.GONE);
@@ -245,6 +287,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.VISIBLE);
                 btnAcceptOrder.setVisibility(View.GONE);
+
+                displayOptionLayout(false);
                 break;
             case Payed:
                 btnNav.setVisibility(View.GONE);
@@ -253,6 +297,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
+
+                displayOptionLayout(false);
                 break;
         }
     }
@@ -285,7 +331,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 .setStepsViewIndicatorAttentionIcon(ContextCompat.getDrawable(this, R.drawable.attention));//设置StepsViewIndicator AttentionIcon
     }
 
-    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_arrive, R.id.btn_take_photo, R.id.btn_finish, R.id.btn_pay})
+    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_arrive, R.id.btn_take_photo, R.id.btn_finish, R.id.btn_pay, R.id.btn_signature, R.id.btn_look, R.id.btn_vin, R.id.btn_construction})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_nav:
@@ -322,6 +368,28 @@ public class OrderDetailActivity extends AbsBaseActivity {
 
                     }
                 });
+                break;
+
+                //new add
+            case R.id.btn_signature:
+                Intent signCheck = new Intent(this, SignatureToCheckActivity.class);
+                signCheck.putExtra(OrderUtil.KEY_ORDER, mOrder);
+                startActivity(signCheck);
+                break;
+            case R.id.btn_look:
+                Intent look = new Intent(this, CameraActivity.class);
+                look.putExtra(PHOTO_TAG, TAG_LOOK_TAKE);
+                startActivity(look);
+                break;
+            case R.id.btn_vin:
+                Intent vin = new Intent(this, CameraActivity.class);
+                vin.putExtra(PHOTO_TAG, TAG_VIN_TAKE);
+                startActivity(vin);
+                break;
+            case R.id.btn_construction:
+                Intent construction = new Intent(this, CameraActivity.class);
+                construction.putExtra(PHOTO_TAG, TAG_CONSTRUCTION_TAKE);
+                startActivity(construction);
                 break;
         }
     }

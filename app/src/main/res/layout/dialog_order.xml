@@ -48,6 +48,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:text="救援位置："/>
 
                 <TextView
@@ -55,7 +56,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:textColor="@color/black"
                     android:singleLine="true"
                     android:text=""/>
 
@@ -77,13 +77,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:text="车主手机："/>
 
                 <TextView
                     android:id="@+id/tv_phone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccent"
+                    android:textColor="@android:color/holo_blue_light"
                     android:text=""/>
 
             </LinearLayout>
@@ -97,12 +98,15 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:text="车主备注："/>
 
                 <TextView
                     android:id="@+id/tv_remark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:maxLines="3"
+                    android:ellipsize="end"
                     android:text=""/>
 
             </LinearLayout>

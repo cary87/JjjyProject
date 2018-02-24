@@ -14,10 +14,14 @@
         android:layout_weight="1" />
 
 
+    <View
+        style="@style/line_horizontal"/>
+
     <com.flyco.tablayout.CommonTabLayout
         android:id="@+id/bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="54dp"
+        android:background="@color/color_tab_bg"
         tl:tl_iconHeight="23dp"
         tl:tl_iconWidth="23dp"
         tl:tl_indicator_color="@color/colorPrimary"
