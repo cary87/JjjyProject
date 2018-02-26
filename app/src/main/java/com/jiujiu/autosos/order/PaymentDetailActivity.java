@@ -80,6 +80,9 @@ public class PaymentDetailActivity extends AbsBaseActivity {
             if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
                 OrderItem orderItem = order.getOrderItems().get(0);
                 CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByValue(orderItem.getCalculationType());
+                if (CalculationTypeEnum.Once.equals(calculationType)) {
+                    llOtherFee.setVisibility(View.GONE);
+                }
                 if (calculationType != null) {
                     tvCalculationType.setText(calculationType.getLaybel());
                 } else {
@@ -148,7 +151,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                 });
                 break;
             case R.id.fl_additional:
-                DialogUtils.showInputDialog(mActivity, "特殊加价费", tvAdditionalPrice.getText().toString(), InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入特殊加价费", new MaterialDialog.InputCallback() {
+                DialogUtils.showInputDialog(mActivity, "特殊时段加价费", tvAdditionalPrice.getText().toString(), InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入特殊加价费", new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvAdditionalPrice.setText(input);

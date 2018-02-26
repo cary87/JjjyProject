@@ -10,10 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -53,9 +49,11 @@
                         android:id="@+id/tv_driver_mobile"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/ic_phone"
                         android:layout_marginLeft="20dp"
                         android:text="1855225446"
-                        android:textColor="@color/black" />
+                        android:textSize="18sp"
+                        android:textColor="@color/colorAccent" />
 
                 </LinearLayout>
 
@@ -84,7 +82,6 @@
                             android:text="广州天河区" />
                     </LinearLayout>
 
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -110,6 +107,8 @@
                             android:text="34534534534535" />
                     </LinearLayout>
 
+                    <View style="@style/line_horizontal" />
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -127,7 +126,7 @@
                             android:text="2018-01-13 11:33:04" />
                     </LinearLayout>
 
-                    <!--<View style="@style/line_horizontal" />-->
+                    <View style="@style/line_horizontal" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -147,7 +146,7 @@
 
                     </LinearLayout>
 
-                    <!--<View style="@style/line_horizontal" />-->
+                    <View style="@style/line_horizontal" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -167,7 +166,7 @@
 
                     </LinearLayout>
 
-                    <!--<View style="@style/line_horizontal" />-->
+                    <View style="@style/line_horizontal" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -283,10 +282,6 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-            <include layout="@layout/layout_option"/>
-
-        </RelativeLayout>
 
     </ScrollView>
 

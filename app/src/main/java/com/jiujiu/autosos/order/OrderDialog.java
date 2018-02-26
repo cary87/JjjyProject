@@ -9,10 +9,12 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.code19.library.DensityUtil;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.storage.UserStorage;
@@ -70,6 +72,13 @@ public class OrderDialog extends Dialog {
         View view = View.inflate(context, R.layout.dialog_order, null);
         ButterKnife.bind(this, view);
         setContentView(view);
+
+        Window win = getWindow();
+        WindowManager.LayoutParams lp = win.getAttributes();
+        lp.height = DensityUtil.dip2px(context,400);
+        lp.width = DensityUtil.dip2px(context,320);
+        win.setAttributes(lp);
+
         setCancelable(false);
 
         tvPhone.setText(order.getCarOwnerId() + "");

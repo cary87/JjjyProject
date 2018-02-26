@@ -54,7 +54,7 @@ public class LoginActivity extends AbsBaseActivity {
         if (TextUtils.isEmpty(etPhone.getText().toString())) {
             showToast("请输入手机号");
         } else if (TextUtils.isEmpty(etPwd.getText().toString())) {
-            showToast("请输入手机号");
+            showToast("请输入密码");
         } else {
             showLoadingDialog("登录中");
             Disposable disposable = Observable.create(new ObservableOnSubscribe<UserResp>() {

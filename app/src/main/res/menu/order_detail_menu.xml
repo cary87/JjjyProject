@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_see_photes" app:showAsAction="always" android:title="图片"></item>
+    <item android:id="@+id/menu_signature" android:visible="false" android:title="验车确认"></item>
+    <item android:id="@+id/menu_look" android:visible="false" android:title="代查勘"></item>
+    <item android:id="@+id/menu_vin" android:visible="false" android:title="车架号"></item>
+    <item android:id="@+id/menu_construction" android:visible="false" android:title="施工单"></item>
+</menu>

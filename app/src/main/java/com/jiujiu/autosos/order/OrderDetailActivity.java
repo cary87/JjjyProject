@@ -1,6 +1,7 @@
 package com.jiujiu.autosos.order;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.content.ContextCompat;
@@ -11,8 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.navi.model.NaviLatLng;
@@ -103,10 +102,6 @@ public class OrderDetailActivity extends AbsBaseActivity {
     Button btnPay;
     @BindView(R.id.btn_accept_order)
     Button btnAcceptOrder;
-    @BindView(R.id.ll_order_detail)
-    LinearLayout llOrderDetail;
-    @BindView(R.id.rl_option)
-    RelativeLayout rlOption;
 
     private OrderModel mOrder;
 
@@ -115,6 +110,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
     private static final int MAX_TRY_COUNT = 3;
 
     private int currentCount = 0;
+
+    private Menu optionMenu;
 
 
     @Override
@@ -179,25 +176,55 @@ public class OrderDetailActivity extends AbsBaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.see_photo_menu, menu);
+        getMenuInflater().inflate(R.menu.order_detail_menu, menu);
         return true;
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        optionMenu = menu;
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (TextUtils.isEmpty(mOrder.getPictures())) {
-            showToast("没有图片");
-        } else {
-            List<String> photoPaths = Arrays.asList(mOrder.getPictures().split("\\|"));
-            ArrayList<String> absolutePaths = new ArrayList<>();
-            for (String photoPath : photoPaths) {
-                absolutePaths.add(UserStorage.getInstance().getUser().getFastDFSFileUrlPrefix() + photoPath);
-            }
-            PhotoPreview.builder()
-                    .setPhotos(absolutePaths)
-                    .setCurrentItem(0)
-                    .setShowDeleteButton(false)
-                    .start(OrderDetailActivity.this);
+        switch (item.getItemId()) {
+            case R.id.menu_see_photes:
+                if (TextUtils.isEmpty(mOrder.getPictures())) {
+                    showToast("没有图片");
+                } else {
+                    List<String> photoPaths = Arrays.asList(mOrder.getPictures().split("\\|"));
+                    ArrayList<String> absolutePaths = new ArrayList<>();
+                    for (String photoPath : photoPaths) {
+                        absolutePaths.add(UserStorage.getInstance().getUser().getFastDFSFileUrlPrefix() + photoPath);
+                    }
+                    PhotoPreview.builder()
+                            .setPhotos(absolutePaths)
+                            .setCurrentItem(0)
+                            .setShowDeleteButton(false)
+                            .start(OrderDetailActivity.this);
+                }
+                break;
+            case R.id.menu_signature:
+                Intent signCheck = new Intent(this, SignatureToCheckActivity.class);
+                signCheck.putExtra(OrderUtil.KEY_ORDER, mOrder);
+                startActivity(signCheck);
+                break;
+            case R.id.menu_look:
+                Intent look = new Intent(this, CameraActivity.class);
+                look.putExtra(PHOTO_TAG, TAG_LOOK_TAKE);
+                startActivity(look);
+                break;
+            case R.id.menu_vin:
+                Intent vin = new Intent(this, CameraActivity.class);
+                vin.putExtra(PHOTO_TAG, TAG_VIN_TAKE);
+                startActivity(vin);
+                break;
+            case R.id.menu_construction:
+                Intent construction = new Intent(this, CameraActivity.class);
+                construction.putExtra(PHOTO_TAG, TAG_CONSTRUCTION_TAKE);
+                startActivity(construction);
+                break;
         }
         return true;
     }
@@ -231,16 +258,15 @@ public class OrderDetailActivity extends AbsBaseActivity {
      * 是否需要显示车架号，验车签名等操作选项
      * @param needDisplay
      */
-    private void displayOptionLayout(boolean needDisplay) {
+    private void displayMoreOptionMenu(boolean needDisplay) {
+        if (optionMenu != null) {
+            optionMenu.findItem(R.id.menu_signature).setVisible(needDisplay);
+            optionMenu.findItem(R.id.menu_look).setVisible(needDisplay);
+            optionMenu.findItem(R.id.menu_vin).setVisible(needDisplay);
+            optionMenu.findItem(R.id.menu_construction).setVisible(needDisplay);
+        }
         if (needDisplay) {
-            rlOption.setVisibility(View.VISIBLE);
-            llOrderDetail.setVisibility(View.INVISIBLE);
             btnTakePhoto.setVisibility(View.GONE);//原有这个按钮就不需要了
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) rlOption.getLayoutParams();
-            params.addRule(RelativeLayout.CENTER_VERTICAL);
-            rlOption.setLayoutParams(params);
-        } else {
-            rlOption.setVisibility(View.GONE);
         }
     }
 
@@ -258,7 +284,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
             case Post:
             case Order:
                 btnAcceptOrder.setVisibility(View.VISIBLE);
-                displayOptionLayout(false);
+                displayMoreOptionMenu(false);
                 break;
             case Accept:
                 btnNav.setVisibility(View.VISIBLE);
@@ -268,7 +294,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
 
-                displayOptionLayout(false);
+                displayMoreOptionMenu(false);
                 break;
             case Arrive:
                 btnNav.setVisibility(View.GONE);
@@ -278,7 +304,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
 
-                displayOptionLayout(OrderUtil.checkIsDragcar(mOrder));
+                displayMoreOptionMenu(OrderUtil.checkIsDragcar(mOrder));
                 break;
             case Finished:
                 btnNav.setVisibility(View.GONE);
@@ -288,7 +314,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnPay.setVisibility(View.VISIBLE);
                 btnAcceptOrder.setVisibility(View.GONE);
 
-                displayOptionLayout(false);
+                displayMoreOptionMenu(false);
                 break;
             case Payed:
                 btnNav.setVisibility(View.GONE);
@@ -298,7 +324,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
 
-                displayOptionLayout(false);
+                displayMoreOptionMenu(false);
                 break;
         }
     }
@@ -331,7 +357,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 .setStepsViewIndicatorAttentionIcon(ContextCompat.getDrawable(this, R.drawable.attention));//设置StepsViewIndicator AttentionIcon
     }
 
-    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_arrive, R.id.btn_take_photo, R.id.btn_finish, R.id.btn_pay, R.id.btn_signature, R.id.btn_look, R.id.btn_vin, R.id.btn_construction})
+    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_arrive, R.id.btn_take_photo, R.id.btn_finish, R.id.btn_pay, R.id.tv_driver_mobile})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_nav:
@@ -369,27 +395,9 @@ public class OrderDetailActivity extends AbsBaseActivity {
                     }
                 });
                 break;
-
-                //new add
-            case R.id.btn_signature:
-                Intent signCheck = new Intent(this, SignatureToCheckActivity.class);
-                signCheck.putExtra(OrderUtil.KEY_ORDER, mOrder);
-                startActivity(signCheck);
-                break;
-            case R.id.btn_look:
-                Intent look = new Intent(this, CameraActivity.class);
-                look.putExtra(PHOTO_TAG, TAG_LOOK_TAKE);
-                startActivity(look);
-                break;
-            case R.id.btn_vin:
-                Intent vin = new Intent(this, CameraActivity.class);
-                vin.putExtra(PHOTO_TAG, TAG_VIN_TAKE);
-                startActivity(vin);
-                break;
-            case R.id.btn_construction:
-                Intent construction = new Intent(this, CameraActivity.class);
-                construction.putExtra(PHOTO_TAG, TAG_CONSTRUCTION_TAKE);
-                startActivity(construction);
+            case R.id.tv_driver_mobile:
+                Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mOrder.getCarOwnerId()));
+                startActivity(callIntent);
                 break;
         }
     }
