@@ -77,7 +77,7 @@ public class SignatureToCheckActivity extends AbsSignatureActivity {
                         public void onComplete(String path) {
                             List<String> paths = new ArrayList<>();
                             paths.add(path);
-                            OrderUtil.savePicturesForOrder(SignatureToCheckActivity.this, order, paths);
+                            OrderUtil.savePicturesForOrder(SignatureToCheckActivity.this, order, paths, null);
                             finish();
                         }
                     });

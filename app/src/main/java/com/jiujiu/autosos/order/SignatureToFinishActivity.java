@@ -74,7 +74,7 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
             public void onComplete(String path) {
                 List<String> paths = new ArrayList<>();
                 paths.add(path);
-                OrderUtil.savePicturesForOrder(SignatureToFinishActivity.this, order, paths);
+                OrderUtil.savePicturesForOrder(SignatureToFinishActivity.this, order, paths, null);
                 Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
                 intent.putExtra(OrderUtil.KEY_ORDER, order);
                 startActivity(intent);

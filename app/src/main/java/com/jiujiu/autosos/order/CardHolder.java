@@ -9,7 +9,6 @@ import com.bumptech.glide.Glide;
 import com.code19.library.DateUtils;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.storage.UserStorage;
-import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 
 import java.util.ArrayList;
@@ -53,14 +52,6 @@ public class CardHolder {
             this.tvPicNum.setText(absolutePaths.size() + "");
             Glide.with(firstImageView.getContext()).load(absolutePaths.get(0)).into(firstImageView);
         }
-        List<OrderItem> orderItems = item.getOrderItems();
-        if (orderItems != null && orderItems.size() > 0) {
-            StringBuffer buffer = new StringBuffer();
-            for (OrderItem orderItem : orderItems) {
-                buffer.append(orderItem.getItemName() + "-");
-            }
-            String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
-            this.tvServiceType.setText(itemsName);
-        }
+        this.tvServiceType.setText(OrderUtil.getOrderTypeName(item));
     }
 }

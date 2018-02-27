@@ -32,7 +32,6 @@ import com.jiujiu.autosos.nav.GPSNaviActivity;
 import com.jiujiu.autosos.nav.NavigateUtils;
 import com.jiujiu.autosos.nav.RouteSearchManager;
 import com.jiujiu.autosos.order.model.ChargeTypeEnum;
-import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
@@ -127,9 +126,39 @@ public class OrderDetailActivity extends AbsBaseActivity {
     }
 
     @Subscribe
-    public void onSavePicturePaths(TakePhotoEvent event) {
+    public void onSavePicturePaths(final TakePhotoEvent event) {
         if (event.getPaths() != null && event.getPaths().size() > 0) {
-            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths());
+            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths(), new OrderUtil.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    addPathStrToOrder(event.getPaths());
+                }
+
+                @Override
+                public void onFail() {
+
+                }
+            });
+        }
+    }
+
+    /**
+     * 为 order 添加图片，以|分割
+     * @param paths
+     */
+    public void addPathStrToOrder(List<String> paths) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (String path : paths) {
+            stringBuffer.append(path);
+            stringBuffer.append("|");
+        }
+        String pathStr = stringBuffer.toString().substring(0, stringBuffer.toString().length() - 1);
+        if (TextUtils.isEmpty(mOrder.getPictures())) {
+            mOrder.setPictures(pathStr);
+        } else if (mOrder.getPictures().endsWith("|")) {
+            mOrder.setPictures(mOrder.getPictures() + pathStr);
+        } else {
+            mOrder.setPictures(mOrder.getPictures() + "|" + pathStr);
         }
     }
 
@@ -242,15 +271,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
         tvChargeType.setText(ChargeTypeEnum.getType(mOrder.getChargeType()).getLabel());
         tvFee.setText("￥" + mOrder.getPayableAmount());
         tvRemark.setText(mOrder.getRemark());
-        List<OrderItem> orderItems = mOrder.getOrderItems();
-        if (orderItems != null && orderItems.size() > 0) {
-            StringBuffer buffer = new StringBuffer();
-            for (OrderItem orderItem : orderItems) {
-                buffer.append(orderItem.getItemName() + "-");
-            }
-            String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
-            tvServiceType.setText(itemsName);
-        }
+        tvServiceType.setText(OrderUtil.getOrderTypeName(mOrder));
         updateViewByState();
     }
 
@@ -482,9 +503,19 @@ public class OrderDetailActivity extends AbsBaseActivity {
                                 @Override
                                 public void onResponse(FileUploadResp resp, int i) {
                                     LogUtils.i("wzh", resp.toString());
-                                    List<String> uploadPaths = new ArrayList<>();
+                                    final List<String> uploadPaths = new ArrayList<>();
                                     uploadPaths.add(resp.getData().getPath());
-                                    OrderUtil.savePicturesForOrder(OrderDetailActivity.this, mOrder, uploadPaths);
+                                    OrderUtil.savePicturesForOrder(OrderDetailActivity.this, mOrder, uploadPaths, new OrderUtil.ActionListener() {
+                                        @Override
+                                        public void onSuccess() {
+                                            addPathStrToOrder(uploadPaths);
+                                        }
+
+                                        @Override
+                                        public void onFail() {
+
+                                        }
+                                    });
                                 }
                             });
                         }

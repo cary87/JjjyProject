@@ -1,6 +1,7 @@
 package com.jiujiu.autosos.order;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -246,6 +247,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
     public void generateQR2View(String qrString, final PayWayEnum payWayEnum) {
         new AwesomeQRCode.Renderer()
                 .contents(qrString)
+                .logo(BitmapFactory.decodeResource(getResources(), PayWayEnum.WxPay.equals(payWayEnum) ? R.drawable.wechat_pay : R.drawable.ali_pay))
                 .size(500).margin(20)
                 .renderAsync(new AwesomeQRCode.Callback() {
                     @Override

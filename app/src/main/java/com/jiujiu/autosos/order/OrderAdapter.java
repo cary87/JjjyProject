@@ -10,11 +10,8 @@ import android.widget.TextView;
 import com.code19.library.DateUtils;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.BaseListAdapter;
-import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -77,15 +74,7 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
                 this.tvOrderTime.setText(DateUtils.formatDataTime(item.getOrderTime()));
                 this.tvTimeName.setText("下单时间：");
             }
-            List<OrderItem> orderItems = item.getOrderItems();
-            if (orderItems != null && orderItems.size() > 0) {
-                StringBuffer buffer = new StringBuffer();
-                for (OrderItem orderItem : orderItems) {
-                    buffer.append(orderItem.getItemName() + "-");
-                }
-                String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
-                this.tvServiceType.setText(itemsName);
-            }
+            this.tvServiceType.setText(OrderUtil.getOrderTypeName(item));
         }
     }
 }

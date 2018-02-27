@@ -84,6 +84,8 @@
 
                 </LinearLayout>
 
+                <View style="@style/line_horizontal" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -220,6 +222,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center">
 
                     <Button
@@ -247,7 +250,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:layout_marginLeft="10dp"
-                        android:text="已到达"
+                        android:text="确认已到达救援地"
                         />
                     <Button
                         android:id="@+id/btn_take_photo"
@@ -266,7 +269,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:layout_marginLeft="10dp"
-                        android:text="完成救援"
+                        android:text="确认已完成救援"
                         />
 
                     <Button

@@ -44,6 +44,19 @@ public class OrderUtil {
         
     }
 
+    public static String getOrderTypeName(OrderModel orderModel) {
+        List<OrderItem> orderItems = orderModel.getOrderItems();
+        if (orderItems != null && orderItems.size() > 0) {
+            StringBuffer buffer = new StringBuffer();
+            for (OrderItem orderItem : orderItems) {
+                buffer.append(orderItem.getItemName() + "-");
+            }
+            String itemsName = buffer.toString().substring(0, buffer.toString().length() - 1);
+            return itemsName;
+        }
+        return "";
+    }
+
     /**
      * 查看是否拖车服务
      * @param item
@@ -72,7 +85,7 @@ public class OrderUtil {
      * @param order
      * @param paths
      */
-    public static void savePicturesForOrder(final AbsBaseActivity activity, OrderModel order, List<String> paths) {
+    public static void savePicturesForOrder(final AbsBaseActivity activity, OrderModel order, final List<String> paths, final ActionListener listener) {
         HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
         params.put("pictures", new Gson().toJson(paths));
@@ -84,7 +97,9 @@ public class OrderUtil {
 
             @Override
             public void onResponse(BaseResp resp, int i) {
-
+                if (listener != null) {
+                    listener.onSuccess();
+                }
             }
         });
     }

@@ -75,12 +75,13 @@ public class OrderDialog extends Dialog {
 
         Window win = getWindow();
         WindowManager.LayoutParams lp = win.getAttributes();
-        lp.height = DensityUtil.dip2px(context,400);
+        lp.height = DensityUtil.dip2px(context,420);
         lp.width = DensityUtil.dip2px(context,320);
         win.setAttributes(lp);
 
         setCancelable(false);
 
+        tvOrderTitle.setText(OrderUtil.getOrderTypeName(order) + "订单");
         tvPhone.setText(order.getCarOwnerId() + "");
         tvPhone.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         tvPhone.getPaint().setAntiAlias(true);//抗锯齿

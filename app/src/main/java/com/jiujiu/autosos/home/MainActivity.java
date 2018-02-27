@@ -1,5 +1,6 @@
 package com.jiujiu.autosos.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,10 +16,12 @@ import com.jiujiu.autosos.common.model.BottomTabEntity;
 import com.jiujiu.autosos.common.utils.PushUtils;
 import com.jiujiu.autosos.me.MeFragment;
 import com.jiujiu.autosos.nav.TTSController;
+import com.jiujiu.autosos.order.OrderDetailActivity;
 import com.jiujiu.autosos.order.OrderDialog;
 import com.jiujiu.autosos.order.OrderFragment;
 import com.jiujiu.autosos.order.OrderUtil;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.PushOrderEvent;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.push.OnePushReceiver;
@@ -102,6 +105,10 @@ public class MainActivity extends AbsBaseActivity {
                     @Override
                     public void onSuccess() {
                         EventBus.getDefault().post(new RefreshViewEvent());
+                        order.setState(OrderStateEnum.Accept.getValue());
+                        Intent intent = new Intent(mActivity, OrderDetailActivity.class);
+                        intent.putExtra(OrderUtil.KEY_ORDER, order);
+                        startActivity(intent);
                     }
 
                     @Override
