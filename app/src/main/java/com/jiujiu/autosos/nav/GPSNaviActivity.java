@@ -145,7 +145,21 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
      * @param event
      */
     @Subscribe
-    public void onPhotoTakenEvent(TakePhotoEvent event) {
+    public void onPhotoTakenEvent(final TakePhotoEvent event) {
+        if (event.getPaths() != null && event.getPaths().size() > 0) {
+            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths(), new OrderUtil.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    OrderUtil.addPicturePathsForOrder(mOrder, event.getPaths());
+                }
+
+                @Override
+                public void onFail() {
+
+                }
+            });
+        }
+
         if (event.getTag() == TAG_ARRIVE_TAKE) {
             btnArrive.setText("把车辆挪上拖车拍照");
             btnArrive.setTag(TAG_MOVE_UP_CAR_TAKE);

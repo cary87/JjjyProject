@@ -6,7 +6,7 @@
 
     <!--tips-->
     <string name="net_error">服务器连接异常</string>
-    <string name="no_data">没有数据</string>
+    <string name="no_data">没有记录</string>
     <string name="loading">加载中...</string>
 
     <!--底部tab栏-->

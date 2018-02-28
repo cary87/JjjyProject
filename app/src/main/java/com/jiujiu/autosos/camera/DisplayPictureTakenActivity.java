@@ -6,8 +6,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
@@ -42,9 +42,6 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
     @BindView(R.id.iv_display)
     ImageView ivDisplay;
 
-    @BindView(R.id.pb_upload)
-    NumberProgressBar pbUpload;
-
     /**
      * 哪种业务拍照
      */
@@ -70,21 +67,25 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
      * @param file
      */
     private void uploadPicture(File file) {
-        pbUpload.setProgress(0);
-        pbUpload.setVisibility(View.VISIBLE);
+        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
+                .title("提示")
+                .content("请等待")
+                .cancelable(false)
+                .progress(false, 100).build();
+        progressDialog.show();
+
         HashMap<String, String> params = new HashMap<>();
         params.put("key", "attach");
-        showLoadingDialog("上传中");
         UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
             @Override
             public void onError(Call call, Exception e, int i) {
-                hideLoadingDialog();
+                showToast("上传失败");
             }
 
             @Override
             public void inProgress(float progress, long total, int id) {
                 super.inProgress(progress, total, id);
-                pbUpload.setProgress((int) progress *100);
+                progressDialog.setProgress((int) (progress *100));
                 LogUtils.i("wzh", progress + "");
 
             }
@@ -92,8 +93,8 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
             @Override
             public void onResponse(FileUploadResp resp, int i) {
                 LogUtils.i("wzh", resp.toString());
-                hideLoadingDialog();
                 paths.add(resp.getData().getPath());
+                progressDialog.dismiss();
             }
         });
     }

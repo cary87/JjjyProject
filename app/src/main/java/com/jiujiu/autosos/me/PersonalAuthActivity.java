@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.daimajia.numberprogressbar.NumberProgressBar;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
@@ -36,8 +36,6 @@ public class PersonalAuthActivity extends AbsBaseActivity {
     TextView tvTitle;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @BindView(R.id.pb_upload)
-    NumberProgressBar pbUpload;
 
     private String identiferpic1 = "";
     private String identiferPid2 = "";
@@ -126,25 +124,33 @@ public class PersonalAuthActivity extends AbsBaseActivity {
                 if (photos != null && photos.size() > 0) {
                     File file = new File(photos.get(0));
                     if (file.exists()) {
-                        pbUpload.setProgress(0);
-                        pbUpload.setVisibility(View.VISIBLE);
+                        final MaterialDialog progressDialog = new MaterialDialog.Builder(this)
+                                .title("提示")
+                                .content("请等待")
+                                .cancelable(false)
+                                .progress(false, 100).build();
+                        progressDialog.show();
+
                         HashMap<String, String> params = new HashMap<>();
                         params.put("key", "attach");
                         UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
                             @Override
                             public void onError(Call call, Exception e, int i) {
-
+                                progressDialog.dismiss();
+                                showToast("上传失败");
                             }
 
                             @Override
                             public void inProgress(float progress, long total, int id) {
                                 super.inProgress(progress, total, id);
-                                pbUpload.setProgress((int) progress *100);
+                                progressDialog.setProgress((int) (progress *100));
                                 LogUtils.i("wzh", progress + "");
                             }
 
                             @Override
                             public void onResponse(FileUploadResp resp, int i) {
+                                progressDialog.dismiss();
+                                showToast("上传成功");
                                 LogUtils.i("wzh", resp.toString());
                                 switch (tagOfPic) {
                                     case 1:

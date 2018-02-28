@@ -80,6 +80,27 @@ public class OrderUtil {
     }
 
     /**
+     * 为订单添加以|为分隔符的图片路径
+     * @param orderModel
+     * @param paths
+     */
+    public static void addPicturePathsForOrder(OrderModel orderModel, List<String> paths) {
+        StringBuffer stringBuffer = new StringBuffer();
+        for (String path : paths) {
+            stringBuffer.append(path);
+            stringBuffer.append("|");
+        }
+        String pathStr = stringBuffer.toString().substring(0, stringBuffer.toString().length() - 1);
+        if (TextUtils.isEmpty(orderModel.getPictures())) {
+            orderModel.setPictures(pathStr);
+        } else if (orderModel.getPictures().endsWith("|")) {
+            orderModel.setPictures(orderModel.getPictures() + pathStr);
+        } else {
+            orderModel.setPictures(orderModel.getPictures() + "|" + pathStr);
+        }
+    }
+
+    /**
      * 保存订单相关图片
      * @param activity
      * @param order
@@ -167,8 +188,8 @@ public class OrderUtil {
                         }
                     }
                     param.put("province", provinceCode);
-                    param.put("oldlongitude", UserStorage.getInstance().getLastSubmitLongitude() == 0 ? "" : Double.toString(UserStorage.getInstance().getLastSubmitLongitude()));
-                    param.put("oldlatitude", UserStorage.getInstance().getLastSubmitLatitude() == 0 ? "" : Double.toString(UserStorage.getInstance().getLastSubmitLatitude()));
+                    param.put("oldlongitude", "");
+                    param.put("oldlatitude", "");
                     param.put("longitude", Double.toString(longitude));
                     param.put("latitude", Double.toString(latitude));
                     BaseResp resp = UserApi.updatePosition(param, BaseResp.class);

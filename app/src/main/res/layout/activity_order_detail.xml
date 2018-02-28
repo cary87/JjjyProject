@@ -72,34 +72,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="救援地：" />
-
-                        <TextView
-                            android:id="@+id/tv_address"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
-                            android:text="广州天河区" />
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <View style="@style/line_horizontal" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:text="订单编号：" />
 
                         <TextView
@@ -126,6 +98,46 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="2018-01-13 11:33:04" />
+                    </LinearLayout>
+
+                    <View style="@style/line_horizontal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="车牌号码：" />
+
+                        <TextView
+                            android:id="@+id/tv_car_no"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="" />
+
+                    </LinearLayout>
+
+                    <View style="@style/line_horizontal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="车辆型号：" />
+
+                        <TextView
+                            android:id="@+id/tv_car_model"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="" />
+
                     </LinearLayout>
 
                     <View style="@style/line_horizontal" />
@@ -166,6 +178,46 @@
                             android:layout_height="wrap_content"
                             android:text="收现" />
 
+                    </LinearLayout>
+
+                    <View style="@style/line_horizontal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="救援地址：" />
+
+                        <TextView
+                            android:id="@+id/tv_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="广州天河区" />
+                    </LinearLayout>
+
+                    <View style="@style/line_horizontal" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="目的地址：" />
+
+                        <TextView
+                            android:id="@+id/tv_desnation_address"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:text="广州天河区" />
                     </LinearLayout>
 
                     <View style="@style/line_horizontal" />
@@ -243,34 +295,6 @@
                         android:layout_marginRight="10dp"
                         android:text="导航"/>
 
-                    <Button
-                        android:id="@+id/btn_arrive"
-                        android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:layout_marginLeft="10dp"
-                        android:text="确认已到达救援地"
-                        />
-                    <Button
-                        android:id="@+id/btn_take_photo"
-                        android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:layout_marginLeft="10dp"
-                        android:text="拍照"
-                        />
-
-                    <Button
-                        android:id="@+id/btn_finish"
-                        android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:layout_marginLeft="10dp"
-                        android:text="确认已完成救援"
-                        />
 
                     <Button
                         android:id="@+id/btn_pay"

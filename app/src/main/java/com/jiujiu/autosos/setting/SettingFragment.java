@@ -9,11 +9,11 @@ import com.code19.library.AppUtils;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.BaseFragment;
 import com.jiujiu.autosos.common.utils.AppTools;
+import com.jiujiu.autosos.common.utils.DialogUtils;
 import com.xdandroid.hellodaemon.IntentWrapper;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by Administrator on 2017/12/27 0027.
@@ -37,7 +37,7 @@ public class SettingFragment extends BaseFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.ll_version:
-                new SweetAlertDialog(mActivity).setTitleText("当前为最新版本，V" + AppUtils.getAppVersionName(mActivity, mActivity.getPackageName())).setConfirmText("确定").show();
+                DialogUtils.showConfirmDialog(mActivity, "当前为最新版本，V" + AppUtils.getAppVersionName(mActivity, mActivity.getPackageName()), null);
                 break;
             case R.id.ll_about:
                 AboutAcitvity.luanchSelf(mActivity);

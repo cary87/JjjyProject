@@ -51,16 +51,4 @@
 
     </LinearLayout>
 
-    <com.daimajia.numberprogressbar.NumberProgressBar
-        android:id="@+id/pb_upload"
-        android:visibility="gone"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        custom:progress_reached_color="@color/colorAccent"
-        custom:progress_text_color="@color/colorAccent"
-        />
-
 </LinearLayout>

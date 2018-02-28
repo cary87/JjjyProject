@@ -8,7 +8,6 @@ import com.sdbc.onepushlib.bean.Config;
 import com.sdbc.onepushlib.bean.OsTypeEnum;
 import com.sdbc.onepushlib.exception.PushException;
 import com.sdbc.onepushlib.net.udp.KeepAliveDaemon;
-import com.sdbc.onepushlib.utils.DeviceUtils;
 import com.sdbc.onepushlib.utils.PushLogs;
 import com.sdbc.onepushlib.utils.StringUtils;
 import com.xiaomi.mipush.sdk.MiPushClient;
@@ -60,7 +59,7 @@ public class OnePush {
                     .setUserId(userId)
                     .setServerIP(serverIP)
                     .setServerPort(serverPort);
-            if (forceMIPush || DeviceUtils.isMIUI(context)) {
+            if (/*forceMIPush || DeviceUtils.isMIUI(context)*/false) {
                 // 是小米系统
                 MiPushClient.registerPush(context, appTypeEnum.getMiAppId(), appTypeEnum.getMiAppKey());
                 String regId = MiPushClient.getRegId(context);

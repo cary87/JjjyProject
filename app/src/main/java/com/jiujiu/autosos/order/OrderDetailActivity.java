@@ -20,12 +20,10 @@ import com.baoyachi.stepview.HorizontalStepView;
 import com.baoyachi.stepview.bean.StepBean;
 import com.code19.library.DateUtils;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.camera.CameraActivity;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
-import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.GPSNaviActivity;
@@ -35,7 +33,6 @@ import com.jiujiu.autosos.order.model.ChargeTypeEnum;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
-import com.jiujiu.autosos.order.model.TakePhotoEvent;
 import com.jiujiu.autosos.resp.FileUploadResp;
 
 import org.greenrobot.eventbus.EventBus;
@@ -91,16 +88,16 @@ public class OrderDetailActivity extends AbsBaseActivity {
     HorizontalStepView setpview;
     @BindView(R.id.btn_nav)
     Button btnNav;
-    @BindView(R.id.btn_arrive)
-    Button btnArrive;
-    @BindView(R.id.btn_take_photo)
-    Button btnTakePhoto;
-    @BindView(R.id.btn_finish)
-    Button btnFinish;
     @BindView(R.id.btn_pay)
     Button btnPay;
     @BindView(R.id.btn_accept_order)
     Button btnAcceptOrder;
+    @BindView(R.id.tv_car_no)
+    TextView tvCarNo;
+    @BindView(R.id.tv_desnation_address)
+    TextView tvDesnationAddress;
+    @BindView(R.id.tv_car_model)
+    TextView tvCarModel;
 
     private OrderModel mOrder;
 
@@ -123,43 +120,6 @@ public class OrderDetailActivity extends AbsBaseActivity {
     public void onOrderStateChangeEvent(OrderModel orderModel) {
         this.mOrder = orderModel;
         setupView();
-    }
-
-    @Subscribe
-    public void onSavePicturePaths(final TakePhotoEvent event) {
-        if (event.getPaths() != null && event.getPaths().size() > 0) {
-            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths(), new OrderUtil.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    addPathStrToOrder(event.getPaths());
-                }
-
-                @Override
-                public void onFail() {
-
-                }
-            });
-        }
-    }
-
-    /**
-     * 为 order 添加图片，以|分割
-     * @param paths
-     */
-    public void addPathStrToOrder(List<String> paths) {
-        StringBuffer stringBuffer = new StringBuffer();
-        for (String path : paths) {
-            stringBuffer.append(path);
-            stringBuffer.append("|");
-        }
-        String pathStr = stringBuffer.toString().substring(0, stringBuffer.toString().length() - 1);
-        if (TextUtils.isEmpty(mOrder.getPictures())) {
-            mOrder.setPictures(pathStr);
-        } else if (mOrder.getPictures().endsWith("|")) {
-            mOrder.setPictures(mOrder.getPictures() + pathStr);
-        } else {
-            mOrder.setPictures(mOrder.getPictures() + "|" + pathStr);
-        }
     }
 
     @Override
@@ -260,6 +220,8 @@ public class OrderDetailActivity extends AbsBaseActivity {
 
     private void setupView() {
         tvDriverOwner.setText(mOrder.getCarOwner());
+        tvCarNo.setText(mOrder.getCarNo());
+        tvCarModel.setText("");
         tvDriverMobile.setText(mOrder.getCarOwnerId() + "");
         tvOrderId.setText(mOrder.getOrderId() + "");
         if (mOrder.getAcceptTime() > 0) {
@@ -268,6 +230,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
             tvAcceptTime.setText("无");
         }
         tvAddress.setText(mOrder.getAddress());
+        tvDesnationAddress.setText(mOrder.getToRescueAdress());
         tvChargeType.setText(ChargeTypeEnum.getType(mOrder.getChargeType()).getLabel());
         tvFee.setText("￥" + mOrder.getPayableAmount());
         tvRemark.setText(mOrder.getRemark());
@@ -286,9 +249,6 @@ public class OrderDetailActivity extends AbsBaseActivity {
             optionMenu.findItem(R.id.menu_vin).setVisible(needDisplay);
             optionMenu.findItem(R.id.menu_construction).setVisible(needDisplay);
         }
-        if (needDisplay) {
-            btnTakePhoto.setVisibility(View.GONE);//原有这个按钮就不需要了
-        }
     }
 
     @Override
@@ -300,52 +260,30 @@ public class OrderDetailActivity extends AbsBaseActivity {
     private void updateViewByState() {
         //变更timeline
         setSetpView();
-
         switch (OrderStateEnum.getOrderState(mOrder.getState())) {
             case Post:
             case Order:
                 btnAcceptOrder.setVisibility(View.VISIBLE);
-                displayMoreOptionMenu(false);
                 break;
             case Accept:
                 btnNav.setVisibility(View.VISIBLE);
-                btnArrive.setVisibility(View.VISIBLE);
-                btnTakePhoto.setVisibility(View.GONE);
-                btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
-
-                displayMoreOptionMenu(false);
                 break;
             case Arrive:
                 btnNav.setVisibility(View.GONE);
-                btnArrive.setVisibility(View.GONE);
-                btnTakePhoto.setVisibility(View.VISIBLE);
-                btnFinish.setVisibility(View.VISIBLE);
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
-
-                displayMoreOptionMenu(OrderUtil.checkIsDragcar(mOrder));
                 break;
             case Finished:
                 btnNav.setVisibility(View.GONE);
-                btnArrive.setVisibility(View.GONE);
-                btnTakePhoto.setVisibility(View.GONE);
-                btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.VISIBLE);
                 btnAcceptOrder.setVisibility(View.GONE);
-
-                displayMoreOptionMenu(false);
                 break;
             case Payed:
                 btnNav.setVisibility(View.GONE);
-                btnArrive.setVisibility(View.GONE);
-                btnTakePhoto.setVisibility(View.GONE);
-                btnFinish.setVisibility(View.GONE);
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
-
-                displayMoreOptionMenu(false);
                 break;
         }
     }
@@ -378,22 +316,11 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 .setStepsViewIndicatorAttentionIcon(ContextCompat.getDrawable(this, R.drawable.attention));//设置StepsViewIndicator AttentionIcon
     }
 
-    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_arrive, R.id.btn_take_photo, R.id.btn_finish, R.id.btn_pay, R.id.tv_driver_mobile})
+    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_pay, R.id.tv_driver_mobile})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_nav:
-                alertBottomSheet();
-                break;
-            case R.id.btn_arrive:
-                sendArriveRequest();
-                break;
-            case R.id.btn_take_photo:
-                PhotoPicker.builder().setPhotoCount(9).setShowCamera(true).setPreviewEnabled(false).start(mActivity);
-                break;
-            case R.id.btn_finish:
-                Intent sign = new Intent(this, SignatureToFinishActivity.class);
-                sign.putExtra(OrderUtil.KEY_ORDER, mOrder);
-                startActivity(sign);
+                startNav();
                 break;
             case R.id.btn_pay:
                 Intent intent = new Intent(this, PaymentDetailActivity.class);
@@ -424,27 +351,12 @@ public class OrderDetailActivity extends AbsBaseActivity {
     }
 
     /**
-     * 到达救援现场请求服务端
+     * 开始导航
      */
-    public void sendArriveRequest() {
-        showLoadingDialog("加载中");
-        HashMap<String, String> params = new HashMap<>();
-        params.put("province", UserStorage.getInstance().getUser().getProvince());
-        params.put("orderId", mOrder.getOrderId() + "");
-        OrderApi.driverArrive(params, new ApiCallback<BaseResp>() {
-            @Override
-            public void onError(Call call, Exception e, int i) {
-                handleError(e);
-            }
-
-            @Override
-            public void onResponse(BaseResp resp, int i) {
-                hideLoadingDialog();
-                mOrder.setState(OrderStateEnum.Arrive.getValue());
-                updateViewByState();
-                EventBus.getDefault().post(new RefreshViewEvent());
-            }
-        });
+    private void startNav() {
+        Intent intent = new Intent(OrderDetailActivity.this, GPSNaviActivity.class);
+        intent.putExtra(OrderUtil.KEY_ORDER, mOrder);
+        startActivity(intent);
     }
 
     private void alertBottomSheet() {
@@ -508,7 +420,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                                     OrderUtil.savePicturesForOrder(OrderDetailActivity.this, mOrder, uploadPaths, new OrderUtil.ActionListener() {
                                         @Override
                                         public void onSuccess() {
-                                            addPathStrToOrder(uploadPaths);
+                                            OrderUtil.addPicturePathsForOrder(mOrder, uploadPaths);
                                         }
 
                                         @Override
