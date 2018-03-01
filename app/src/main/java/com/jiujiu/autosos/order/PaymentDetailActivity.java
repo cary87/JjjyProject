@@ -7,7 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -23,7 +23,6 @@ import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.common.utils.DialogUtils;
 import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.LocationManeger;
-import com.jiujiu.autosos.order.model.CalculationTypeEnum;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
@@ -34,7 +33,6 @@ import com.jiujiu.autosos.resp.QrResp;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -51,23 +49,21 @@ import okhttp3.Call;
  * Created by Administrator on 2018/1/16.
  */
 
-public class PaymentDetailActivity extends AbsBaseActivity {
+public class PaymentDetailActivity extends AbsBaseActivity implements OrderItemAdapter.RecalculationHandler {
     @BindView(R.id.tv_title)
     TextView tvTitle;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.tv_total_amount)
     TextView tvTotalAmount;
-    @BindView(R.id.tv_calculation_type)
-    TextView tvCalculationType;
     @BindView(R.id.tv_cross_bridge_price)
     TextView tvCrossBridgePrice;
-    @BindView(R.id.tv_additional_price)
-    TextView tvAdditionalPrice;
     @BindView(R.id.tv_distance)
     TextView tvDistance;
-    @BindView(R.id.ll_other_fee)
-    LinearLayout llOtherFee;
+    @BindView(R.id.item_list)
+    ListView itemListView;
+
+    private OrderItemAdapter mAdapter;
 
     private OrderModel order;
 
@@ -76,23 +72,14 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         tvTitle.setText("救援详情");
         setupToolbar(toolbar);
         order = (OrderModel) getIntent().getSerializableExtra(OrderUtil.KEY_ORDER);
-        if (order != null) {
-            tvDistance.setText(order.getDistance() + "公里");
-            if (order.getOrderItems() != null && order.getOrderItems().size() > 0) {
-                OrderItem orderItem = order.getOrderItems().get(0);
-                CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByValue(orderItem.getCalculationType());
-                if (CalculationTypeEnum.Once.equals(calculationType)) {
-                    llOtherFee.setVisibility(View.GONE);
-                }
-                if (calculationType != null) {
-                    tvCalculationType.setText(calculationType.getLaybel());
-                } else {
-                    tvCalculationType.setText("");
-                }
-            }
-        }
+        tvDistance.setText(order.getDistance() + "公里");
 
-        getPaymentAmount();
+        mAdapter = new OrderItemAdapter(mActivity);
+        mAdapter.setmDatas(order.getOrderItems());
+        mAdapter.setRecalculationHandler(this);
+        itemListView.setAdapter(mAdapter);
+
+        fecthOrderPayableAmount();
     }
 
     @Override
@@ -100,64 +87,16 @@ public class PaymentDetailActivity extends AbsBaseActivity {
         return R.layout.activity_payment_detail;
     }
 
-    @OnClick({R.id.fl_calculation, R.id.fl_cross_bridge, R.id.fl_additional, R.id.btn_wx_qr, R.id.btn_ali_qr})
+    @OnClick({R.id.fl_cross_bridge, R.id.btn_wx_qr, R.id.btn_ali_qr})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.fl_calculation:
-                String[] calculationArray = new String[]{"公里价", "一口价"};
-                DialogUtils.showSingleChoiceListDialog(mActivity, Arrays.asList(calculationArray), -1, new MaterialDialog.ListCallbackSingleChoice() {
-                    @Override
-                    public boolean onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                        tvCalculationType.setText(text);
-                        CalculationTypeEnum calculationType = CalculationTypeEnum.getEnumByLabel(text.toString());
-                        if (calculationType.equals(CalculationTypeEnum.Once)) {
-                            order.getOrderItems().get(0).setCalculationType(calculationType.getValue());
-                            llOtherFee.setVisibility(View.GONE);
-                            DialogUtils.showInputDialog(mActivity, "一口价费用", "", InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入一口价", new MaterialDialog.InputCallback() {
-                                @Override
-                                public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                                    double oncePrice = Double.parseDouble(input.toString());
-                                    order.setCrossBridgeAmount(0);
-                                    tvCrossBridgePrice.setText("");
-
-                                    tvAdditionalPrice.setText("");
-                                    order.getOrderItems().get(0).setAdditional(0);
-
-                                    order.getOrderItems().get(0).setPrice(oncePrice);
-                                    tvTotalAmount.setText(Double.toString(oncePrice) + "元");
-                                    // 一口价触发重新计算价格
-                                    getPaymentAmount();
-                                }
-                            });
-                        } else {
-                            // 公里价触发重新计算价格
-                            order.getOrderItems().get(0).setCalculationType(calculationType.getValue());
-                            order.getOrderItems().get(0).setPrice(0);
-                            tvTotalAmount.setText("" + "元");
-                            llOtherFee.setVisibility(View.VISIBLE);
-                            getPaymentAmount();
-                        }
-                        return true;
-                    }
-                }, null);
-                break;
             case R.id.fl_cross_bridge:
                 DialogUtils.showInputDialog(mActivity, "过桥过路费", tvCrossBridgePrice.getText().toString(), InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入过桥过路费", new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
                         tvCrossBridgePrice.setText(input);
                         order.setCrossBridgeAmount(Double.parseDouble(input.toString()));
-                        getPaymentAmount();
-                    }
-                });
-                break;
-            case R.id.fl_additional:
-                DialogUtils.showInputDialog(mActivity, "特殊时段加价费", tvAdditionalPrice.getText().toString(), InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL, "请输入特殊加价费", new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(@NonNull MaterialDialog dialog, CharSequence input) {
-                        tvAdditionalPrice.setText(input);
-                        order.getOrderItems().get(0).setAdditional(Double.parseDouble(input.toString()));
-                        getPaymentAmount();
+                        fecthOrderPayableAmount();
                     }
                 });
                 break;
@@ -172,6 +111,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
 
     /**
      * 获取扫码支付二维码
+     *
      * @param payway
      */
     public void getQRCode(final PayWayEnum payway) {
@@ -242,6 +182,7 @@ public class PaymentDetailActivity extends AbsBaseActivity {
 
     /**
      * 生成二维码图片并展示
+     *
      * @param qrString
      */
     public void generateQR2View(String qrString, final PayWayEnum payWayEnum) {
@@ -268,10 +209,16 @@ public class PaymentDetailActivity extends AbsBaseActivity {
                 });
     }
 
+    @Override
+    public void onOrderItemsChanged(List<OrderItem> orderItems) {
+        order.setOrderItems(orderItems);
+        fecthOrderPayableAmount();
+    }
+
     /**
      * 拉取结算价格
      */
-    public void getPaymentAmount() {
+    public void fecthOrderPayableAmount() {
         HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
         params.put("distance", order.getDistance() + "");
@@ -288,7 +235,8 @@ public class PaymentDetailActivity extends AbsBaseActivity {
             public FinishOrderResp parseResponse(String string) throws Exception {
                 FinishOrderResp resp = super.parseResponse(string);
                 String items = resp.getData().getItems();
-                List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {}.getType());
+                List<OrderItem> orderItems = new Gson().fromJson(items, new TypeToken<List<OrderItem>>() {
+                }.getType());
                 resp.getData().setOrderItems(orderItems);
                 return resp;
             }

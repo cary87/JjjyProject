@@ -35,10 +35,22 @@
                 android:textColor="@color/black"
                 android:textSize="22sp" />
 
-            <View style="@style/line_horizontal" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="服务明细"
+                android:layout_gravity="center_horizontal"/>
+
+            <com.jiujiu.autosos.common.widget.ExpandListView
+                android:id="@+id/item_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@null"
+                android:layout_marginTop="10dp">
+            </com.jiujiu.autosos.common.widget.ExpandListView>
 
             <FrameLayout
-                android:id="@+id/fl_calculation"
+                android:id="@+id/fl_cross_bridge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp">
@@ -46,76 +58,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="收费方式" />
+                    android:text="过桥过路费" />
 
                 <TextView
-                    android:id="@+id/tv_calculation_type"
+                    android:id="@+id/tv_cross_bridge_price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:drawableRight="@drawable/icon_arrow_right"
-                    android:text="一口价"
+                    android:text=""
                     android:textColor="@color/black" />
 
             </FrameLayout>
-
-            <View style="@style/line_horizontal" />
-
-            <LinearLayout
-                android:id="@+id/ll_other_fee"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <FrameLayout
-                    android:id="@+id/fl_cross_bridge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="过桥过路费" />
-
-                    <TextView
-                        android:id="@+id/tv_cross_bridge_price"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:drawableRight="@drawable/icon_arrow_right"
-                        android:text=""
-                        android:textColor="@color/black" />
-
-                </FrameLayout>
-
-                <View style="@style/line_horizontal" />
-
-                <FrameLayout
-                    android:id="@+id/fl_additional"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="特殊时段加价费" />
-
-                    <TextView
-                        android:id="@+id/tv_additional_price"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:drawableRight="@drawable/icon_arrow_right"
-                        android:text=""
-                        android:textColor="@color/black" />
-
-                </FrameLayout>
-
-                <View style="@style/line_horizontal" />
-
-            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"

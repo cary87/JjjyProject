@@ -20,6 +20,7 @@ import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.LocationManeger;
 import com.jiujiu.autosos.order.model.OrderItem;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.PictureTypeEnum;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,21 +83,71 @@ public class OrderUtil {
     /**
      * 为订单添加以|为分隔符的图片路径
      * @param orderModel
+     * @param pictureType 图片类型
      * @param paths
      */
-    public static void addPicturePathsForOrder(OrderModel orderModel, List<String> paths) {
+    public static void addPicturePathsForOrder(OrderModel orderModel, PictureTypeEnum pictureType, List<String> paths) {
         StringBuffer stringBuffer = new StringBuffer();
         for (String path : paths) {
             stringBuffer.append(path);
             stringBuffer.append("|");
         }
         String pathStr = stringBuffer.toString().substring(0, stringBuffer.toString().length() - 1);
-        if (TextUtils.isEmpty(orderModel.getPictures())) {
-            orderModel.setPictures(pathStr);
-        } else if (orderModel.getPictures().endsWith("|")) {
-            orderModel.setPictures(orderModel.getPictures() + pathStr);
-        } else {
-            orderModel.setPictures(orderModel.getPictures() + "|" + pathStr);
+        switch (pictureType) {
+            case arrive:
+                if (TextUtils.isEmpty(orderModel.getArrivePics())) {
+                    orderModel.setArrivePics(pathStr);
+                } else if (orderModel.getArrivePics().endsWith("|")) {
+                    orderModel.setArrivePics(orderModel.getArrivePics() + pathStr);
+                } else {
+                    orderModel.setArrivePics(orderModel.getArrivePics() + "|" + pathStr);
+                }
+                break;
+            case moveUp:
+                if (TextUtils.isEmpty(orderModel.getMoveUpPics())) {
+                    orderModel.setMoveUpPics(pathStr);
+                } else if (orderModel.getMoveUpPics().endsWith("|")) {
+                    orderModel.setMoveUpPics(orderModel.getMoveUpPics() + pathStr);
+                } else {
+                    orderModel.setMoveUpPics(orderModel.getMoveUpPics() + "|" + pathStr);
+                }
+                break;
+            case destination:
+                if (TextUtils.isEmpty(orderModel.getDestinationPics())) {
+                    orderModel.setDestinationPics(pathStr);
+                } else if (orderModel.getDestinationPics().endsWith("|")) {
+                    orderModel.setDestinationPics(orderModel.getDestinationPics() + pathStr);
+                } else {
+                    orderModel.setDestinationPics(orderModel.getDestinationPics() + "|" + pathStr);
+                }
+                break;
+            case survery:
+                if (TextUtils.isEmpty(orderModel.getSurveyPics())) {
+                    orderModel.setSurveyPics(pathStr);
+                } else if (orderModel.getSurveyPics().endsWith("|")) {
+                    orderModel.setSurveyPics(orderModel.getSurveyPics() + pathStr);
+                } else {
+                    orderModel.setSurveyPics(orderModel.getSurveyPics() + "|" + pathStr);
+                }
+                break;
+            case sign:
+                if (TextUtils.isEmpty(orderModel.getSignPics())) {
+                    orderModel.setSignPics(pathStr);
+                } else if (orderModel.getSignPics().endsWith("|")) {
+                    orderModel.setSignPics(orderModel.getSignPics() + pathStr);
+                } else {
+                    orderModel.setSignPics(orderModel.getSignPics() + "|" + pathStr);
+                }
+                break;
+            case other:
+                if (TextUtils.isEmpty(orderModel.getOtherPics())) {
+                    orderModel.setOtherPics(pathStr);
+                } else if (orderModel.getOtherPics().endsWith("|")) {
+                    orderModel.setOtherPics(orderModel.getOtherPics() + pathStr);
+                } else {
+                    orderModel.setOtherPics(orderModel.getOtherPics() + "|" + pathStr);
+                }
+                break;
         }
     }
 
@@ -106,9 +157,10 @@ public class OrderUtil {
      * @param order
      * @param paths
      */
-    public static void savePicturesForOrder(final AbsBaseActivity activity, OrderModel order, final List<String> paths, final ActionListener listener) {
+    public static void savePicturesForOrder(final AbsBaseActivity activity, OrderModel order, int pictureType, final List<String> paths, final ActionListener listener) {
         HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
+        params.put("pictureType", pictureType + "");
         params.put("pictures", new Gson().toJson(paths));
         OrderApi.savePicFile(params, new ApiCallback<BaseResp>() {
             @Override

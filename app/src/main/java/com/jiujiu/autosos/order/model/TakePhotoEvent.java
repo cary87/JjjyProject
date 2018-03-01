@@ -7,20 +7,20 @@ import java.util.List;
  */
 
 public class TakePhotoEvent {
-    private int tag;
     private List<String> paths;
+    private PictureTypeEnum pictureType;
 
-    public TakePhotoEvent(int tag, List<String> paths) {
-        this.tag = tag;
+    public TakePhotoEvent(PictureTypeEnum pictureType, List<String> paths) {
+        this.pictureType = pictureType;
         this.paths = paths;
     }
 
-    public int getTag() {
-        return tag;
+    public PictureTypeEnum getPictureType() {
+        return pictureType;
     }
 
-    public void setTag(int tag) {
-        this.tag = tag;
+    public void setPictureType(PictureTypeEnum pictureType) {
+        this.pictureType = pictureType;
     }
 
     public List<String> getPaths() {

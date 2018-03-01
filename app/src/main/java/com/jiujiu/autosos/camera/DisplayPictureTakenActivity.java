@@ -13,6 +13,7 @@ import com.jiujiu.autosos.api.UserApi;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.utils.LogUtils;
+import com.jiujiu.autosos.order.model.PictureTypeEnum;
 import com.jiujiu.autosos.order.model.TakePhotoEvent;
 import com.jiujiu.autosos.resp.FileUploadResp;
 
@@ -28,9 +29,7 @@ import butterknife.OnClick;
 import okhttp3.Call;
 
 import static com.jiujiu.autosos.order.TakePhotoConstant.PHOTO_TAG;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_ARRIVE_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_MOVE_UP_CAR_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_TO_DES_TAKE;
+
 
 /**
  * Created by Administrator on 2018/1/3.
@@ -45,7 +44,7 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
     /**
      * 哪种业务拍照
      */
-    private int mTag = -1;
+    private PictureTypeEnum mTag = PictureTypeEnum.arrive;
 
     /**
      * 图片上传后返回的相对路径
@@ -55,7 +54,10 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         tvTitle.setText("拍照结果");
-        mTag = getIntent().getIntExtra(PHOTO_TAG, -1);
+        PictureTypeEnum pictureTypeEnum = (PictureTypeEnum) getIntent().getSerializableExtra(PHOTO_TAG);
+        if (pictureTypeEnum != null) {
+            mTag = pictureTypeEnum;
+        }
 
         String url = getIntent().getStringExtra("url");
         displayAndUpload(url);
@@ -102,7 +104,10 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        mTag = getIntent().getIntExtra(PHOTO_TAG, -1);
+        PictureTypeEnum pictureTypeEnum = (PictureTypeEnum) getIntent().getSerializableExtra(PHOTO_TAG);
+        if (pictureTypeEnum != null) {
+            mTag = pictureTypeEnum;
+        }
 
         String url = intent.getStringExtra("url");
         displayAndUpload(url);
@@ -129,15 +134,7 @@ public class DisplayPictureTakenActivity extends AbsBaseActivity {
                 startActivity(reIntent);
                 break;
             case R.id.btn_finish_take:
-                if (mTag == TAG_ARRIVE_TAKE) {
-                    EventBus.getDefault().post(new TakePhotoEvent(TAG_ARRIVE_TAKE, paths));
-                }else if (mTag == TAG_MOVE_UP_CAR_TAKE) {
-                    EventBus.getDefault().post(new TakePhotoEvent(TAG_MOVE_UP_CAR_TAKE, paths));
-                } else if (mTag == TAG_TO_DES_TAKE) {
-                    EventBus.getDefault().post(new TakePhotoEvent(TAG_TO_DES_TAKE, paths));
-                } else {
-                    EventBus.getDefault().post(new TakePhotoEvent(-1, paths));
-                }
+                EventBus.getDefault().post(new TakePhotoEvent(mTag, paths));
                 finish();
                 break;
             case R.id.btn_take_one_more:

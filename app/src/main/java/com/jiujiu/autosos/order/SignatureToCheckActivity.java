@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.order.model.OrderModel;
+import com.jiujiu.autosos.order.model.PictureTypeEnum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class SignatureToCheckActivity extends AbsSignatureActivity {
                         public void onComplete(String path) {
                             List<String> paths = new ArrayList<>();
                             paths.add(path);
-                            OrderUtil.savePicturesForOrder(SignatureToCheckActivity.this, order, paths, null);
+                            OrderUtil.savePicturesForOrder(SignatureToCheckActivity.this, order, PictureTypeEnum.sign.getValue(), paths, null);
                             finish();
                         }
                     });

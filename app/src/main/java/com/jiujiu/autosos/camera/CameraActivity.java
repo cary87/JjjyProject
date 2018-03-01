@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.google.android.cameraview.CameraView;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
+import com.jiujiu.autosos.order.model.PictureTypeEnum;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,14 +39,17 @@ public class CameraActivity extends AbsBaseActivity {
     /**
      * 哪种业务拍照
      */
-    private int mTag = -1;
+    private PictureTypeEnum mTag = PictureTypeEnum.arrive;
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
         }
-        mTag = getIntent().getIntExtra(PHOTO_TAG, -1);
+        PictureTypeEnum pictureTypeEnum = (PictureTypeEnum) getIntent().getSerializableExtra(PHOTO_TAG);
+        if (pictureTypeEnum != null) {
+            mTag = pictureTypeEnum;
+        }
     }
 
     @Override

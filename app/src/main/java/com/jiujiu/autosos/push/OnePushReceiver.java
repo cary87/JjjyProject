@@ -98,7 +98,7 @@ public class OnePushReceiver extends OnePushAbsReceiver {
         Notification notification = new Notification.Builder(context)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("新订单")
-                .setContentText("救援订单, 地址：" + order.getToRescueAdress() + ", 手机：" + order.getCarOwnerId())
+                .setContentText("救援订单, 地址：" + order.getAddress() + ", 手机：" + order.getCarOwnerId())
                 .setContentIntent(contentIntent)
                 .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE)
                 .build();

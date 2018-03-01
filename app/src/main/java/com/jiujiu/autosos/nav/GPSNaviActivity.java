@@ -1,6 +1,7 @@
 package com.jiujiu.autosos.nav;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -41,6 +42,7 @@ import com.jiujiu.autosos.order.SignatureToCheckActivity;
 import com.jiujiu.autosos.order.SignatureToFinishActivity;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
+import com.jiujiu.autosos.order.model.PictureTypeEnum;
 import com.jiujiu.autosos.order.model.TakePhotoEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -54,12 +56,6 @@ import butterknife.BindView;
 import okhttp3.Call;
 
 import static com.jiujiu.autosos.order.TakePhotoConstant.PHOTO_TAG;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_ARRIVE_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_CONSTRUCTION_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_LOOK_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_MOVE_UP_CAR_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_TO_DES_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_VIN_TAKE;
 
 public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickListener, View.OnClickListener {
     @BindView(R.id.btn_order_detail)
@@ -72,7 +68,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     ImageButton btnVin;
     @BindView(R.id.btn_construction)
     ImageButton btnConstruction;
-    private Button btnArrive;
+    private Button btnOption;
     private TextView tvBeginNav;
     private boolean navInitSuccess;
 
@@ -99,13 +95,18 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     private boolean arrive = false;//是否到达事故点
 
     @Override
+    protected int getLayoutID() {
+        return R.layout.activity_basic_navi;
+    }
+
+    @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
         super.onActivityCreate(savedInstanceState);
         mAMapNaviView = (AMapNaviView) findViewById(R.id.navi_view);
         mAMapNaviView.onCreate(savedInstanceState);
         mAMapNaviView.setAMapNaviViewListener(this);
-        btnArrive = (Button) findViewById(R.id.btn_arrive);
-        btnArrive.setOnClickListener(this);
+        btnOption = (Button) findViewById(R.id.btn_option);
+        btnOption.setOnClickListener(this);
         tvBeginNav = (TextView) findViewById(R.id.tv_begin_nav);
         tvBeginNav.setOnClickListener(this);
         btnOrderDetail.setOnClickListener(this);
@@ -127,11 +128,25 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
         }
 
         EventBus.getDefault().register(this);
+
+        refreshOptionButton();
+
+        showMyLocationOnMap();
     }
 
-    @Override
-    protected int getLayoutID() {
-        return R.layout.activity_basic_navi;
+    /**
+     * 刷洗操作菜单
+     */
+    private void refreshOptionButton() {
+        if (mOrder.getState() == OrderStateEnum.Arrive.getValue() && OrderUtil.checkIsDragcar(mOrder)) {
+            if (TextUtils.isEmpty(mOrder.getMoveUpPics())) {
+                btnOption.setText("把车辆挪上拖车拍照");
+                btnOption.setTag(PictureTypeEnum.moveUp);
+            } else if (TextUtils.isEmpty(mOrder.getDestinationPics())) {
+                btnOption.setText("到达拖车目的地拍照");
+                btnOption.setTag(PictureTypeEnum.destination);
+            }
+        }
     }
 
     @Override
@@ -147,10 +162,11 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     @Subscribe
     public void onPhotoTakenEvent(final TakePhotoEvent event) {
         if (event.getPaths() != null && event.getPaths().size() > 0) {
-            OrderUtil.savePicturesForOrder(this, mOrder, event.getPaths(), new OrderUtil.ActionListener() {
+            OrderUtil.savePicturesForOrder(this, mOrder, event.getPictureType().getValue(), event.getPaths(), new OrderUtil.ActionListener() {
                 @Override
                 public void onSuccess() {
-                    OrderUtil.addPicturePathsForOrder(mOrder, event.getPaths());
+
+                    OrderUtil.addPicturePathsForOrder(mOrder, event.getPictureType(), event.getPaths());
                 }
 
                 @Override
@@ -160,13 +176,13 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             });
         }
 
-        if (event.getTag() == TAG_ARRIVE_TAKE) {
-            btnArrive.setText("把车辆挪上拖车拍照");
-            btnArrive.setTag(TAG_MOVE_UP_CAR_TAKE);
-        } else if (event.getTag() == TAG_MOVE_UP_CAR_TAKE) {
-            btnArrive.setText("到达拖车目的地拍照");
-            btnArrive.setTag(TAG_TO_DES_TAKE);
-        } else if (event.getTag() == TAG_TO_DES_TAKE) {
+        if (PictureTypeEnum.arrive.equals(event.getPictureType())) {
+            btnOption.setText("把车辆挪上拖车拍照");
+            btnOption.setTag(PictureTypeEnum.moveUp);
+        } else if (PictureTypeEnum.moveUp.equals(event.getPictureType())) {
+            btnOption.setText("到达拖车目的地拍照");
+            btnOption.setTag(PictureTypeEnum.destination);
+        } else if (PictureTypeEnum.destination.equals(event.getPictureType())) {
             Intent sign = new Intent(this, SignatureToFinishActivity.class);
             sign.putExtra(OrderUtil.KEY_ORDER, mOrder);
             startActivityForResult(sign, REQ_TO_PAY);
@@ -179,8 +195,9 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     private void showMyLocationOnMap() {
         //初始化地图控制器对象
         aMap = mAMapNaviView.getMap();
-        MyLocationStyle myLocationStyle;
-        myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+        MyLocationStyle myLocationStyle = new MyLocationStyle();//初始化定位蓝点样式类myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_LOCATION_ROTATE);//连续定位、且将视角移动到地图中心点，定位点依照设备方向旋转，并且会跟随设备移动。（1秒1次定位）如果不设置myLocationType，默认也会执行此种模式。
+        myLocationStyle.strokeColor(Color.argb(0, 0, 0, 0));// 自定义精度范围的圆形边框颜色
+        myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));
         myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
         //aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
@@ -243,7 +260,6 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     public void onInitNaviSuccess() {
         super.onInitNaviSuccess();
         navInitSuccess = true;
-        showMyLocationOnMap();
     }
 
     /**
@@ -292,7 +308,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
         mAMapNavi.startNavi(NaviType.GPS);
 
         //规划成功后方显示下一步操作按钮
-        btnArrive.setVisibility(View.VISIBLE);
+        btnOption.setVisibility(View.VISIBLE);
 
         final LBSTraceClient lbsTraceClient = LBSTraceClient.getInstance(this);
         lbsTraceClient.startTrace(new TraceStatusListener() {
@@ -306,21 +322,21 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_arrive:
+            case R.id.btn_option:
                 if (v.getTag() != null) {
-                    int nowTag = (int) v.getTag();
-                    if (nowTag == TAG_MOVE_UP_CAR_TAKE) {
+                    PictureTypeEnum nowTag = (PictureTypeEnum) v.getTag();
+                    if (PictureTypeEnum.moveUp.equals(nowTag)) {
                         Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
-                        intent.putExtra(PHOTO_TAG, TAG_MOVE_UP_CAR_TAKE);
+                        intent.putExtra(PHOTO_TAG, PictureTypeEnum.moveUp);
                         startActivity(intent);
-                    } else if (nowTag == TAG_TO_DES_TAKE) {
+                    } else if (PictureTypeEnum.destination.equals(nowTag)) {
                         DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达拖车目的地", new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 switch (which) {
                                     case POSITIVE:
                                         Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
-                                        intent.putExtra(PHOTO_TAG, TAG_TO_DES_TAKE);
+                                        intent.putExtra(PHOTO_TAG, PictureTypeEnum.destination);
                                         startActivity(intent);
                                         break;
                                     case NEGATIVE:
@@ -351,17 +367,17 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
                 break;
             case R.id.btn_look:
                 Intent look = new Intent(this, CameraActivity.class);
-                look.putExtra(PHOTO_TAG, TAG_LOOK_TAKE);
+                look.putExtra(PHOTO_TAG, PictureTypeEnum.survery);
                 startActivity(look);
                 break;
             case R.id.btn_vin:
                 Intent vin = new Intent(this, CameraActivity.class);
-                vin.putExtra(PHOTO_TAG, TAG_VIN_TAKE);
+                vin.putExtra(PHOTO_TAG, PictureTypeEnum.other);
                 startActivity(vin);
                 break;
             case R.id.btn_construction:
                 Intent construction = new Intent(this, CameraActivity.class);
-                construction.putExtra(PHOTO_TAG, TAG_CONSTRUCTION_TAKE);
+                construction.putExtra(PHOTO_TAG, PictureTypeEnum.other);
                 startActivity(construction);
                 break;
         }
@@ -385,7 +401,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             public void onResponse(BaseResp resp, int i) {
                 hideLoadingDialog();
                 Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
-                intent.putExtra(PHOTO_TAG, TAG_ARRIVE_TAKE);
+                intent.putExtra(PHOTO_TAG, PictureTypeEnum.arrive);
                 startActivity(intent);
                 arrive = true;
             }

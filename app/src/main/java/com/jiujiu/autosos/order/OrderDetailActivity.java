@@ -20,10 +20,7 @@ import com.baoyachi.stepview.HorizontalStepView;
 import com.baoyachi.stepview.bean.StepBean;
 import com.code19.library.DateUtils;
 import com.jiujiu.autosos.R;
-import com.jiujiu.autosos.api.UserApi;
-import com.jiujiu.autosos.camera.CameraActivity;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
-import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.LogUtils;
 import com.jiujiu.autosos.nav.GPSNaviActivity;
@@ -33,28 +30,19 @@ import com.jiujiu.autosos.order.model.ChargeTypeEnum;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
-import com.jiujiu.autosos.resp.FileUploadResp;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.litepal.crud.DataSupport;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import me.iwf.photopicker.PhotoPicker;
 import me.iwf.photopicker.PhotoPreview;
-import okhttp3.Call;
 
-import static com.jiujiu.autosos.order.TakePhotoConstant.PHOTO_TAG;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_CONSTRUCTION_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_LOOK_TAKE;
-import static com.jiujiu.autosos.order.TakePhotoConstant.TAG_VIN_TAKE;
 import static com.jiujiu.autosos.order.model.OrderStateEnum.getTimeLineStates;
 
 /**
@@ -194,26 +182,6 @@ public class OrderDetailActivity extends AbsBaseActivity {
                             .start(OrderDetailActivity.this);
                 }
                 break;
-            case R.id.menu_signature:
-                Intent signCheck = new Intent(this, SignatureToCheckActivity.class);
-                signCheck.putExtra(OrderUtil.KEY_ORDER, mOrder);
-                startActivity(signCheck);
-                break;
-            case R.id.menu_look:
-                Intent look = new Intent(this, CameraActivity.class);
-                look.putExtra(PHOTO_TAG, TAG_LOOK_TAKE);
-                startActivity(look);
-                break;
-            case R.id.menu_vin:
-                Intent vin = new Intent(this, CameraActivity.class);
-                vin.putExtra(PHOTO_TAG, TAG_VIN_TAKE);
-                startActivity(vin);
-                break;
-            case R.id.menu_construction:
-                Intent construction = new Intent(this, CameraActivity.class);
-                construction.putExtra(PHOTO_TAG, TAG_CONSTRUCTION_TAKE);
-                startActivity(construction);
-                break;
         }
         return true;
     }
@@ -271,7 +239,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnAcceptOrder.setVisibility(View.GONE);
                 break;
             case Arrive:
-                btnNav.setVisibility(View.GONE);
+                btnNav.setVisibility(View.VISIBLE);
                 btnPay.setVisibility(View.GONE);
                 btnAcceptOrder.setVisibility(View.GONE);
                 break;
@@ -385,55 +353,5 @@ public class OrderDetailActivity extends AbsBaseActivity {
         });
         dialog.setContentView(dialogView);
         dialog.show();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == PhotoPicker.REQUEST_CODE) {
-            if (data != null) {
-                ArrayList<String> photos = data.getStringArrayListExtra(PhotoPicker.KEY_SELECTED_PHOTOS);
-                LogUtils.i("wzh", photos.toString());
-                if (photos != null && photos.size() > 0) {
-                    for (String photo : photos) {
-                        File file = new File(photo);
-                        if (file.exists()) {
-                            HashMap<String, String> params = new HashMap<>();
-                            params.put("key", "attach");
-                            UserApi.upload(params, file, new ApiCallback<FileUploadResp>() {
-                                @Override
-                                public void onError(Call call, Exception e, int i) {
-
-                                }
-
-                                @Override
-                                public void inProgress(float progress, long total, int id) {
-                                    super.inProgress(progress, total, id);
-                                    LogUtils.i("wzh", progress + "");
-                                }
-
-                                @Override
-                                public void onResponse(FileUploadResp resp, int i) {
-                                    LogUtils.i("wzh", resp.toString());
-                                    final List<String> uploadPaths = new ArrayList<>();
-                                    uploadPaths.add(resp.getData().getPath());
-                                    OrderUtil.savePicturesForOrder(OrderDetailActivity.this, mOrder, uploadPaths, new OrderUtil.ActionListener() {
-                                        @Override
-                                        public void onSuccess() {
-                                            OrderUtil.addPicturePathsForOrder(mOrder, uploadPaths);
-                                        }
-
-                                        @Override
-                                        public void onFail() {
-
-                                        }
-                                    });
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-        }
     }
 }

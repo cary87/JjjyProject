@@ -68,6 +68,12 @@ public class OrderModel extends DataSupport implements Serializable {
     @Column(ignore = true)
     private List<OrderItem> orderItems;
     private String pictures;
+    private String arrivePics;
+    private String surveyPics;
+    private String moveUpPics;
+    private String destinationPics;
+    private String signPics;
+    private String otherPics;
     private double payableAmount;
     private long carOwnerId;
     private double flowAmount;
@@ -185,6 +191,54 @@ public class OrderModel extends DataSupport implements Serializable {
 
     public String getPictures() {
         return pictures;
+    }
+
+    public String getArrivePics() {
+        return arrivePics;
+    }
+
+    public void setArrivePics(String arrivePics) {
+        this.arrivePics = arrivePics;
+    }
+
+    public String getSurveyPics() {
+        return surveyPics;
+    }
+
+    public void setSurveyPics(String surveyPics) {
+        this.surveyPics = surveyPics;
+    }
+
+    public String getMoveUpPics() {
+        return moveUpPics;
+    }
+
+    public void setMoveUpPics(String moveUpPics) {
+        this.moveUpPics = moveUpPics;
+    }
+
+    public String getDestinationPics() {
+        return destinationPics;
+    }
+
+    public void setDestinationPics(String destinationPics) {
+        this.destinationPics = destinationPics;
+    }
+
+    public String getSignPics() {
+        return signPics;
+    }
+
+    public void setSignPics(String signPics) {
+        this.signPics = signPics;
+    }
+
+    public String getOtherPics() {
+        return otherPics;
+    }
+
+    public void setOtherPics(String otherPics) {
+        this.otherPics = otherPics;
     }
 
     public void setPictures(String pictures) {
