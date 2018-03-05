@@ -14,8 +14,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="@color/black"
+            android:textColor="@color/colorAccent"
             android:text="救援订单"
+            android:maxLength="9"
+            android:ellipsize="middle"
             android:layout_gravity="center"/>
 
         <TextView

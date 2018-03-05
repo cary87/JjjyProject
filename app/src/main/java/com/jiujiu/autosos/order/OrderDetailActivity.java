@@ -325,6 +325,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
         Intent intent = new Intent(OrderDetailActivity.this, GPSNaviActivity.class);
         intent.putExtra(OrderUtil.KEY_ORDER, mOrder);
         startActivity(intent);
+        finish();
     }
 
     private void alertBottomSheet() {

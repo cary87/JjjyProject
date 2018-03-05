@@ -22,6 +22,7 @@ public class OrderApi {
     public static final String WECHAT_CREATE_QR_CODE = "/common/order/createCode";
     public static final String FECTH_CAN_ACCEPT_ORDER = "/common/order/findDriverCanAcceptOrders/" + Constant.PAGESIZE + "/";
     public static final String QUERY_PAY_RESULT = "/common/order/checkOrderPayed";
+    public static final String UPDATE_SCORE = "/common/order/updateScore";
 
     public static <T> T syncFecthCanAcceptOrder(int currentPage, Class<T> clz) throws Exception {
         return ApiHelper.syncHttpRequest(HttpMethod.GET, FECTH_CAN_ACCEPT_ORDER + currentPage, null, clz);
@@ -61,5 +62,9 @@ public class OrderApi {
 
     public static <T> void queryPayResult(Map<String, String> param, Callback<T> callback){
         ApiHelper.httpRequest(HttpMethod.GET, QUERY_PAY_RESULT, param, callback);
+    }
+
+    public static <T> void updateScore(Map<String, String> param, Callback<T> callback){
+        ApiHelper.httpRequest(HttpMethod.GET, UPDATE_SCORE, param, callback);
     }
 }

@@ -2,6 +2,7 @@ package com.jiujiu.autosos.me;
 
 import android.content.Intent;
 import android.view.View;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.jiujiu.autosos.R;
@@ -20,6 +21,8 @@ public class MeFragment extends BaseFragment {
     TextView tvDriverName;
     @BindView(R.id.tv_driver_company)
     TextView tvDriverCompany;
+    @BindView(R.id.my_rating)
+    RatingBar myRating;
 
     @Override
     protected int getLayoutID() {
@@ -30,6 +33,8 @@ public class MeFragment extends BaseFragment {
     protected void afterViewInited(View view) {
         tvDriverName.setText(UserStorage.getInstance().getUser().getName());
         tvDriverCompany.setText(UserStorage.getInstance().getUser().getBelongOrgName());
+        String score = UserStorage.getInstance().getUser().getScore();
+        myRating.setProgress(score == null ? 0 : Integer.parseInt(score));
     }
 
     @OnClick({R.id.ll_manage_service_info, R.id.ll_change_pwd, R.id.ll_my_account, R.id.ll_my_auth, R.id.ll_share})

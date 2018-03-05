@@ -33,8 +33,6 @@ public class BaseActivity extends AbsBaseActivity implements AMapNaviListener, A
     protected AMapNaviView mAMapNaviView;
     protected AMapNavi mAMapNavi;
     protected TTSController mTtsManager;
-    protected NaviLatLng mEndLatlng = new NaviLatLng(40.084894,116.603039);
-    protected NaviLatLng mStartLatlng = new NaviLatLng(39.825934,116.342972);
     protected final List<NaviLatLng> sList = new ArrayList<>();
     protected final List<NaviLatLng> eList = new ArrayList<>();
     protected List<NaviLatLng> mWayPointList;

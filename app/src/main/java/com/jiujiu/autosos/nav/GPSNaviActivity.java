@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -43,12 +43,12 @@ import com.jiujiu.autosos.order.SignatureToFinishActivity;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
 import com.jiujiu.autosos.order.model.PictureTypeEnum;
+import com.jiujiu.autosos.order.model.RefreshViewEvent;
 import com.jiujiu.autosos.order.model.TakePhotoEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -69,8 +69,6 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     @BindView(R.id.btn_construction)
     ImageButton btnConstruction;
     private Button btnOption;
-    private TextView tvBeginNav;
-    private boolean navInitSuccess;
 
     private AMap aMap;
 
@@ -80,7 +78,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
 
     // 手选拖车目的地位置坐标
     private LatLng toRescueLatLng = null;
-    // 中心点marker
+    // 手选拖车目的地位置marker
     private Marker centerMarker;
 
     private RouteSearchManager routeSearchManager;
@@ -88,11 +86,6 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     private static final int MAX_TRY_COUNT = 3;
 
     private int currentCount = 0;
-
-    private BitmapDescriptor ICON_RED = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-    private MarkerOptions markerOption = null;
-
-    private boolean arrive = false;//是否到达事故点
 
     @Override
     protected int getLayoutID() {
@@ -106,9 +99,8 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
         mAMapNaviView.onCreate(savedInstanceState);
         mAMapNaviView.setAMapNaviViewListener(this);
         btnOption = (Button) findViewById(R.id.btn_option);
+        btnOption.setTag(PictureTypeEnum.arrive);//by default
         btnOption.setOnClickListener(this);
-        tvBeginNav = (TextView) findViewById(R.id.tv_begin_nav);
-        tvBeginNav.setOnClickListener(this);
         btnOrderDetail.setOnClickListener(this);
         btnSignature.setOnClickListener(this);
         btnLook.setOnClickListener(this);
@@ -119,8 +111,6 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
         options.setLayoutVisible(false);
         mAMapNaviView.setViewOptions(options);
 
-        markerOption = new MarkerOptions().draggable(true);
-
         mOrder = (OrderModel) getIntent().getSerializableExtra(OrderUtil.KEY_ORDER);
 
         if (OrderUtil.checkIsDragcar(mOrder)) {
@@ -130,16 +120,17 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
         EventBus.getDefault().register(this);
 
         refreshOptionButton();
-
-        showMyLocationOnMap();
     }
 
     /**
-     * 刷洗操作菜单
+     * 刷新操作菜单
      */
     private void refreshOptionButton() {
         if (mOrder.getState() == OrderStateEnum.Arrive.getValue() && OrderUtil.checkIsDragcar(mOrder)) {
-            if (TextUtils.isEmpty(mOrder.getMoveUpPics())) {
+            if (TextUtils.isEmpty(mOrder.getArrivePics())) {
+                btnOption.setText("救援现场拍照");
+                btnOption.setTag(PictureTypeEnum.arrive);
+            } else if (TextUtils.isEmpty(mOrder.getMoveUpPics())) {
                 btnOption.setText("把车辆挪上拖车拍照");
                 btnOption.setTag(PictureTypeEnum.moveUp);
             } else if (TextUtils.isEmpty(mOrder.getDestinationPics())) {
@@ -165,7 +156,6 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             OrderUtil.savePicturesForOrder(this, mOrder, event.getPictureType().getValue(), event.getPaths(), new OrderUtil.ActionListener() {
                 @Override
                 public void onSuccess() {
-
                     OrderUtil.addPicturePathsForOrder(mOrder, event.getPictureType(), event.getPaths());
                 }
 
@@ -176,13 +166,22 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             });
         }
 
-        if (PictureTypeEnum.arrive.equals(event.getPictureType())) {
-            btnOption.setText("把车辆挪上拖车拍照");
-            btnOption.setTag(PictureTypeEnum.moveUp);
-        } else if (PictureTypeEnum.moveUp.equals(event.getPictureType())) {
-            btnOption.setText("到达拖车目的地拍照");
-            btnOption.setTag(PictureTypeEnum.destination);
-        } else if (PictureTypeEnum.destination.equals(event.getPictureType())) {
+        //拖车
+        if (OrderUtil.checkIsDragcar(mOrder)) {
+            if (PictureTypeEnum.arrive.equals(event.getPictureType())) {
+                btnOption.setText("把车辆挪上拖车拍照");
+                btnOption.setTag(PictureTypeEnum.moveUp);
+            } else if (PictureTypeEnum.moveUp.equals(event.getPictureType())) {
+                btnOption.setText("到达拖车目的地拍照");
+                btnOption.setTag(PictureTypeEnum.destination);
+                //先停止，再重新导航
+                navAgain();
+            } else if (PictureTypeEnum.destination.equals(event.getPictureType())) {
+                Intent sign = new Intent(this, SignatureToFinishActivity.class);
+                sign.putExtra(OrderUtil.KEY_ORDER, mOrder);
+                startActivityForResult(sign, REQ_TO_PAY);
+            }
+        } else if (PictureTypeEnum.arrive.equals(event.getPictureType())) {
             Intent sign = new Intent(this, SignatureToFinishActivity.class);
             sign.putExtra(OrderUtil.KEY_ORDER, mOrder);
             startActivityForResult(sign, REQ_TO_PAY);
@@ -200,9 +199,8 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
         myLocationStyle.radiusFillColor(Color.argb(0, 0, 0, 0));
         myLocationStyle.interval(2000); //设置连续定位模式下的定位间隔，只在连续定位模式下生效，单次定位模式下不会生效。单位为毫秒。
         aMap.setMyLocationStyle(myLocationStyle);//设置定位蓝点的Style
-        //aMap.getUiSettings().setMyLocationButtonEnabled(true);设置默认定位按钮是否显示，非必需设置。
+        aMap.getUiSettings().setMyLocationButtonEnabled(true);//设置默认定位按钮是否显示，非必需设置。
         aMap.setMyLocationEnabled(true);// 设置为true表示启动显示定位蓝点，false表示隐藏定位蓝点并不进行定位，默认是false。
-        aMap.setOnMapClickListener(this);
         aMap.setOnMyLocationChangeListener(new AMap.OnMyLocationChangeListener() {
             @Override
             public void onMyLocationChange(Location location) {
@@ -215,43 +213,33 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     }
 
     /**
-     * 初始化起始点和终点
+     * 设置开始和终点
+     * @return
      */
     protected boolean setupStartAndEndLocation() {
-        //已到达救援地然后导航到拖车目的地
-        boolean ok = true;
-        if (arrive && mOrder.getToRescueLatitude() == 0 && mOrder.getToRescueLongitude() == 0) {
-            if (toRescueLatLng == null) {
-                showToast("请点击地图选择一个救援目的地再进行导航");
-                ok = false;
-            } else {
-                sList.clear();
-                sList.add(new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude()));
+        boolean ok = false;
+        if (OrderStateEnum.Accept.getValue() == mOrder.getState()) {
+            eList.clear();
+            eList.add(new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude()));
+            ok = true;
+        } else if (OrderStateEnum.Arrive.getValue() == mOrder.getState()) {
+            if (OrderUtil.checkIsDragcar(mOrder)) {
                 eList.clear();
-                eList.add(new NaviLatLng(toRescueLatLng.latitude, toRescueLatLng.longitude));
+                if (mOrder.getToRescueLatitude() == 0 && mOrder.getToRescueLongitude() == 0) {
+                    if (toRescueLatLng == null) {
+                        if (aMap != null) {
+                            aMap.setOnMapClickListener(this);
+                        }
+                        showToast("请点击地图选择一个救援目的地再进行导航");
+                    } else {
+                        eList.add(new NaviLatLng(toRescueLatLng.latitude, toRescueLatLng.longitude));
+                        ok = true;
+                    }
+                } else {
+                    eList.add(new NaviLatLng(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude()));
+                    ok = true;
+                }
             }
-            return ok;
-        }
-
-        //设置救援司机起始位置，定位获取不到，取缓存
-        if (sList.isEmpty()) {
-            mStartLatlng = new NaviLatLng(UserStorage.getInstance().getLastSubmitLatitude(), UserStorage.getInstance().getLastSubmitLongitude());
-            sList.add(mStartLatlng);
-        }
-
-        if (mOrder.getToRescueLatitude() > 0 && mOrder.getToRescueLongitude() > 0) {
-            if (mOrder.getLatitude() == mOrder.getToRescueLatitude() && mOrder.getLongitude() == mOrder.getToRescueLongitude()) {
-                mEndLatlng = new NaviLatLng(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude());
-                eList.add(mEndLatlng);
-            } else {
-                mWayPointList = new ArrayList<>();
-                mWayPointList.add(new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude()));
-                mEndLatlng = new NaviLatLng(mOrder.getToRescueLatitude(), mOrder.getToRescueLongitude());
-                eList.add(mEndLatlng);
-            }
-        } else {
-            mEndLatlng = new NaviLatLng(mOrder.getLatitude(), mOrder.getLongitude());//救援点
-            eList.add(mEndLatlng);
         }
         return ok;
     }
@@ -259,7 +247,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     @Override
     public void onInitNaviSuccess() {
         super.onInitNaviSuccess();
-        navInitSuccess = true;
+        navAgain();
     }
 
     /**
@@ -325,12 +313,36 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             case R.id.btn_option:
                 if (v.getTag() != null) {
                     PictureTypeEnum nowTag = (PictureTypeEnum) v.getTag();
-                    if (PictureTypeEnum.moveUp.equals(nowTag)) {
+                    if (PictureTypeEnum.arrive.equals(nowTag)) {
+                        if (mOrder.getState() == OrderStateEnum.Arrive.getValue()) {
+                            // 已到达救援现场未拍照
+                            if (TextUtils.isEmpty(mOrder.getArrivePics())) {
+                                Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
+                                intent.putExtra(PHOTO_TAG, PictureTypeEnum.arrive);
+                                startActivity(intent);
+                            }
+                        } else {
+                            //未到达救援现场
+                            DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达救援现场？", new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    switch (which) {
+                                        case POSITIVE:
+                                            sendArriveRequestAndTakePics();
+                                            break;
+                                        case NEGATIVE:
+                                            dialog.dismiss();
+                                            break;
+                                    }
+                                }
+                            });
+                        }
+                    } else if (PictureTypeEnum.moveUp.equals(nowTag)) {
                         Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
                         intent.putExtra(PHOTO_TAG, PictureTypeEnum.moveUp);
                         startActivity(intent);
                     } else if (PictureTypeEnum.destination.equals(nowTag)) {
-                        DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达拖车目的地", new MaterialDialog.SingleButtonCallback() {
+                        DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达拖车目的地？", new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 switch (which) {
@@ -346,13 +358,6 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
                             }
                         });
                     }
-                } else {
-                    sendArriveRequest();
-                }
-                break;
-            case R.id.tv_begin_nav:
-                if (navInitSuccess) {
-                    beginCalculateDriveRoute();
                 }
                 break;
             case R.id.btn_order_detail:
@@ -386,7 +391,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     /**
      * 到达救援现场请求服务端
      */
-    public void sendArriveRequest() {
+    public void sendArriveRequestAndTakePics() {
         showLoadingDialog("加载中");
         HashMap<String, String> params = new HashMap<>();
         params.put("province", UserStorage.getInstance().getUser().getProvince());
@@ -400,10 +405,11 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
             @Override
             public void onResponse(BaseResp resp, int i) {
                 hideLoadingDialog();
+                mOrder.setState(OrderStateEnum.Arrive.getValue());
+                EventBus.getDefault().post(new RefreshViewEvent());
                 Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
                 intent.putExtra(PHOTO_TAG, PictureTypeEnum.arrive);
                 startActivity(intent);
-                arrive = true;
             }
         });
     }
@@ -420,21 +426,46 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
 
     @Override
     public void onMapClick(LatLng latLng) {
-        markerOption.icon(ICON_RED);
         toRescueLatLng = latLng;
-        addCenterMarker(toRescueLatLng);
-        mOrder.setToRescueLatitude(latLng.latitude);
-        mOrder.setToRescueLongitude(latLng.longitude);
-        if (OrderUtil.checkIsDragcar(mOrder)) {
-            getDistanceForOrder();
-        }
-    }
-
-    private void addCenterMarker(LatLng latlng) {
+        BitmapDescriptor ICON_RED = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
+        MarkerOptions markerOption = new MarkerOptions().draggable(true);
+        markerOption.icon(ICON_RED);
         if (null == centerMarker) {
             centerMarker = aMap.addMarker(markerOption);
         }
-        centerMarker.setPosition(latlng);
+        centerMarker.setPosition(latLng);
+        mOrder.setToRescueLatitude(latLng.latitude);
+        mOrder.setToRescueLongitude(latLng.longitude);
+
+        if (OrderUtil.checkIsDragcar(mOrder)) {
+            getDistanceForOrder();
+        }
+
+        DialogUtils.showConfirmDialogWithCancel(mActivity, "导航到所选择位置？", new MaterialDialog.SingleButtonCallback() {
+            @Override
+            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                switch (which) {
+                    case POSITIVE:
+                        //先停止，再重新导航
+                        navAgain();
+                        break;
+                }
+            }
+        });
+    }
+
+    /**
+     * 先停掉原有导航，重新定位，最后导航
+     */
+    public void navAgain() {
+        mAMapNavi.stopNavi();
+        showMyLocationOnMap();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                beginCalculateDriveRoute();
+            }
+        }, 1000);
     }
 
     /**

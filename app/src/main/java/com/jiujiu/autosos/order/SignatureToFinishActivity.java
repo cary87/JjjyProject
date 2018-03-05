@@ -11,14 +11,19 @@ import android.widget.TextView;
 
 import com.github.gcacace.signaturepad.views.SignaturePad;
 import com.jiujiu.autosos.R;
+import com.jiujiu.autosos.api.OrderApi;
+import com.jiujiu.autosos.common.http.ApiCallback;
+import com.jiujiu.autosos.common.http.BaseResp;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.PictureTypeEnum;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import okhttp3.Call;
 
 /**
  * Created by Administrator on 2018/1/15.
@@ -76,11 +81,24 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
                 List<String> paths = new ArrayList<>();
                 paths.add(path);
                 OrderUtil.savePicturesForOrder(SignatureToFinishActivity.this, order, PictureTypeEnum.sign.getValue(), paths, null);
-                Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
-                intent.putExtra(OrderUtil.KEY_ORDER, order);
-                startActivity(intent);
-                setResult(RESULT_OK);
-                finish();
+                HashMap<String, String> params = new HashMap<>();
+                params.put("score", ratingComment.getProgress() + "");
+                OrderApi.updateScore(params, new ApiCallback<BaseResp>() {
+                    @Override
+                    public void onError(Call call, Exception e, int i) {
+                        handleError(e);
+                    }
+
+                    @Override
+                    public void onResponse(BaseResp baseResp, int i) {
+                        Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
+                        intent.putExtra(OrderUtil.KEY_ORDER, order);
+                        startActivity(intent);
+                        setResult(RESULT_OK);
+                        finish();
+                    }
+                });
+
             }
         });
 

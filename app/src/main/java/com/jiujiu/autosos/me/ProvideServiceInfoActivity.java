@@ -213,9 +213,13 @@ public class ProvideServiceInfoActivity extends AbsBaseActivity implements Compo
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_save) {
+            if (TextUtils.isEmpty(etMobile.getText().toString()) || etMobile.getText().toString().length() != 11) {
+                showToast("请输入正确手机号");
+                return true;
+            }
             final DriverInfoReq driverInfoReq = new DriverInfoReq();
-            driverInfoReq.setDriverLicensePlateNumber(tvProvinceOfCar.getText().toString() + etCardNumber.getText().toString());
             driverInfoReq.setPhone(etMobile.getText().toString());
+            driverInfoReq.setDriverLicensePlateNumber(tvProvinceOfCar.getText().toString() + etCardNumber.getText().toString());
             driverInfoReq.setDriverServiceItems("");
             StringBuffer buffer = new StringBuffer();
             if (cbTuoche.isChecked()) {

@@ -75,7 +75,7 @@ public class OrderDialog extends Dialog {
 
         Window win = getWindow();
         WindowManager.LayoutParams lp = win.getAttributes();
-        lp.height = DensityUtil.dip2px(context,420);
+        lp.height = DensityUtil.dip2px(context,460);
         lp.width = DensityUtil.dip2px(context,320);
         win.setAttributes(lp);
 
