@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.code19.library.DateUtils;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.BaseListAdapter;
+import com.jiujiu.autosos.common.utils.FormatUtils;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.OrderStateEnum;
 
@@ -64,7 +65,7 @@ public class OrderAdapter extends BaseListAdapter<OrderModel> {
 
         public void bindData(OrderModel item) {
             String carNo = TextUtils.isEmpty(item.getCarNo()) ? "" : item.getCarNo() + "/";
-            this.tvCarNumber.setText(carNo + item.getCarOwnerId());
+            this.tvCarNumber.setText(carNo + FormatUtils.formatMobilePhone(item.getCarOwnerId() + ""));
             this.tvOccurAddress.setText(item.getAddress());
             this.tvOrderNumber.setText(item.getOrderId() +"");
             this.tvOrderState.setText(OrderStateEnum.getOrderState(item.getState()).getLabel());

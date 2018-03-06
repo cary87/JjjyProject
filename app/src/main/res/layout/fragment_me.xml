@@ -37,7 +37,7 @@
                     android:progressTint="@color/colorAccent"
                     android:isIndicator="true"
                     android:layout_marginTop="6dp"
-                    android:progress="60"
+                    android:rating="4.6"
                     android:numStars="5"/>
 
                 <TextView

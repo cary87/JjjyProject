@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.cameraview.CameraView;
 import com.jiujiu.autosos.R;
@@ -105,8 +104,6 @@ public class CameraActivity extends AbsBaseActivity {
         @Override
         public void onPictureTaken(CameraView cameraView, final byte[] data) {
             Log.d(TAG, "onPictureTaken " + data.length);
-            Toast.makeText(cameraView.getContext(), "已经拍照", Toast.LENGTH_SHORT)
-                    .show();
             getBackgroundHandler().post(new Runnable() {
                 @Override
                 public void run() {

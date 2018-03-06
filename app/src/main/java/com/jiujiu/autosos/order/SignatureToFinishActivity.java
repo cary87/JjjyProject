@@ -82,7 +82,7 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
                 paths.add(path);
                 OrderUtil.savePicturesForOrder(SignatureToFinishActivity.this, order, PictureTypeEnum.sign.getValue(), paths, null);
                 HashMap<String, String> params = new HashMap<>();
-                params.put("score", ratingComment.getProgress() + "");
+                params.put("score", ratingComment.getRating() + "");
                 OrderApi.updateScore(params, new ApiCallback<BaseResp>() {
                     @Override
                     public void onError(Call call, Exception e, int i) {

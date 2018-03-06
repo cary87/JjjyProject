@@ -18,6 +18,7 @@ import com.code19.library.DensityUtil;
 import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.storage.UserStorage;
+import com.jiujiu.autosos.common.utils.FormatUtils;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.RefreshViewEvent;
 
@@ -74,15 +75,15 @@ public class OrderDialog extends Dialog {
         setContentView(view);
 
         Window win = getWindow();
+        win.setType(WindowManager.LayoutParams.TYPE_TOAST);
         WindowManager.LayoutParams lp = win.getAttributes();
-        lp.height = DensityUtil.dip2px(context,460);
         lp.width = DensityUtil.dip2px(context,320);
         win.setAttributes(lp);
 
         setCancelable(false);
 
         tvOrderTitle.setText(OrderUtil.getOrderTypeName(order) + "订单");
-        tvPhone.setText(order.getCarOwnerId() + "");
+        tvPhone.setText(FormatUtils.formatMobilePhone(order.getCarOwnerId() + ""));
         tvPhone.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //下划线
         tvPhone.getPaint().setAntiAlias(true);//抗锯齿
         tvAddress.setText(order.getAddress());
@@ -105,7 +106,7 @@ public class OrderDialog extends Dialog {
         tvPhone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + tvPhone.getText().toString()));
+                Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + order.getCarOwnerId()));
                 context.startActivity(intent);
             }
         });

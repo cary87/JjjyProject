@@ -34,7 +34,7 @@ public class MeFragment extends BaseFragment {
         tvDriverName.setText(UserStorage.getInstance().getUser().getName());
         tvDriverCompany.setText(UserStorage.getInstance().getUser().getBelongOrgName());
         String score = UserStorage.getInstance().getUser().getScore();
-        myRating.setProgress(score == null ? 0 : Integer.parseInt(score));
+        myRating.setRating(score == null ? 0 : Integer.parseInt(score));
     }
 
     @OnClick({R.id.ll_manage_service_info, R.id.ll_change_pwd, R.id.ll_my_account, R.id.ll_my_auth, R.id.ll_share})

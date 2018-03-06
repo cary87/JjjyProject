@@ -23,6 +23,7 @@ import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.common.base.AbsBaseActivity;
 import com.jiujiu.autosos.common.storage.UserStorage;
 import com.jiujiu.autosos.common.utils.LogUtils;
+import com.jiujiu.autosos.common.utils.FormatUtils;
 import com.jiujiu.autosos.nav.GPSNaviActivity;
 import com.jiujiu.autosos.nav.NavigateUtils;
 import com.jiujiu.autosos.nav.RouteSearchManager;
@@ -190,7 +191,7 @@ public class OrderDetailActivity extends AbsBaseActivity {
         tvDriverOwner.setText(mOrder.getCarOwner());
         tvCarNo.setText(mOrder.getCarNo());
         tvCarModel.setText("");
-        tvDriverMobile.setText(mOrder.getCarOwnerId() + "");
+        tvDriverMobile.setText(FormatUtils.formatMobilePhone(mOrder.getCarOwnerId() + ""));
         tvOrderId.setText(mOrder.getOrderId() + "");
         if (mOrder.getAcceptTime() > 0) {
             tvAcceptTime.setText(DateUtils.formatDataTime(mOrder.getAcceptTime()));
