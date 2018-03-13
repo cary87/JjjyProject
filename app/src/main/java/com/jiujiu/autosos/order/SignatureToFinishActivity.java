@@ -14,6 +14,7 @@ import com.jiujiu.autosos.R;
 import com.jiujiu.autosos.api.OrderApi;
 import com.jiujiu.autosos.common.http.ApiCallback;
 import com.jiujiu.autosos.common.http.BaseResp;
+import com.jiujiu.autosos.order.model.ChargeTypeEnum;
 import com.jiujiu.autosos.order.model.OrderModel;
 import com.jiujiu.autosos.order.model.PictureTypeEnum;
 
@@ -91,7 +92,13 @@ public class SignatureToFinishActivity extends AbsSignatureActivity {
 
                     @Override
                     public void onResponse(BaseResp baseResp, int i) {
-                        Intent intent = new Intent(SignatureToFinishActivity.this, PaymentDetailActivity.class);
+                        Class clz;
+                        if (order.getChargeType() == ChargeTypeEnum.Cash.getValue()) {
+                            clz = PaymentDetailActivity.class;
+                        } else {
+                            clz = UnNeedPayActivity.class;
+                        }
+                        Intent intent = new Intent(SignatureToFinishActivity.this, clz);
                         intent.putExtra(OrderUtil.KEY_ORDER, order);
                         startActivity(intent);
                         setResult(RESULT_OK);

@@ -196,7 +196,9 @@
                             android:id="@+id/tv_address"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:singleLine="true"
+                            android:drawableRight="@drawable/ic_location_on_green_a400_24dp"
+                            android:drawablePadding="5dp"
                             android:text="广州天河区" />
                     </LinearLayout>
 
@@ -216,7 +218,9 @@
                             android:id="@+id/tv_desnation_address"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="10dp"
+                            android:singleLine="true"
+                            android:drawableRight="@drawable/ic_location_on_green_a400_24dp"
+                            android:drawablePadding="5dp"
                             android:text="广州天河区" />
                     </LinearLayout>
 

@@ -13,4 +13,7 @@ public class TakePhotoConstant {
     public static final int TAG_CONSTRUCTION_TAKE = 6;*/
 
     public static final String PHOTO_TAG = "photo_tag";
+    public static final String PHOTO_INDEX = "photo_index";
+
+    public static final int MAX_SURVERY_PICS_NUM = 9;
 }

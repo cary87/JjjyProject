@@ -29,7 +29,7 @@ public class DisplayLocationActivity extends AbsBaseActivity {
 
     @Override
     protected void onActivityCreate(Bundle savedInstanceState) {
-        tvTitle.setText("救援位置");
+        tvTitle.setText("位置信息");
         setupToolbar(toolbar);
 
         //在activity执行onCreate时执行mMapView.onCreate(savedInstanceState)，创建地图

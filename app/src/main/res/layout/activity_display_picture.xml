@@ -34,20 +34,22 @@
                 android:text="重拍"/>
 
             <Button
-                android:id="@+id/btn_finish_take"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:layout_gravity="center"
-                android:text="完成"/>
-
-            <Button
                 android:id="@+id/btn_take_one_more"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:text="再拍一张"/>
+
+            <Button
+                android:id="@+id/btn_finish_take"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:layout_gravity="end"
-                android:text="下一张"/>
+                android:text="完成"/>
+
+
 
         </FrameLayout>
 

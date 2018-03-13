@@ -13,7 +13,6 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -30,13 +29,28 @@
         android:adjustViewBounds="true"
         android:background="@android:color/black"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/take_picture"
+
+    <ImageView
+        android:id="@+id/iv_tip_pic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/camera_border"/>
+
+    <TextView
+        android:id="@+id/tv_count_down_take"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        app:srcCompat="@drawable/ic_camera"
-        app:useCompatPadding="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:textColor="@color/black"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:background="@drawable/icon_camera_take"
+        />
 
 </RelativeLayout>

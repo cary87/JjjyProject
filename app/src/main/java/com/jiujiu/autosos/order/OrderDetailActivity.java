@@ -285,14 +285,20 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 .setStepsViewIndicatorAttentionIcon(ContextCompat.getDrawable(this, R.drawable.attention));//设置StepsViewIndicator AttentionIcon
     }
 
-    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_pay, R.id.tv_driver_mobile})
+    @OnClick({R.id.btn_accept_order, R.id.btn_nav, R.id.btn_pay, R.id.tv_driver_mobile, R.id.tv_address, R.id.tv_desnation_address})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_nav:
                 startNav();
                 break;
             case R.id.btn_pay:
-                Intent intent = new Intent(this, PaymentDetailActivity.class);
+                Class clz;
+                if (mOrder.getChargeType() == ChargeTypeEnum.Cash.getValue()) {
+                    clz = PaymentDetailActivity.class;
+                } else {
+                    clz = UnNeedPayActivity.class;
+                }
+                Intent intent = new Intent(this, clz);
                 intent.putExtra(OrderUtil.KEY_ORDER, mOrder);
                 startActivity(intent);
                 break;
@@ -315,6 +321,20 @@ public class OrderDetailActivity extends AbsBaseActivity {
             case R.id.tv_driver_mobile:
                 Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + mOrder.getCarOwnerId()));
                 startActivity(callIntent);
+                break;
+            case R.id.tv_address:
+                Intent showlocation = new Intent(this, DisplayLocationActivity.class);
+                showlocation.putExtra("lat", mOrder.getLatitude());
+                showlocation.putExtra("lng", mOrder.getLongitude());
+                startActivity(showlocation);
+                break;
+            case R.id.tv_desnation_address:
+                if (mOrder.getToRescueLatitude() * mOrder.getToRescueLongitude() > 0) {
+                    Intent deslocation = new Intent(this, DisplayLocationActivity.class);
+                    deslocation.putExtra("lat", mOrder.getToRescueLatitude());
+                    deslocation.putExtra("lng", mOrder.getToRescueLongitude());
+                    startActivity(deslocation);
+                }
                 break;
         }
     }

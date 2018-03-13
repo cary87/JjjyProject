@@ -11,7 +11,9 @@ public enum PictureTypeEnum {
     moveUp(3, "挪上拖车"),
     destination(4, "到达目的地"),
     sign(5, "签名照片"),
-    other(6, "其他照片")
+    other(6, "其他照片"),
+    vin(7, "车架号照片"),
+    construction(8,"施工单照片")
     ;
     private int value;
     private String display;

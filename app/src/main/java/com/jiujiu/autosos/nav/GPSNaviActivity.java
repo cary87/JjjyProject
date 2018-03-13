@@ -147,7 +147,7 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     }
 
     /**
-     * 监听拍照上传完成回调, 此页面不上传，OrderDetailActivity页面监听上传
+     * 监听拍照上传完成回调
      * @param event
      */
     @Subscribe
@@ -377,12 +377,12 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
                 break;
             case R.id.btn_vin:
                 Intent vin = new Intent(this, CameraActivity.class);
-                vin.putExtra(PHOTO_TAG, PictureTypeEnum.other);
+                vin.putExtra(PHOTO_TAG, PictureTypeEnum.vin);
                 startActivity(vin);
                 break;
             case R.id.btn_construction:
                 Intent construction = new Intent(this, CameraActivity.class);
-                construction.putExtra(PHOTO_TAG, PictureTypeEnum.other);
+                construction.putExtra(PHOTO_TAG, PictureTypeEnum.construction);
                 startActivity(construction);
                 break;
         }

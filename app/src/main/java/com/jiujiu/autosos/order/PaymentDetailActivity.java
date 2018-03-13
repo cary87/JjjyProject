@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.sumimakito.awesomeqr.AwesomeQRCode;
 import com.google.gson.Gson;
@@ -116,7 +117,7 @@ public class PaymentDetailActivity extends AbsBaseActivity implements OrderItemA
      */
     public void getQRCode(final PayWayEnum payway) {
         showLoadingDialog("加载中");
-        HashMap<String, String> params = new HashMap<>();
+        final HashMap<String, String> params = new HashMap<>();
         params.put("orderId", order.getOrderId() + "");
         switch (payway) {
             case AliPay:
@@ -135,17 +136,27 @@ public class PaymentDetailActivity extends AbsBaseActivity implements OrderItemA
                 });
                 break;
             case WxPay:
-                OrderApi.createWechatQRCode(params, new ApiCallback<QrResp>() {
+                //因为不同价格微信只能生成一次二维码, 给出二次确认提示
+                DialogUtils.showConfirmDialogWithCancel(this, "确认支付金额 " + tvTotalAmount.getText().toString() + " ？", new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onError(Call call, Exception e, int i) {
-                        handleError(e);
-                    }
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        switch (which) {
+                            case POSITIVE:
+                                OrderApi.createWechatQRCode(params, new ApiCallback<QrResp>() {
+                                    @Override
+                                    public void onError(Call call, Exception e, int i) {
+                                        handleError(e);
+                                    }
 
-                    @Override
-                    public void onResponse(QrResp resp, int i) {
-                        hideLoadingDialog();
-                        generateQR2View(resp.getData().getPayQR(), payway);
-                        timerQueryPayResult();
+                                    @Override
+                                    public void onResponse(QrResp resp, int i) {
+                                        hideLoadingDialog();
+                                        generateQR2View(resp.getData().getPayQR(), payway);
+                                        timerQueryPayResult();
+                                    }
+                                });
+                                break;
+                        }
                     }
                 });
                 break;

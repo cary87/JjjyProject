@@ -115,10 +115,6 @@ public class OrderItemAdapter extends BaseListAdapter<OrderItem> {
         void onOrderItemsChanged(List<OrderItem> orderItems);
     }
 
-    public RecalculationHandler getRecalculationHandler() {
-        return recalculationHandler;
-    }
-
     public void setRecalculationHandler(RecalculationHandler recalculationHandler) {
         this.recalculationHandler = recalculationHandler;
     }

@@ -72,7 +72,7 @@
 
         <activity android:name="me.iwf.photopicker.PhotoPickerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity android:name="me.iwf.photopicker.PhotoPagerActivity" android:theme="@style/Theme.AppCompat.NoActionBar"/>
-        <activity android:name=".camera.CameraActivity" android:screenOrientation="portrait">
+        <activity android:name=".camera.CameraActivity" android:screenOrientation="landscape" >
 
         </activity>
         <activity android:name=".camera.DisplayPictureTakenActivity" android:screenOrientation="portrait" android:launchMode="singleTask"/>
@@ -83,6 +83,7 @@
         <activity android:name=".order.SignatureToCheckActivity" android:screenOrientation="portrait"/>
         <activity android:name=".order.PaymentDetailActivity" android:screenOrientation="portrait"/>
         <activity android:name=".order.OrderDetailActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".order.UnNeedPayActivity" android:screenOrientation="portrait"/>
 
         <!--高德地图定位服务-->
         <service android:name="com.amap.api.location.APSService"></service>
