@@ -12,6 +12,7 @@
         android:layout_marginTop="30dp"
         android:textSize="18sp"
         android:layout_gravity="center_horizontal"
+        android:textColor="@color/black"
         android:text="车主无需付款"/>
 
     <ImageView

@@ -23,6 +23,7 @@ public class OrderApi {
     public static final String FECTH_CAN_ACCEPT_ORDER = "/common/order/findDriverCanAcceptOrders/" + Constant.PAGESIZE + "/";
     public static final String QUERY_PAY_RESULT = "/common/order/checkOrderPayed";
     public static final String UPDATE_SCORE = "/common/order/updateScore";
+    public static final String FINISH_BIZ_ORDER = "/common/order/finishBizOrder";//不用支付的情况
 
     public static <T> T syncFecthCanAcceptOrder(int currentPage, Class<T> clz) throws Exception {
         return ApiHelper.syncHttpRequest(HttpMethod.GET, FECTH_CAN_ACCEPT_ORDER + currentPage, null, clz);
@@ -42,6 +43,16 @@ public class OrderApi {
 
     public static <T> void finishOrder(Map<String, String> param, Callback<T> callback) {
         ApiHelper.httpRequest(HttpMethod.POST, FINISH_ORDER, param, callback);
+    }
+
+    /**
+     * 非车主下单，无需车主支付情况
+     * @param param
+     * @param callback
+     * @param <T>
+     */
+    public static <T> void finishBizOrder(Map<String, String> param, Callback<T> callback) {
+        ApiHelper.httpRequest(HttpMethod.POST, FINISH_BIZ_ORDER, param, callback);
     }
 
     public static <T> void countDriverOrders(Map<String, String> param, Callback<T> callback) {

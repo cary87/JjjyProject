@@ -199,7 +199,12 @@ public class OrderDetailActivity extends AbsBaseActivity {
             tvAcceptTime.setText("无");
         }
         tvAddress.setText(mOrder.getAddress());
-        tvDesnationAddress.setText(mOrder.getToRescueAdress());
+        if (TextUtils.isEmpty(mOrder.getToRescueAdress()) || mOrder.getToRescueLongitude()*mOrder.getToRescueLatitude() == 0) {
+            tvDesnationAddress.setCompoundDrawables(null,null,null,null);
+            tvDesnationAddress.setText("");
+        } else {
+            tvDesnationAddress.setText(mOrder.getToRescueAdress());
+        }
         tvChargeType.setText(ChargeTypeEnum.getType(mOrder.getChargeType()).getLabel());
         tvFee.setText("￥" + mOrder.getPayableAmount());
         tvRemark.setText(mOrder.getRemark());
@@ -240,9 +245,15 @@ public class OrderDetailActivity extends AbsBaseActivity {
                 btnAcceptOrder.setVisibility(View.GONE);
                 break;
             case Arrive:
-                btnNav.setVisibility(View.VISIBLE);
-                btnPay.setVisibility(View.GONE);
-                btnAcceptOrder.setVisibility(View.GONE);
+                if (!OrderUtil.checkIsDragcar(mOrder) && !TextUtils.isEmpty(mOrder.getArrivePics()) && !TextUtils.isEmpty(mOrder.getSignPics())) {
+                    btnNav.setVisibility(View.GONE);
+                    btnPay.setVisibility(View.VISIBLE);
+                    btnAcceptOrder.setVisibility(View.GONE);
+                } else {
+                    btnNav.setVisibility(View.VISIBLE);
+                    btnPay.setVisibility(View.GONE);
+                    btnAcceptOrder.setVisibility(View.GONE);
+                }
                 break;
             case Finished:
                 btnNav.setVisibility(View.GONE);

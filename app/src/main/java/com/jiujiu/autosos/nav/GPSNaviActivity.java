@@ -126,16 +126,18 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
      * 刷新操作菜单
      */
     private void refreshOptionButton() {
-        if (mOrder.getState() == OrderStateEnum.Arrive.getValue() && OrderUtil.checkIsDragcar(mOrder)) {
+        if (mOrder.getState() == OrderStateEnum.Arrive.getValue()) {
             if (TextUtils.isEmpty(mOrder.getArrivePics())) {
                 btnOption.setText("救援现场拍照");
                 btnOption.setTag(PictureTypeEnum.arrive);
-            } else if (TextUtils.isEmpty(mOrder.getMoveUpPics())) {
-                btnOption.setText("把车辆挪上拖车拍照");
-                btnOption.setTag(PictureTypeEnum.moveUp);
-            } else if (TextUtils.isEmpty(mOrder.getDestinationPics())) {
-                btnOption.setText("到达拖车目的地拍照");
-                btnOption.setTag(PictureTypeEnum.destination);
+            } else if (OrderUtil.checkIsDragcar(mOrder)) {
+                if (TextUtils.isEmpty(mOrder.getMoveUpPics())) {
+                    btnOption.setText("把车辆挪上拖车拍照");
+                    btnOption.setTag(PictureTypeEnum.moveUp);
+                } else if (TextUtils.isEmpty(mOrder.getDestinationPics())) {
+                    btnOption.setText("到达拖车目的地拍照");
+                    btnOption.setTag(PictureTypeEnum.destination);
+                }
             }
         }
     }
@@ -311,45 +313,23 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_option:
-                if (v.getTag() != null) {
-                    PictureTypeEnum nowTag = (PictureTypeEnum) v.getTag();
-                    if (PictureTypeEnum.arrive.equals(nowTag)) {
-                        if (mOrder.getState() == OrderStateEnum.Arrive.getValue()) {
-                            // 已到达救援现场未拍照
-                            if (TextUtils.isEmpty(mOrder.getArrivePics())) {
-                                Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
-                                intent.putExtra(PHOTO_TAG, PictureTypeEnum.arrive);
-                                startActivity(intent);
-                            }
-                        } else {
-                            //未到达救援现场
-                            DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达救援现场？", new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                    switch (which) {
-                                        case POSITIVE:
-                                            sendArriveRequestAndTakePics();
-                                            break;
-                                        case NEGATIVE:
-                                            dialog.dismiss();
-                                            break;
-                                    }
-                                }
-                            });
+                PictureTypeEnum nowTag = (PictureTypeEnum) v.getTag();
+                if (PictureTypeEnum.arrive.equals(nowTag)) {
+                    if (mOrder.getState() == OrderStateEnum.Arrive.getValue()) {
+                        // 已到达救援现场未拍照
+                        if (TextUtils.isEmpty(mOrder.getArrivePics())) {
+                            Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
+                            intent.putExtra(PHOTO_TAG, PictureTypeEnum.arrive);
+                            startActivity(intent);
                         }
-                    } else if (PictureTypeEnum.moveUp.equals(nowTag)) {
-                        Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
-                        intent.putExtra(PHOTO_TAG, PictureTypeEnum.moveUp);
-                        startActivity(intent);
-                    } else if (PictureTypeEnum.destination.equals(nowTag)) {
-                        DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达拖车目的地？", new MaterialDialog.SingleButtonCallback() {
+                    } else {
+                        //未到达救援现场
+                        DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达救援现场？", new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 switch (which) {
                                     case POSITIVE:
-                                        Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
-                                        intent.putExtra(PHOTO_TAG, PictureTypeEnum.destination);
-                                        startActivity(intent);
+                                        sendArriveRequestAndTakePics();
                                         break;
                                     case NEGATIVE:
                                         dialog.dismiss();
@@ -358,6 +338,26 @@ public class GPSNaviActivity extends BaseActivity implements AMap.OnMapClickList
                             }
                         });
                     }
+                } else if (PictureTypeEnum.moveUp.equals(nowTag)) {
+                    Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
+                    intent.putExtra(PHOTO_TAG, PictureTypeEnum.moveUp);
+                    startActivity(intent);
+                } else if (PictureTypeEnum.destination.equals(nowTag)) {
+                    DialogUtils.showConfirmDialogWithCancel(GPSNaviActivity.this, "是否到达拖车目的地？", new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            switch (which) {
+                                case POSITIVE:
+                                    Intent intent = new Intent(GPSNaviActivity.this, CameraActivity.class);
+                                    intent.putExtra(PHOTO_TAG, PictureTypeEnum.destination);
+                                    startActivity(intent);
+                                    break;
+                                case NEGATIVE:
+                                    dialog.dismiss();
+                                    break;
+                            }
+                        }
+                    });
                 }
                 break;
             case R.id.btn_order_detail:

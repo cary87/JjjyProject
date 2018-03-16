@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:text="拖车服务"
-        android:drawableRight="@drawable/ic_arrow_drop_down"
         android:layout_marginLeft="10dp"/>
 
     <FrameLayout
